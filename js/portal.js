@@ -59,9 +59,21 @@
     Promise.all([
       api("/rest/v1/rpc/semaforo_atual", { method: "POST", body: "{}" }),
       api("/rest/v1/avisos?select=texto,emoji,link&order=ordem.asc,inicio.desc&limit=6"),
-      carregarAlertasTempo()
+      carregarAlertasTempo(),
+      api("/rest/v1/rpc/espera_tipica", { method: "POST", body: "{}" })
     ]).then(function (r) {
       var sem = Array.isArray(r[0]) ? r[0] : [], avisos = Array.isArray(r[1]) ? r[1] : [], tempo = r[2] || [];
+      var tipicaDB = {}; (Array.isArray(r[3]) ? r[3] : []).forEach(function (t) { tipicaDB[t.lado] = t; });
+      // sem dados ao vivo: histórico próprio (5+ medições no mesmo dia/horário) ou estimativa de referência
+      function tipica(l) {
+        var h = tipicaDB[l];
+        if (h && h.medicoes >= 5 && h.mediana != null) {
+          return { texto: "≈ " + h.mediana + " min", nota: "típico neste horário · " + h.medicoes + " medições nas últimas semanas",
+                   nivel: h.mediana < 20 ? "verde" : h.mediana <= 60 ? "amarelo" : "vermelho" };
+        }
+        var e = window.VDB_ESTIMATIVA ? window.VDB_ESTIMATIVA(l) : null;
+        return e ? { texto: e.texto, nota: "estimativa de referência (" + e.contexto + ")", nivel: e.nivel } : null;
+      }
       var porLado = {}; sem.forEach(function (d) { porLado[d.lado] = d; });
       var algum = sem.some(function (d) { return d.relatos > 0 || d.medidas > 0; });
 
@@ -72,7 +84,9 @@
         var d = porLado[l] || { nivel: "sem-dados" }, n = NIVEL[d.nivel] || NIVEL["sem-dados"];
         var extra = d.espera_mediana != null ? " · ≈" + d.espera_mediana + " min" : (FAIXA[d.nivel] ? " · " + FAIXA[d.nivel] : "");
         var quando = d.ultimo ? " (há " + minAtras(d.ultimo) + " min)" : "";
-        itens.push(item(n[0] + " <b>" + NOMES[l] + ":</b> " + n[1] + extra + quando, base + "#fila"));
+        var t = d.nivel === "sem-dados" ? tipica(l) : null;
+        if (t) itens.push(item("⏱ <b>" + NOMES[l] + ":</b> embarque aprox. " + esc(t.texto) + " <i>(sem relatos agora)</i>", base + "#fila"));
+        else itens.push(item(n[0] + " <b>" + NOMES[l] + ":</b> " + n[1] + extra + quando, base + "#fila"));
       });
       itens.push(item("⛴️ Saídas agora " + frequencia()));
       tempo.forEach(function (t) { itens.push(item(esc(t), base + "#tempo-7-dias")); });
@@ -99,12 +113,13 @@
           var valor, sub, nivel = d.nivel;
           if (d.espera_mediana != null) { valor = "≈ " + d.espera_mediana + " min"; }
           else if (FAIXA[d.nivel]) { valor = FAIXA[d.nivel]; }
-          else { valor = "Sem dados"; nivel = "sem-dados"; }
+          else { var t = tipica(l); valor = t ? t.texto : "Sem dados"; nivel = t ? "tipico " + t.nivel : "sem-dados"; }
           var partes = [];
           if (d.medidas) partes.push(d.medidas + (d.medidas === 1 ? " medição" : " medições"));
           if (d.relatos) partes.push(d.relatos + (d.relatos === 1 ? " foto" : " fotos"));
+          var tt = partes.length ? null : tipica(l);
           sub = partes.length ? partes.join(" · ") + (d.ultimo ? " · há " + minAtras(d.ultimo) + " min" : "")
-            : '<a href="' + WAZE[l] + '" target="_blank" rel="noopener">ver trânsito no Waze →</a>';
+            : (tt ? esc(tt.nota) + " · " : "") + '<a href="' + WAZE[l] + '" target="_blank" rel="noopener">ver trânsito no Waze →</a>';
           el.className = "emb-lado " + nivel;
           el.querySelector("strong").textContent = valor;
           el.querySelector("span").innerHTML = sub;
@@ -112,7 +127,7 @@
         });
         emb.querySelector(".emb-fonte").textContent = base2.length
           ? "Estimativa de quem está na fila agora (esperas medidas e fotos)."
-          : "Ninguém informou a fila nos últimos 30 min.";
+          : "Sem relatos nos últimos 30 min — mostrando o tempo aproximado típico.";
       }
     });
   }

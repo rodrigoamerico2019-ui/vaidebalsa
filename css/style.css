@@ -517,3 +517,8 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
   .hero-acoes .btn-sec{display:none}
   .hero-acoes{margin-bottom:18px}
 }
+
+.emb-lado.tipico{border-left-style:dashed;background:rgba(255,255,255,.05)}
+.emb-lado.tipico strong{font-size:1.45rem}
+.bf-item i{font-style:normal;color:#9fb8d6}
+@media (max-width:760px){.emb-lado.tipico strong{font-size:1.2rem}}

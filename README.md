@@ -42,3 +42,7 @@ Ajustes:
 - Rodar `supabase/005_avisos.sql`. Avisos: Supabase > Table Editor > `avisos` > Insert row (texto, emoji, link, fim, ativo).
 - A faixa junta: seus avisos + situação de cada lado + frequência de saídas + alertas de vento/mar dos próximos 3 dias.
 - "Embarque agora" usa só dados do site (esperas medidas e fotos). Sem dados = "Sem dados" + link do Waze; nunca inventa número.
+
+## Tempo aproximado quando não há relatos
+- Ordem: dado ao vivo (esperas medidas/fotos) > histórico próprio (`supabase/006_espera_tipica.sql`, 5+ medições no mesmo dia/horário nas últimas 8 semanas) > estimativa de referência (`js/estimativa.js`).
+- A estimativa de referência são faixas aproximadas por dia da semana, horário, sentido, feriados e alta temporada. Ajuste os números em `js/estimativa.js` e mantenha a lista de feriados atualizada.
