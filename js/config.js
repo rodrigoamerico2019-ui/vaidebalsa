@@ -11,7 +11,8 @@
  */
 window.VAIDEBALSA = {
   // Link do site/agendamento oficial da travessia (preencher com o endereço oficial atual)
-  linkOficial: "",
+  // Hora Marcada: sistema oficial de agendamento (conferido em 20/11/2026)
+  linkOficial: "https://horamarcada.dh.sp.gov.br/ViaDigital/",
 
   cameras: [
     { id: "ss-fila",     lado: "sao-sebastiao", nome: "Fila de embarque — São Sebastião", tipo: "youtube", url: "", credito: "", creditoUrl: "" },

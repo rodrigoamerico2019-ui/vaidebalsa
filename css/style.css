@@ -64,6 +64,11 @@ details{border-bottom:1px solid var(--borda);padding:12px 0}
 details summary{cursor:pointer;font-weight:700}
 details p{margin:8px 0 0;color:var(--suave)}
 
+.tabela{width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:.95rem}
+.tabela th,.tabela td{padding:9px 10px;border-bottom:1px solid var(--borda);text-align:left}
+.tabela th{background:var(--ceu);color:var(--mar)}
+.tabela td:not(:first-child),.tabela th:not(:first-child){white-space:nowrap}
+
 /* rodapé */
 .rodape{background:var(--mar);color:#b8d2e4;padding:26px 0;margin-top:30px;font-size:.92rem}
 .rodape a{color:#fff}
