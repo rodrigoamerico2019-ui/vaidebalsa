@@ -48,6 +48,9 @@ alter table public.posts    enable row level security;
 alter table public.reacoes  enable row level security;
 alter table public.embarques enable row level security;
 
+-- Projetos novos não liberam as tabelas para a API automaticamente
+grant select on public.posts to anon, authenticated;
+
 drop policy if exists "ler posts recentes" on public.posts;
 create policy "ler posts recentes" on public.posts
   for select to anon, authenticated

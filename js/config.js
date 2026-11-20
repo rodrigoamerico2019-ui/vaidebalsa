@@ -13,8 +13,8 @@ window.VAIDEBALSA = {
   // Link do site/agendamento oficial da travessia (preencher com o endereço oficial atual)
   // Mural ao vivo (Supabase). Preencha com Project URL e anon key do projeto.
   // Enquanto vazio, o mural aparece como "em breve". Teste visual: abra o site com ?demo=1
-  supabaseUrl: "",
-  supabaseAnonKey: "",
+  supabaseUrl: "https://ktuugoebvsvtvccynexc.supabase.co",
+  supabaseAnonKey: "sb_publishable_1lfypxwF3OeZjd2BafYa9g_BIhrwHIC",
 
   // Embarques (mesmos valores da tabela "embarques" no Supabase) — usados para sugerir o lado
   embarques: {
