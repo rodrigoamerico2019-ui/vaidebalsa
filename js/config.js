@@ -11,6 +11,17 @@
  */
 window.VAIDEBALSA = {
   // Link do site/agendamento oficial da travessia (preencher com o endereço oficial atual)
+  // Mural ao vivo (Supabase). Preencha com Project URL e anon key do projeto.
+  // Enquanto vazio, o mural aparece como "em breve". Teste visual: abra o site com ?demo=1
+  supabaseUrl: "",
+  supabaseAnonKey: "",
+
+  // Embarques (mesmos valores da tabela "embarques" no Supabase) — usados para sugerir o lado
+  embarques: {
+    "sao-sebastiao": { lat: -23.8075, lon: -45.4005, raio: 2000 },
+    "ilhabela":      { lat: -23.8202, lon: -45.3762, raio: 2000 }
+  },
+
   // Hora Marcada: sistema oficial de agendamento (conferido em 20/11/2026)
   linkOficial: "https://horamarcada.dh.sp.gov.br/ViaDigital/",
 

@@ -15,3 +15,15 @@ Site estático com as câmeras ao vivo da balsa São Sebastião–Ilhabela.
 
 ## Regra das câmeras
 Use só feeds com autorização do dono ou players oficiais de incorporação, sempre com crédito.
+
+## Mural ao vivo + semáforo (Supabase)
+1. Crie um projeto em supabase.com (região São Paulo, `sa-east-1`).
+2. SQL Editor > New query > cole `supabase/schema.sql` > Run.
+3. Project Settings > API: copie **Project URL** e **anon public key** para `supabaseUrl` e `supabaseAnonKey` em `js/config.js`.
+4. Suba a versão nova (`git push`). Sem esses dados o mural aparece como "em breve".
+5. Teste visual sem banco: abra o site com `?demo=1`.
+
+Ajustes:
+- Coordenadas e raio dos embarques: tabela `embarques` (e o mesmo em `js/config.js`). O ponto de São Sebastião é aproximado — conferir no Google Maps.
+- Posts somem do mural em 45 min; o semáforo usa os últimos 30 min; 3 denúncias escondem o post.
+- Limpeza: rode `select limpar_antigos();` 1x por dia (Database > Cron, ou manualmente). Apague fotos antigas do bucket `fotos` no painel Storage.

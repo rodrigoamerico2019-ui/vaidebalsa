@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=4">
+<link rel="stylesheet" href="css/style.css?v=5">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -42,6 +42,7 @@
     </a>
     <nav class="menu" aria-label="Principal">
       <a href="./" aria-current="page">Ao vivo</a>
+      <a href="#fila">Fila agora</a>
       <a href="#cameras">Câmeras</a>
       <a href="horarios-e-tarifas.html">Horários e tarifas</a>
       <a href="perguntas-frequentes.html">Dúvidas</a>
@@ -62,7 +63,7 @@
     <h1 id="titulo">Travessia de Ilhabela <em>ao vivo</em></h1>
     <p class="sub">A travessia em tempo real, <strong>na palma da sua mão.</strong> Veja as filas de São Sebastião e Ilhabela antes de sair de casa.</p>
     <div class="hero-acoes">
-      <a class="btn-agendar" href="#cameras"><svg aria-hidden="true"><use href="img/icones.svg#i-camera"/></svg>Ver as câmeras</a>
+      <a class="btn-agendar" href="#fila"><svg aria-hidden="true"><use href="img/icones.svg#i-vivo"/></svg>Ver a fila agora</a>
       <a class="btn-sec" href="horarios-e-tarifas.html"><svg aria-hidden="true"><use href="img/icones.svg#i-ticket"/></svg>Horários e tarifas</a>
     </div>
 
@@ -76,6 +77,76 @@
 </section>
 
 <main>
+  <section class="secao fila" id="fila" aria-labelledby="tit-fila">
+    <div class="wrap">
+      <div class="secao-cab">
+        <div>
+          <span class="rotulo">Mural ao vivo</span>
+          <h2 id="tit-fila">A fila agora, <em>por quem está nela</em></h2>
+          <p class="lead">Motoristas e passageiros mostram em tempo real como está cada lado. O semáforo é calculado pelos relatos dos últimos 30 minutos.</p>
+        </div>
+        <button class="btn-postar" type="button" data-abrir-postar><svg aria-hidden="true"><use href="img/icones.svg#i-camera"/></svg>Estou na fila</button>
+      </div>
+
+      <div class="sinais">
+        <div class="sinal breve" data-semaforo="sao-sebastiao">
+          <div class="luzes" aria-hidden="true"><i class="l-vermelho"></i><i class="l-amarelo"></i><i class="l-verde"></i></div>
+          <div><small>Lado São Sebastião</small><strong class="sinal-nivel">Em breve</strong><span class="sinal-faixa">o mural abre em breve</span><em class="sinal-base"></em></div>
+        </div>
+        <div class="sinal breve" data-semaforo="ilhabela">
+          <div class="luzes" aria-hidden="true"><i class="l-vermelho"></i><i class="l-amarelo"></i><i class="l-verde"></i></div>
+          <div><small>Lado Ilhabela</small><strong class="sinal-nivel">Em breve</strong><span class="sinal-faixa">o mural abre em breve</span><em class="sinal-base"></em></div>
+        </div>
+      </div>
+
+      <div class="mural-topo">
+        <div class="chips mural-filtros" role="group" aria-label="Filtrar mural">
+          <button data-filtro="todos" aria-pressed="true">Todos</button>
+          <button data-filtro="sao-sebastiao" aria-pressed="false">São Sebastião</button>
+          <button data-filtro="ilhabela" aria-pressed="false">Ilhabela</button>
+        </div>
+        <span class="aviso-volante">📵 Motorista: nunca poste dirigindo</span>
+      </div>
+      <div id="mural" class="mural" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <dialog id="postar" class="folha" aria-labelledby="tit-postar">
+    <form id="form-postar" method="dialog">
+      <div class="folha-cab">
+        <h3 id="tit-postar">Mostre como está a fila</h3>
+        <button type="button" class="fechar" data-fechar aria-label="Fechar">✕</button>
+      </div>
+      <p class="local">Buscando sua localização…</p>
+      <label class="previa-wrap">
+        <input type="file" accept="image/*" capture="environment" class="sr">
+        <div class="previa"><span>📷 Toque para tirar a foto da fila</span></div>
+      </label>
+      <fieldset>
+        <legend>Qual lado?</legend>
+        <div class="opcoes">
+          <label><input type="radio" name="lado" value="sao-sebastiao"><span>São Sebastião</span></label>
+          <label><input type="radio" name="lado" value="ilhabela"><span>Ilhabela</span></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Quanto tempo de espera, mais ou menos?</legend>
+        <div class="opcoes tres">
+          <label class="o-verde"><input type="radio" name="espera" value="verde"><span>🟢 menos de 20 min</span></label>
+          <label class="o-amarelo"><input type="radio" name="espera" value="amarelo"><span>🟡 20 a 60 min</span></label>
+          <label class="o-vermelho"><input type="radio" name="espera" value="vermelho"><span>🔴 mais de 1 hora</span></label>
+        </div>
+      </fieldset>
+      <label class="campo-texto">Quer dizer algo? <small>(opcional)</small>
+        <input type="text" name="texto" maxlength="140" placeholder="Ex.: fila chegando no posto, andando rápido">
+      </label>
+      <label class="check"><input type="checkbox" name="parado" value="1"> Não estou dirigindo (sou passageiro ou estou parado)</label>
+      <button type="submit" class="btn-agendar enviar">Postar no mural</button>
+      <p class="termos-nota">Ao postar você concorda com os <a href="termos.html" target="_blank">termos de uso</a>. Evite mostrar rostos e placas. A foto some do mural em 45 minutos.</p>
+    </form>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
   <section class="secao" id="cameras" aria-labelledby="tit-cams">
     <div class="wrap">
       <div class="secao-cab revela">
@@ -214,13 +285,14 @@
 </footer>
 
 <nav class="tabbar" aria-label="Atalhos">
-  <a href="./" aria-current="page"><svg aria-hidden="true"><use href="img/icones.svg#i-vivo"/></svg>Ao vivo</a>
+  <a href="./#fila" aria-current="page"><svg aria-hidden="true"><use href="img/icones.svg#i-vivo"/></svg>Fila agora</a>
   <a href="./#cameras"><svg aria-hidden="true"><use href="img/icones.svg#i-camera"/></svg>Câmeras</a>
   <a href="horarios-e-tarifas.html"><svg aria-hidden="true"><use href="img/icones.svg#i-ticket"/></svg>Tarifas</a>
   <a href="perguntas-frequentes.html"><svg aria-hidden="true"><use href="img/icones.svg#i-duvida"/></svg>Dúvidas</a>
 </nav>
 
-<script src="js/config.js?v=2"></script>
+<script src="js/config.js?v=3"></script>
 <script src="js/app.js?v=2"></script>
+<script src="js/mural.js?v=1"></script>
 </body>
 </html>
