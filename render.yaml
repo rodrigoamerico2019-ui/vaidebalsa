@@ -2,8 +2,18 @@ services:
   - type: web
     name: vaidebalsa
     runtime: static
+    buildCommand: ""
     staticPublishPath: .
+    domains:
+      - vaidebalsa.com.br
+      - www.vaidebalsa.com.br
     headers:
       - path: /*
         name: X-Content-Type-Options
         value: nosniff
+      - path: /css/*
+        name: Cache-Control
+        value: public, max-age=86400
+      - path: /js/*
+        name: Cache-Control
+        value: public, max-age=3600
