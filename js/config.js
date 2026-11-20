@@ -22,6 +22,22 @@ window.VAIDEBALSA = {
     "ilhabela":      { lat: -23.8202, lon: -45.3762, raio: 2000 }
   },
 
+  // Parceiros (até 3, aparecem logo abaixo do semáforo). null = espaço livre.
+  parceiros: [
+    {
+      nome: "Emirados Pousada de Charme",
+      categoria: "Hospedagem em Ilhabela",
+      texto: "Charme, hospitalidade e alma. Chegou na ilha? Fale direto com a recepção.",
+      imagem: "img/parceiros/emirados.webp",
+      link: "https://wa.me/5524988541645?text=" + encodeURIComponent("Olá! Vi a pousada no VAIDEBALSA e gostaria de informações."),
+      botao: "Chamar no WhatsApp"
+    },
+    null,
+    null
+  ],
+  // Contato para quem quer anunciar (WhatsApp com DDI, ex.: "5512999999999"). Vazio = sem botão.
+  contatoAnuncie: "",
+
   // Hora Marcada: sistema oficial de agendamento (conferido em 20/11/2026)
   linkOficial: "https://horamarcada.dh.sp.gov.br/ViaDigital/",
 

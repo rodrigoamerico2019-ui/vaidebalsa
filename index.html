@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=5">
+<link rel="stylesheet" href="css/style.css?v=8">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -43,12 +43,16 @@
     <nav class="menu" aria-label="Principal">
       <a href="./" aria-current="page">Ao vivo</a>
       <a href="#fila">Fila agora</a>
+      <a href="#tempo-7-dias">Previsão</a>
       <a href="#cameras">Câmeras</a>
       <a href="horarios-e-tarifas.html">Horários e tarifas</a>
       <a href="perguntas-frequentes.html">Dúvidas</a>
     </nav>
     <a class="btn-agendar" data-link="oficial" href="#"><svg aria-hidden="true"><use href="img/icones.svg#i-calendario"/></svg>Agendar</a>
   </div>
+  <a id="barra-fila" class="barra-fila" href="./#fila" hidden aria-label="Situação da fila agora — ver mural">
+    <span class="wrap bf-conteudo"></span>
+  </a>
 </header>
 
 <section class="hero" aria-labelledby="titulo">
@@ -99,6 +103,9 @@
         </div>
       </div>
 
+      <div class="parceiros-cab"><span>Parceiros da travessia</span></div>
+      <div id="parceiros" class="parceiros"></div>
+
       <div class="mural-topo">
         <div class="chips mural-filtros" role="group" aria-label="Filtrar mural">
           <button data-filtro="todos" aria-pressed="true">Todos</button>
@@ -147,12 +154,25 @@
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <section class="secao tempo" id="tempo-7-dias" aria-labelledby="tit-tempo">
+    <div class="wrap">
+      <div class="secao-cab revela">
+        <div>
+          <span class="rotulo">Previsão</span>
+          <h2 id="tit-tempo">Tempo e mar nos <em>próximos 7 dias</em></h2>
+          <p class="lead">Planeje a travessia: vento forte e mar agitado podem atrasar a balsa.</p>
+        </div>
+      </div>
+      <div id="previsao" class="previsao"><p class="prev-fonte">Carregando previsão…</p></div>
+    </div>
+  </section>
+
   <section class="secao" id="cameras" aria-labelledby="tit-cams">
     <div class="wrap">
       <div class="secao-cab revela">
         <div>
           <span class="rotulo">Câmeras</span>
-          <h2 id="tit-cams">Como está a <em>fila agora?</em></h2>
+          <h2 id="tit-cams">Câmeras da <em>travessia</em></h2>
           <p class="lead">Os dois lados do canal num lugar só. Escolha o embarque e confira antes de pegar a estrada.</p>
         </div>
         <div class="chips" role="group" aria-label="Filtrar câmeras">
@@ -291,8 +311,9 @@
   <a href="perguntas-frequentes.html"><svg aria-hidden="true"><use href="img/icones.svg#i-duvida"/></svg>Dúvidas</a>
 </nav>
 
-<script src="js/config.js?v=4"></script>
+<script src="js/config.js?v=5"></script>
 <script src="js/app.js?v=2"></script>
-<script src="js/mural.js?v=1"></script>
+<script src="js/portal.js?v=3"></script>
+<script src="js/mural.js?v=2"></script>
 </body>
 </html>

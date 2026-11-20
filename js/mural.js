@@ -243,6 +243,11 @@
   form.querySelector('input[type="file"]').addEventListener("change", function (e) {
     var f = e.target.files && e.target.files[0];
     if (!f) return;
+    // Só fotos tiradas agora: arquivo de mais de 30 min (ex.: da galeria) é recusado
+    if (f.lastModified && Date.now() - f.lastModified > 30 * 60000) {
+      e.target.value = "";
+      return toast("Use uma foto tirada agora, na fila. Fotos antigas da galeria não valem.");
+    }
     comprimir(f).then(function (b) {
       arquivo = b;
       form.querySelector(".previa").innerHTML = '<img alt="Prévia da foto" src="' + URL.createObjectURL(b) + '">';
