@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=8">
+<link rel="stylesheet" href="css/style.css?v=9">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -87,19 +87,22 @@
         <div>
           <span class="rotulo">Mural ao vivo</span>
           <h2 id="tit-fila">A fila agora, <em>por quem está nela</em></h2>
-          <p class="lead">Motoristas e passageiros mostram em tempo real como está cada lado. O semáforo é calculado pelos relatos dos últimos 30 minutos.</p>
+          <p class="lead">Motoristas e passageiros mostram em tempo real como está cada lado. O semáforo junta as fotos dos últimos 30 minutos e as esperas medidas pelo GPS de quem passou pela fila.</p>
         </div>
-        <button class="btn-postar" type="button" data-abrir-postar><svg aria-hidden="true"><use href="img/icones.svg#i-camera"/></svg>Estou na fila</button>
+        <div class="fila-botoes">
+          <button class="btn-postar" type="button" data-abrir-postar><svg aria-hidden="true"><use href="img/icones.svg#i-camera"/></svg>Postar foto da fila</button>
+          <button class="btn-medir" type="button" data-medir><svg aria-hidden="true"><use href="img/icones.svg#i-relogio"/></svg>Medir minha espera</button>
+        </div>
       </div>
 
       <div class="sinais">
         <div class="sinal breve" data-semaforo="sao-sebastiao">
           <div class="luzes" aria-hidden="true"><i class="l-vermelho"></i><i class="l-amarelo"></i><i class="l-verde"></i></div>
-          <div><small>Lado São Sebastião</small><strong class="sinal-nivel">Em breve</strong><span class="sinal-faixa">o mural abre em breve</span><em class="sinal-base"></em></div>
+          <div><small>Lado São Sebastião</small><strong class="sinal-nivel">Em breve</strong><span class="sinal-faixa">o mural abre em breve</span><em class="sinal-base"></em><span class="sinal-transito">Trânsito agora: <a href="https://www.google.com/maps/@?api=1&amp;map_action=map&amp;center=-23.8075%2C-45.4005&amp;zoom=15&amp;layer=traffic" target="_blank" rel="noopener">Google Maps</a> · <a href="https://www.waze.com/live-map/directions?to=ll.-23.8075%2C-45.4005" target="_blank" rel="noopener">Waze</a></span></div>
         </div>
         <div class="sinal breve" data-semaforo="ilhabela">
           <div class="luzes" aria-hidden="true"><i class="l-vermelho"></i><i class="l-amarelo"></i><i class="l-verde"></i></div>
-          <div><small>Lado Ilhabela</small><strong class="sinal-nivel">Em breve</strong><span class="sinal-faixa">o mural abre em breve</span><em class="sinal-base"></em></div>
+          <div><small>Lado Ilhabela</small><strong class="sinal-nivel">Em breve</strong><span class="sinal-faixa">o mural abre em breve</span><em class="sinal-base"></em><span class="sinal-transito">Trânsito agora: <a href="https://www.google.com/maps/@?api=1&amp;map_action=map&amp;center=-23.8202%2C-45.3762&amp;zoom=15&amp;layer=traffic" target="_blank" rel="noopener">Google Maps</a> · <a href="https://www.waze.com/live-map/directions?to=ll.-23.8202%2C-45.3762" target="_blank" rel="noopener">Waze</a></span></div>
         </div>
       </div>
 
@@ -152,6 +155,35 @@
       <p class="termos-nota">Ao postar você concorda com os <a href="termos.html" target="_blank">termos de uso</a>. Evite mostrar rostos e placas. A foto some do mural em 45 minutos.</p>
     </form>
   </dialog>
+  <dialog id="medir" class="folha" aria-labelledby="tit-medir">
+    <div class="folha-corpo">
+      <div class="folha-cab"><h3 id="tit-medir">Medir minha espera</h3><button type="button" class="fechar" data-fechar aria-label="Fechar">✕</button></div>
+      <p>O site mede <strong>sozinho</strong> quanto tempo você leva da fila até a balsa sair, e esse tempo real ajuda todo mundo que vem atrás.</p>
+      <ul class="medir-lista">
+        <li>📍 Usa o GPS <strong>só enquanto este site estiver aberto</strong>.</li>
+        <li>🔒 Guardamos apenas o lado e a hora de entrada e de embarque. <strong>Seu trajeto não é guardado</strong>, e a medição fica anônima.</li>
+        <li>📱 Deixe o site aberto na tela. Se fechar, você pode reabrir e a medição continua.</li>
+        <li>📵 Motorista: comece a medir com o carro parado e não mexa no celular dirigindo.</li>
+      </ul>
+      <button type="button" class="btn-agendar enviar" data-comecar>Começar a medir</button>
+      <p class="termos-nota">Ao começar você concorda com os <a href="termos.html" target="_blank">termos de uso</a>.</p>
+    </div>
+  </dialog>
+  <dialog id="medido" class="folha" aria-labelledby="tit-medido">
+    <div class="folha-corpo centro">
+      <div class="folha-cab"><span></span><button type="button" class="fechar" data-fechar aria-label="Fechar">✕</button></div>
+      <span class="mr-emoji" aria-hidden="true">⛴️</span>
+      <h3 id="tit-medido">Você esperou <span class="mr-min">0</span> min</h3>
+      <p>na fila de <strong class="mr-lado"></strong>. Sua medição já está ajudando o semáforo. Obrigado! 🙌</p>
+      <button type="button" class="btn-agendar enviar" data-compartilhar>Compartilhar no WhatsApp</button>
+    </div>
+  </dialog>
+  <div id="medindo" class="medindo" hidden>
+    <span class="md-ponto" aria-hidden="true"></span>
+    <div><strong>⏱ <span class="md-tempo">0 min</span></strong><small class="md-lado"></small></div>
+    <button type="button" data-embarquei>Já embarquei</button>
+    <button type="button" data-cancelar aria-label="Cancelar medição">✕</button>
+  </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <section class="secao tempo" id="tempo-7-dias" aria-labelledby="tit-tempo">
@@ -313,7 +345,8 @@
 
 <script src="js/config.js?v=5"></script>
 <script src="js/app.js?v=2"></script>
-<script src="js/portal.js?v=3"></script>
-<script src="js/mural.js?v=2"></script>
+<script src="js/portal.js?v=4"></script>
+<script src="js/mural.js?v=3"></script>
+<script src="js/modo-fila.js?v=1"></script>
 </body>
 </html>

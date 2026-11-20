@@ -27,3 +27,8 @@ Ajustes:
 - Coordenadas e raio dos embarques: tabela `embarques` (e o mesmo em `js/config.js`). O ponto de São Sebastião é aproximado — conferir no Google Maps.
 - Posts somem do mural em 45 min; o semáforo usa os últimos 30 min; 3 denúncias escondem o post.
 - Limpeza: rode `select limpar_antigos();` 1x por dia (Database > Cron, ou manualmente). Apague fotos antigas do bucket `fotos` no painel Storage.
+
+## Modo fila (medição automática da espera)
+- Rodar `supabase/002_modo_fila.sql` no SQL Editor (depois do schema.sql).
+- O site mede do momento em que a pessoa toca em "Medir minha espera" (dentro da área da fila) até o celular avançar 400 m+ em direção ao outro embarque (= balsa saiu).
+- Guarda só lado + horários; ao concluir, a medição é desvinculada do aparelho.

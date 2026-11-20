@@ -21,7 +21,8 @@
       var ultimo = dados.map(function (d) { return d.ultimo; }).filter(Boolean).sort().pop();
       var itens = ["sao-sebastiao", "ilhabela"].map(function (l) {
         var d = porLado[l] || { nivel: "sem-dados" }, n = NIVEL[d.nivel] || NIVEL["sem-dados"];
-        return '<span class="bf-item ' + esc(d.nivel) + '">' + n[0] + " <b>" + NOMES[l] + ":</b> " + n[1] + "</span>";
+        var extra = d.espera_mediana != null ? " ≈" + d.espera_mediana + " min" : "";
+        return '<span class="bf-item ' + esc(d.nivel) + '">' + n[0] + " <b>" + NOMES[l] + ":</b> " + n[1] + extra + "</span>";
       }).join("");
       barra.querySelector(".bf-conteudo").innerHTML = '<span class="bf-vivo">AO VIVO</span>' + itens +
         (algum ? '<span class="bf-hora">há ' + minAtras(ultimo) + " min</span>" : '<span class="bf-hora">Está na fila? Avise</span>');

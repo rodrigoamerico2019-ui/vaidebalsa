@@ -89,9 +89,14 @@
       el.className = "sinal " + nivel;
       var n = NIVEIS[nivel];
       el.querySelector(".sinal-nivel").textContent = nivel === "breve" ? "Em breve" : n.rotulo;
-      el.querySelector(".sinal-faixa").textContent = nivel === "breve" ? "o mural abre em breve" : n.faixa;
-      el.querySelector(".sinal-base").textContent = (s && s.relatos)
-        ? "baseado em " + s.relatos + (s.relatos === 1 ? " relato" : " relatos") + " · último " + ha(s.ultimo)
+      el.querySelector(".sinal-faixa").textContent = nivel === "breve" ? "o mural abre em breve"
+        : (s && s.espera_mediana != null ? "≈ " + s.espera_mediana + " min de espera medida" : n.faixa);
+      var partes = [];
+      if (s && s.medidas) partes.push(s.medidas + (s.medidas === 1 ? " espera medida" : " esperas medidas"));
+      if (s && s.relatos) partes.push(s.relatos + (s.relatos === 1 ? " relato" : " relatos"));
+      if (s && s.medindo) partes.push(s.medindo + " medindo agora");
+      el.querySelector(".sinal-base").textContent = partes.length
+        ? partes.join(" · ") + (s.ultimo ? " · último " + ha(s.ultimo) : "")
         : (falhou ? "sem conexão no momento" : "seja o primeiro a avisar");
     });
 
