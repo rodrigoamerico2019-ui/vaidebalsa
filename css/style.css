@@ -1,0 +1,74 @@
+:root{
+  --mar:#0b3a5b; --mar-2:#0f5784; --ceu:#e8f3fa; --sol:#ffc83d; --texto:#13232f;
+  --suave:#5b6b78; --card:#fff; --borda:#d7e3ec; --ok:#1f9d55; --alerta:#e07b00;
+  --fonte: system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--fonte);color:var(--texto);background:var(--ceu);line-height:1.55}
+a{color:var(--mar-2)}
+img{max-width:100%}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+
+/* topo */
+.topo{background:var(--mar);color:#fff;position:sticky;top:0;z-index:10}
+.topo .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:800;font-size:1.25rem;letter-spacing:-.02em}
+.logo b{color:var(--sol)}
+.logo svg{width:32px;height:32px}
+.menu{display:flex;gap:4px;flex-wrap:wrap}
+.menu a{color:#d6e8f5;text-decoration:none;padding:8px 10px;border-radius:8px;font-size:.95rem}
+.menu a:hover,.menu a[aria-current]{background:rgba(255,255,255,.12);color:#fff}
+
+/* hero */
+.hero{background:linear-gradient(160deg,var(--mar) 0%,var(--mar-2) 100%);color:#fff;padding:28px 0 36px}
+.hero h1{margin:0 0 6px;font-size:clamp(1.6rem,4.5vw,2.6rem);line-height:1.15;letter-spacing:-.02em}
+.hero p{margin:0;color:#cfe4f3;max-width:640px}
+.atualizado{display:inline-flex;align-items:center;gap:8px;margin-top:14px;background:rgba(255,255,255,.12);padding:6px 12px;border-radius:999px;font-size:.9rem}
+.pulso{width:9px;height:9px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 0 0 rgba(255,77,77,.7);animation:pulso 1.6s infinite}
+@keyframes pulso{70%{box-shadow:0 0 0 9px rgba(255,77,77,0)}100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}}
+
+/* abas de lado */
+.lados{display:flex;gap:8px;margin:22px 0 14px;flex-wrap:wrap}
+.lados button{font:inherit;border:1px solid var(--borda);background:#fff;color:var(--texto);padding:9px 14px;border-radius:999px;cursor:pointer;font-weight:600}
+.lados button[aria-pressed="true"]{background:var(--mar);color:#fff;border-color:var(--mar)}
+
+/* câmeras */
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.cam{background:var(--card);border:1px solid var(--borda);border-radius:14px;overflow:hidden}
+.cam .tela{aspect-ratio:16/9;background:#0d1b26;position:relative;display:flex;align-items:center;justify-content:center}
+.cam .tela iframe,.cam .tela img{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}
+.cam .vazio{color:#9fb3c3;text-align:center;padding:16px;font-size:.95rem}
+.cam .vazio strong{display:block;color:#fff;margin-bottom:4px}
+.cam .info{padding:10px 14px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.cam h3{margin:0;font-size:1rem}
+.cam small{color:var(--suave)}
+.tag{font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--ceu);color:var(--mar-2);white-space:nowrap}
+
+/* blocos */
+section{padding:28px 0}
+h2{font-size:1.45rem;margin:0 0 12px;letter-spacing:-.01em}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--borda);border-radius:14px;padding:16px}
+.card h3{margin:0 0 6px;font-size:1.05rem}
+.card p{margin:0;color:var(--suave)}
+.numero{font-size:1.8rem;font-weight:800;color:var(--mar)}
+.btn{display:inline-block;background:var(--sol);color:#13232f;font-weight:700;text-decoration:none;padding:11px 18px;border-radius:10px}
+.btn:hover{filter:brightness(.95)}
+.aviso{background:#fff7e0;border:1px solid #f2d27a;border-radius:12px;padding:12px 14px;color:#6b5000;font-size:.95rem}
+
+/* conteúdo de texto */
+.texto{background:#fff;border:1px solid var(--borda);border-radius:14px;padding:20px}
+.texto h2{margin-top:8px}
+details{border-bottom:1px solid var(--borda);padding:12px 0}
+details summary{cursor:pointer;font-weight:700}
+details p{margin:8px 0 0;color:var(--suave)}
+
+/* rodapé */
+.rodape{background:var(--mar);color:#b8d2e4;padding:26px 0;margin-top:30px;font-size:.92rem}
+.rodape a{color:#fff}
+
+@media (max-width:640px){
+  .menu a{padding:6px 8px;font-size:.88rem}
+  .grade{grid-template-columns:1fr}
+}
