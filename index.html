@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=9">
+<link rel="stylesheet" href="css/style.css?v=11">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -104,6 +104,26 @@
           <div class="luzes" aria-hidden="true"><i class="l-vermelho"></i><i class="l-amarelo"></i><i class="l-verde"></i></div>
           <div><small>Lado Ilhabela</small><strong class="sinal-nivel">Em breve</strong><span class="sinal-faixa">o mural abre em breve</span><em class="sinal-base"></em><span class="sinal-transito">Trânsito agora: <a href="https://www.google.com/maps/@?api=1&amp;map_action=map&amp;center=-23.8202%2C-45.3762&amp;zoom=15&amp;layer=traffic" target="_blank" rel="noopener">Google Maps</a> · <a href="https://www.waze.com/live-map/directions?to=ll.-23.8202%2C-45.3762" target="_blank" rel="noopener">Waze</a></span></div>
         </div>
+      </div>
+
+      <div class="mapas-waze">
+        <figure class="mapa-waze">
+          <figcaption><b>São Sebastião</b><span>Trânsito ao vivo · Waze</span></figcaption>
+          <iframe src="https://embed.waze.com/iframe?zoom=15&amp;lat=-23.8075&amp;lon=-45.4005&amp;ct=livemap" loading="lazy" title="Mapa ao vivo do Waze — acesso à balsa em São Sebastião" allowfullscreen></iframe>
+        </figure>
+        <figure class="mapa-waze">
+          <figcaption><b>Ilhabela</b><span>Trânsito ao vivo · Waze</span></figcaption>
+          <iframe src="https://embed.waze.com/iframe?zoom=15&amp;lat=-23.8202&amp;lon=-45.3762&amp;ct=livemap" loading="lazy" title="Mapa ao vivo do Waze — acesso à balsa em Ilhabela" allowfullscreen></iframe>
+        </figure>
+      </div>
+      <p class="mapas-nota">Mapas do Waze: ruas em vermelho e amarelo indicam lentidão no acesso à balsa. Os alertas vêm dos motoristas do Waze.</p>
+
+      <div class="grafico-card">
+        <div class="grafico-cab">
+          <h3>Espera ao longo de hoje</h3>
+          <small>Espera em minutos, média por hora das esperas medidas e das fotos da fila</small>
+        </div>
+        <div id="grafico-dia"><p class="g-vazio">Carregando…</p></div>
       </div>
 
       <div class="parceiros-cab"><span>Parceiros da travessia</span></div>
@@ -348,5 +368,6 @@
 <script src="js/portal.js?v=4"></script>
 <script src="js/mural.js?v=3"></script>
 <script src="js/modo-fila.js?v=1"></script>
+<script src="js/grafico.js?v=4"></script>
 </body>
 </html>

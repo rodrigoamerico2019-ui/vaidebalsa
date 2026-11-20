@@ -432,3 +432,40 @@ a.parceiro:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(10,44,82
   .btn-medir{width:100%;justify-content:center}
   .medindo{bottom:88px}
 }
+
+
+/* ===== Mapas do Waze + gráfico do dia ===== */
+.mapas-waze{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.mapa-waze{margin:0;background:#fff;border-radius:var(--raio);overflow:hidden;box-shadow:var(--sombra)}
+.mapa-waze figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:12px 16px}
+.mapa-waze figcaption b{font:800 1rem var(--titulo);color:var(--oceano)}
+.mapa-waze figcaption span{font-size:.78rem;color:var(--suave)}
+.mapa-waze iframe{display:block;width:100%;height:300px;border:0;background:var(--nevoa)}
+.mapas-nota{margin:10px 0 22px;font-size:.82rem;color:var(--suave)}
+.grafico-card{background:#fff;border-radius:var(--raio);box-shadow:var(--sombra);padding:18px 18px 12px;margin-bottom:28px}
+.grafico-cab h3{font:900 italic 1.25rem var(--titulo);color:var(--oceano)}
+.grafico-cab small{color:var(--suave);font-size:.82rem}
+.g-legenda{display:flex;gap:16px;margin:12px 0 4px;font-size:.85rem;font-weight:600;color:var(--texto)}
+.g-legenda span{display:inline-flex;align-items:center;gap:6px}
+.g-legenda i,.g-dica i{display:inline-block;width:14px;height:3px;border-radius:2px}
+.g-area{position:relative;overflow:hidden}
+.g-svg{width:100%;height:auto;display:block;overflow:visible}
+.g-grade{stroke:var(--borda);stroke-width:1}
+.g-grade.base{stroke:#b8c6d6}
+.g-eixo{font:500 11px var(--corpo);fill:var(--suave)}
+.g-rotulo{font:700 12px var(--corpo);fill:var(--texto)}
+.g-agora{stroke:var(--sol);stroke-width:1.5;stroke-dasharray:4 4}
+.g-mira{stroke:var(--oceano);stroke-width:1;stroke-dasharray:3 3}
+.g-alvo{cursor:crosshair}
+.g-dica{position:absolute;top:6px;width:190px;background:var(--oceano);color:#fff;border-radius:12px;padding:10px 12px;font-size:.8rem;pointer-events:none;box-shadow:0 10px 26px rgba(0,0,0,.25)}
+.g-dica strong{display:block;margin-bottom:4px}
+.g-dica div{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.g-dica small{opacity:.75}
+.g-vazio{margin:8px 0 6px;font-size:.88rem;color:var(--suave);background:var(--nevoa);border-radius:12px;padding:10px 12px}
+.g-tabela{margin-top:8px}
+.g-tabela summary{cursor:pointer;font-size:.85rem;font-weight:700;color:var(--mar)}
+@media (max-width:760px){
+  .mapas-waze{grid-template-columns:1fr}
+  .mapa-waze iframe{height:240px}
+  .grafico-card{padding:14px 10px 10px}
+}

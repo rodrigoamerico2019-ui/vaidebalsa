@@ -32,3 +32,8 @@ Ajustes:
 - Rodar `supabase/002_modo_fila.sql` no SQL Editor (depois do schema.sql).
 - O site mede do momento em que a pessoa toca em "Medir minha espera" (dentro da área da fila) até o celular avançar 400 m+ em direção ao outro embarque (= balsa saiu).
 - Guarda só lado + horários; ao concluir, a medição é desvinculada do aparelho.
+
+## Gráfico do dia + mapas do Waze
+- Rodar `supabase/004_grafico_dia.sql` (função `espera_hoje`). Sem ela o gráfico mostra "Ainda sem dados hoje".
+- Teste visual com dados fictícios: `?demo=1`.
+- Mapas: embed oficial e gratuito do Waze (embed.waze.com/iframe), um por lado.
