@@ -37,3 +37,8 @@ Ajustes:
 - Rodar `supabase/004_grafico_dia.sql` (função `espera_hoje`). Sem ela o gráfico mostra "Ainda sem dados hoje".
 - Teste visual com dados fictícios: `?demo=1`.
 - Mapas: embed oficial e gratuito do Waze (embed.waze.com/iframe), um por lado.
+
+## Faixa AO VIVO + Embarque agora
+- Rodar `supabase/005_avisos.sql`. Avisos: Supabase > Table Editor > `avisos` > Insert row (texto, emoji, link, fim, ativo).
+- A faixa junta: seus avisos + situação de cada lado + frequência de saídas + alertas de vento/mar dos próximos 3 dias.
+- "Embarque agora" usa só dados do site (esperas medidas e fotos). Sem dados = "Sem dados" + link do Waze; nunca inventa número.

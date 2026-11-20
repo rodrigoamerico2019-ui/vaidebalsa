@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=11">
+<link rel="stylesheet" href="css/style.css?v=13">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -50,9 +50,7 @@
     </nav>
     <a class="btn-agendar" data-link="oficial" href="#"><svg aria-hidden="true"><use href="img/icones.svg#i-calendario"/></svg>Agendar</a>
   </div>
-  <a id="barra-fila" class="barra-fila" href="./#fila" hidden aria-label="Situação da fila agora — ver mural">
-    <span class="wrap bf-conteudo"></span>
-  </a>
+  <div id="barra-fila" class="barra-fila" hidden aria-label="Ao vivo: fila, saídas e avisos"></div>
 </header>
 
 <section class="hero" aria-labelledby="titulo">
@@ -65,6 +63,14 @@
   <div class="wrap hero-conteudo">
     <span class="pill-vivo"><span class="ponto" aria-hidden="true"></span>Ao vivo <span class="hora" id="hora">--:--</span></span>
     <h1 id="titulo">Travessia de Ilhabela <em>ao vivo</em></h1>
+    <div class="embarque" id="embarque" aria-live="polite">
+      <div class="emb-cab"><span class="emb-tit">⏱ Embarque agora</span><small class="emb-fonte">Carregando…</small></div>
+      <div class="emb-lados">
+        <a class="emb-lado sem-dados" data-lado="sao-sebastiao" href="#fila"><small>Embarque em São Sebastião</small><strong>—</strong><span></span></a>
+        <a class="emb-lado sem-dados" data-lado="ilhabela" href="#fila"><small>Embarque em Ilhabela</small><strong>—</strong><span></span></a>
+      </div>
+    </div>
+
     <p class="sub">A travessia em tempo real, <strong>na palma da sua mão.</strong> Veja as filas de São Sebastião e Ilhabela antes de sair de casa.</p>
     <div class="hero-acoes">
       <a class="btn-agendar" href="#fila"><svg aria-hidden="true"><use href="img/icones.svg#i-vivo"/></svg>Ver a fila agora</a>
@@ -365,7 +371,7 @@
 
 <script src="js/config.js?v=5"></script>
 <script src="js/app.js?v=2"></script>
-<script src="js/portal.js?v=4"></script>
+<script src="js/portal.js?v=5"></script>
 <script src="js/mural.js?v=3"></script>
 <script src="js/modo-fila.js?v=1"></script>
 <script src="js/grafico.js?v=4"></script>
