@@ -548,3 +548,20 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
   .avatar-mascote{width:48px;height:48px}
   .emb-fala p{font-size:.84rem}
 }
+
+
+/* ===== Mascote no topo, ao lado da marca ===== */
+.topo-esq{display:flex;align-items:center;gap:12px;min-width:0}
+.topo-mascote{position:relative;display:inline-flex;align-items:center;gap:8px;text-decoration:none;flex:none}
+.topo-mascote img{width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:50% 16%;border:2px solid var(--sol);background:var(--mar);box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .2s}
+.topo-mascote:hover img{transform:scale(1.08) rotate(-4deg)}
+.tm-selo{font:700 .78rem var(--corpo);color:#cfe0f5;white-space:nowrap}
+.topo-mascote:hover .tm-selo{color:var(--sol)}
+@media (max-width:1080px){.tm-selo{display:none}}
+@media (max-width:760px){
+  .topo-esq{gap:8px}
+  .topo-mascote img{width:34px;height:34px}
+}
+@media (max-width:370px){
+  .marca svg{display:none}
+}

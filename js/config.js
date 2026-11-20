@@ -36,7 +36,7 @@ window.VAIDEBALSA = {
     null
   ],
   // Mascote / apresentador (nome opcional; instagram sem @, vazio = "em breve")
-  mascote: { nome: "", imagem: "img/mascote.webp", instagram: "" },
+  mascote: { nome: "", imagem: "img/mascote.webp", instagram: "vaidebalsa" },
 
   // Contato para quem quer anunciar (WhatsApp com DDI, ex.: "5512999999999"). Vazio = sem botão.
   contatoAnuncie: "",
