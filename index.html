@@ -15,10 +15,12 @@
 <meta property="og:title" content="Balsa Ilhabela ao vivo — como está a fila agora?">
 <meta property="og:description" content="A travessia São Sebastião–Ilhabela em tempo real, na palma da sua mão.">
 <meta property="og:url" content="https://vaidebalsa.com.br/">
+<meta property="og:image" content="https://vaidebalsa.com.br/img/travessia.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
-<link rel="stylesheet" href="css/style.css?v=2">
+<link rel="preload" as="image" href="img/travessia.webp">
+<link rel="stylesheet" href="css/style.css?v=4">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -49,57 +51,10 @@
 </header>
 
 <section class="hero" aria-labelledby="titulo">
-  <svg class="hero-cena" viewBox="0 0 1440 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-    <defs>
-      <linearGradient id="ceu" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#0A2C52"/><stop offset=".45" stop-color="#174f8c"/><stop offset=".78" stop-color="#e79a4a"/><stop offset="1" stop-color="#ffcf6b"/>
-      </linearGradient>
-      <linearGradient id="agua" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#0D6EFD"/><stop offset=".35" stop-color="#0b4f9e"/><stop offset="1" stop-color="#0A2C52"/>
-      </linearGradient>
-      <radialGradient id="brilho"><stop offset="0" stop-color="#FFC107" stop-opacity=".9"/><stop offset="1" stop-color="#FFC107" stop-opacity="0"/></radialGradient>
-      <path id="ondaTile" d="M0 10 Q45 0 90 10 T180 10 T270 10 T360 10 T450 10 T540 10 T630 10 T720 10 T810 10 T900 10 T990 10 T1080 10 T1170 10 T1260 10 T1350 10 T1440 10 T1530 10 T1620 10 T1710 10 T1800 10 T1890 10 T1980 10 T2070 10 T2160 10 T2250 10"/>
-    </defs>
-    <rect width="1440" height="420" fill="url(#ceu)"/>
-    <circle class="sol-brilho" cx="1230" cy="190" r="240" fill="url(#brilho)"/>
-    <circle cx="1230" cy="190" r="62" fill="#FFC107"/>
-    <!-- Ilhabela (serra ao fundo, à direita) -->
-    <path d="M540 410 C620 320 700 270 800 238 C880 212 950 160 1035 150 C1120 140 1185 190 1265 210 C1345 230 1400 265 1440 285 V410 Z" fill="#123f6e"/>
-    <path d="M690 410 C750 362 820 340 900 330 C980 320 1040 292 1120 296 C1220 300 1300 330 1440 338 V410 Z" fill="#0b3358"/>
-    <!-- São Sebastião (morros à esquerda) -->
-    <path d="M0 410 V300 C80 278 160 252 240 262 C320 272 380 322 460 362 C500 382 540 400 560 410 Z" fill="#0e3a64"/>
-    <g fill="#FFC107" opacity=".85">
-      <rect x="760" y="396" width="5" height="4"/><rect x="800" y="392" width="4" height="4"/><rect x="842" y="398" width="5" height="4"/><rect x="905" y="394" width="4" height="4"/><rect x="1180" y="392" width="5" height="4"/><rect x="1240" y="396" width="4" height="4"/><rect x="1320" y="390" width="5" height="4"/>
-      <rect x="90" y="398" width="5" height="4"/><rect x="150" y="394" width="4" height="4"/><rect x="230" y="399" width="5" height="4"/><rect x="330" y="397" width="4" height="4"/>
-    </g>
-    <rect y="405" width="1440" height="235" fill="url(#agua)"/>
-    <g fill="#FFC107" opacity=".35">
-      <ellipse cx="1230" cy="425" rx="110" ry="4"/><ellipse cx="1220" cy="445" rx="70" ry="3"/><ellipse cx="1240" cy="468" rx="45" ry="3"/>
-    </g>
-    <g class="ondas-a" stroke="#fff" stroke-opacity=".18" stroke-width="2" fill="none"><use href="#ondaTile" y="430"/></g>
-    <g class="ondas-b" stroke="#00B8A9" stroke-opacity=".45" stroke-width="3" fill="none"><use href="#ondaTile" y="500"/></g>
-    <!-- balsa atravessando -->
-    <g transform="translate(0 452)">
-      <g class="balsa-mov">
-        <g class="balsa-bob">
-          <path d="M-150 58 Q-80 48 0 54" stroke="#fff" stroke-opacity=".5" stroke-width="3" fill="none"/>
-          <path d="M-110 64 Q-50 58 4 62" stroke="#fff" stroke-opacity=".3" stroke-width="2" fill="none"/>
-          <path d="M0 40 H230 L214 64 H16 Z" fill="#0A2C52"/>
-          <rect x="4" y="38" width="222" height="8" fill="#FFC107"/>
-          <rect x="10" y="20" width="22" height="18" fill="#fff"/><rect x="198" y="20" width="22" height="18" fill="#fff"/>
-          <g>
-            <rect x="38" y="27" width="20" height="11" rx="3" fill="#e53935"/><rect x="62" y="27" width="20" height="11" rx="3" fill="#fff"/><rect x="86" y="27" width="20" height="11" rx="3" fill="#0D6EFD"/>
-            <rect x="124" y="27" width="20" height="11" rx="3" fill="#cfd8dc"/><rect x="148" y="27" width="20" height="11" rx="3" fill="#FFC107"/><rect x="172" y="27" width="20" height="11" rx="3" fill="#00B8A9"/>
-          </g>
-          <rect x="106" y="4" width="20" height="23" rx="3" fill="#fff"/><rect x="109" y="8" width="14" height="6" rx="1" fill="#0A2C52"/>
-          <path d="M116 4 V-12" stroke="#fff" stroke-width="2"/>
-        </g>
-      </g>
-    </g>
-    <g class="ondas-c" stroke="#fff" stroke-opacity=".12" stroke-width="2" fill="none"><use href="#ondaTile" y="560"/></g>
-    <g class="gaivota" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".8">
-      <path d="M0 120 q8 -8 16 0 q8 -8 16 0"/><path d="M40 150 q6 -6 12 0 q6 -6 12 0"/>
-    </g>
+  <img class="hero-foto" src="img/travessia.webp" width="984" height="554" alt="Balsa carregada de carros atravessando o canal entre São Sebastião e Ilhabela, vista do alto" fetchpriority="high" decoding="async">
+  <svg class="hero-ondas" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+    <path class="ondas-a" d="M0 60 Q90 30 180 60 T360 60 T540 60 T720 60 T900 60 T1080 60 T1260 60 T1440 60 T1620 60 T1800 60 T1980 60 T2160 60 V120 H0Z" fill="#0D6EFD" opacity=".35"/>
+    <path class="ondas-b" d="M0 80 Q90 55 180 80 T360 80 T540 80 T720 80 T900 80 T1080 80 T1260 80 T1440 80 T1620 80 T1800 80 T1980 80 T2160 80 V120 H0Z" fill="#00B8A9" opacity=".35"/>
   </svg>
 
   <div class="wrap hero-conteudo">
