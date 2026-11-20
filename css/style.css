@@ -522,3 +522,29 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
 .emb-lado.tipico strong{font-size:1.45rem}
 .bf-item i{font-style:normal;color:#9fb8d6}
 @media (max-width:760px){.emb-lado.tipico strong{font-size:1.2rem}}
+
+
+/* ===== Mascote / apresentador ===== */
+.emb-fala{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.avatar-mascote{width:56px;height:56px;border-radius:50%;object-fit:cover;object-position:50% 18%;border:3px solid var(--sol);background:var(--mar);flex:none;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.emb-fala p{position:relative;margin:0;background:#fff;color:var(--oceano);font-weight:600;font-size:.9rem;line-height:1.35;padding:10px 12px;border-radius:14px;border-top-left-radius:4px}
+.emb-fala p::before{content:"";position:absolute;left:-7px;top:10px;border:7px solid transparent;border-right-color:#fff;border-left:0}
+.mr-mascote{width:120px;height:120px;border-radius:50%;object-fit:cover;object-position:50% 15%;border:4px solid var(--sol);background:var(--mar)}
+.mural-vazio.com-mascote{display:flex;align-items:center;gap:16px;text-align:left;justify-content:center}
+.mural-vazio.com-mascote img{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:50% 18%;border:3px solid var(--sol);background:var(--mar);flex:none}
+.insta{margin:10px auto 40px}
+.insta-card{display:grid;grid-template-columns:300px 1fr;gap:30px;align-items:center;background:linear-gradient(135deg,var(--mar),var(--oceano));border-radius:28px;overflow:hidden;color:#fff;padding:0 34px 0 0}
+.insta-mascote{width:100%;height:100%;max-height:340px;object-fit:cover;object-position:50% 10%;display:block}
+.insta-texto h2{color:#fff;font-size:clamp(1.6rem,4vw,2.3rem);font-weight:900;font-style:italic}
+.insta-texto h2 em{color:var(--sol);font-style:italic}
+.insta-texto p{color:#d9e8f8;margin:10px 0 18px}
+.insta-texto .rotulo{color:var(--sol)}
+.btn-insta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(45deg,#f9a825,#e1306c,#833ab4);color:#fff;font:800 1rem var(--titulo);text-decoration:none;padding:13px 22px;border-radius:999px}
+.btn-insta.breve{background:rgba(255,255,255,.15);cursor:default}
+@media (max-width:760px){
+  .insta-card{grid-template-columns:1fr;padding:0 0 24px;text-align:center}
+  .insta-mascote{max-height:260px}
+  .insta-texto{padding:0 20px}
+  .avatar-mascote{width:48px;height:48px}
+  .emb-fala p{font-size:.84rem}
+}

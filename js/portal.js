@@ -125,6 +125,30 @@
           el.querySelector("span").innerHTML = sub;
           if (partes.length) base2.push(1);
         });
+        // fala do apresentador
+        var fala = document.getElementById("fala-mascote");
+        if (fala) {
+          var ss = porLado["sao-sebastiao"] || {}, ib = porLado["ilhabela"] || {};
+          var vivo = function (d) { return d.relatos > 0 || d.medidas > 0; };
+          var tempoTxt = function (l) {
+            var d = porLado[l] || {};
+            if (d.espera_mediana != null) return "≈ " + d.espera_mediana + " min";
+            if (FAIXA[d.nivel]) return FAIXA[d.nivel];
+            var t = tipica(l); return t ? t.texto : "";
+          };
+          var frase;
+          if (ss.nivel === "vermelho" || ib.nivel === "vermelho") {
+            var l = ss.nivel === "vermelho" ? "sao-sebastiao" : "ilhabela";
+            frase = "Eita! A fila em " + NOMES[l] + " está cheia (" + tempoTxt(l) + "). Se der, espere um pouco ou agende no Hora Marcada.";
+          } else if (vivo(ss) || vivo(ib)) {
+            if (ss.nivel === "verde" && ib.nivel !== "amarelo") frase = "Fila tranquila agora! Bora pra Ilhabela! 👍";
+            else frase = "Movimento moderado: São Sebastião " + tempoTxt("sao-sebastiao") + " e Ilhabela " + tempoTxt("ilhabela") + ".";
+          } else {
+            frase = "Ninguém contou da fila agora. Pela experiência: São Sebastião " + tempoTxt("sao-sebastiao") + " e Ilhabela " + tempoTxt("ilhabela") + ". Tá na fila? Me ajuda! 📸";
+          }
+          var nome = cfg.mascote && cfg.mascote.nome;
+          fala.textContent = (nome ? nome + ": " : "") + frase;
+        }
         emb.querySelector(".emb-fonte").textContent = base2.length
           ? "Estimativa de quem está na fila agora (esperas medidas e fotos)."
           : "Sem relatos nos últimos 30 min — mostrando o tempo aproximado típico.";
@@ -133,6 +157,19 @@
   }
   atualizarAoVivo();
   setInterval(function () { if (!document.hidden) atualizarAoVivo(); }, 60000);
+
+  // Instagram do apresentador
+  var il = document.getElementById("insta-link");
+  if (il && cfg.mascote) {
+    if (cfg.mascote.instagram) {
+      il.href = "https://www.instagram.com/" + encodeURIComponent(cfg.mascote.instagram) + "/";
+      il.textContent = "Seguir @" + cfg.mascote.instagram;
+    } else { il.removeAttribute("href"); il.classList.add("breve"); }
+    if (cfg.mascote.nome) {
+      var d = document.getElementById("insta-desc");
+      d.textContent = d.textContent.replace("nosso apresentador", cfg.mascote.nome);
+    }
+  }
 
   // ---------- Parceiros ----------
   var parc = document.getElementById("parceiros");

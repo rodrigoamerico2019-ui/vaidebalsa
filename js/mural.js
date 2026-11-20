@@ -108,7 +108,7 @@
       return;
     }
     if (!posts.length) {
-      lista.innerHTML = '<div class="mural-vazio"><strong>Nenhuma foto nos últimos 45 minutos</strong><span>Está na fila? Seja o primeiro a mostrar como está.</span></div>';
+      lista.innerHTML = '<div class="mural-vazio com-mascote"><img src="img/mascote.webp" alt="" width="72" height="72"><div><strong>Ninguém postou nos últimos 45 minutos</strong><span>Tá na fila? Tira uma foto e mostra pra galera! 📸</span></div></div>';
       return;
     }
     var minhas = JSON.parse(ls("vdb-reacoes") || "{}");

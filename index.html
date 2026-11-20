@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=14">
+<link rel="stylesheet" href="css/style.css?v=15">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -64,6 +64,7 @@
     <span class="pill-vivo"><span class="ponto" aria-hidden="true"></span>Ao vivo <span class="hora" id="hora">--:--</span></span>
     <h1 id="titulo">Travessia de Ilhabela <em>ao vivo</em></h1>
     <div class="embarque" id="embarque" aria-live="polite">
+      <div class="emb-fala"><img class="avatar-mascote" src="img/mascote.webp" alt="Mascote do VAIDEBALSA" width="56" height="56"><p id="fala-mascote">Fala, galera! Tô vendo como está a fila…</p></div>
       <div class="emb-cab"><span class="emb-tit">⏱ Embarque agora</span><small class="emb-fonte">Carregando…</small></div>
       <div class="emb-lados">
         <a class="emb-lado sem-dados" data-lado="sao-sebastiao" href="#fila"><small>Embarque em São Sebastião</small><strong>—</strong><span></span></a>
@@ -198,7 +199,7 @@
   <dialog id="medido" class="folha" aria-labelledby="tit-medido">
     <div class="folha-corpo centro">
       <div class="folha-cab"><span></span><button type="button" class="fechar" data-fechar aria-label="Fechar">✕</button></div>
-      <span class="mr-emoji" aria-hidden="true">⛴️</span>
+      <img class="mr-mascote" src="img/mascote.webp" alt="Mascote do VAIDEBALSA comemorando" width="120" height="131">
       <h3 id="tit-medido">Você esperou <span class="mr-min">0</span> min</h3>
       <p>na fila de <strong class="mr-lado"></strong>. Sua medição já está ajudando o semáforo. Obrigado! 🙌</p>
       <button type="button" class="btn-agendar enviar" data-compartilhar>Compartilhar no WhatsApp</button>
@@ -313,6 +314,18 @@
     </div>
   </section>
 
+  <section class="wrap insta revela" aria-labelledby="tit-insta">
+    <div class="insta-card">
+      <img class="insta-mascote" src="img/mascote.webp" alt="Mascote do VAIDEBALSA fazendo joinha" width="1199" height="1312" loading="lazy">
+      <div class="insta-texto">
+        <span class="rotulo">Nosso apresentador</span>
+        <h2 id="tit-insta">Fila ao vivo também <em>no Instagram</em></h2>
+        <p id="insta-desc">Nos feriados e fins de semana, nosso apresentador mostra como está a travessia, dá dicas para fugir da fila e avisa quando a balsa está tranquila.</p>
+        <a id="insta-link" class="btn-insta" href="#" target="_blank" rel="noopener">Em breve no Instagram</a>
+      </div>
+    </div>
+  </section>
+
   <section class="wrap revela" aria-labelledby="tit-cta">
     <div class="chamada">
       <div>
@@ -369,11 +382,11 @@
   <a href="perguntas-frequentes.html"><svg aria-hidden="true"><use href="img/icones.svg#i-duvida"/></svg>Dúvidas</a>
 </nav>
 
-<script src="js/config.js?v=5"></script>
+<script src="js/config.js?v=6"></script>
 <script src="js/app.js?v=2"></script>
 <script src="js/estimativa.js?v=1"></script>
-<script src="js/portal.js?v=6"></script>
-<script src="js/mural.js?v=3"></script>
+<script src="js/portal.js?v=7"></script>
+<script src="js/mural.js?v=4"></script>
 <script src="js/modo-fila.js?v=1"></script>
 <script src="js/grafico.js?v=4"></script>
 </body>
