@@ -69,6 +69,9 @@ details p{margin:8px 0 0;color:var(--suave)}
 .rodape a{color:#fff}
 
 @media (max-width:640px){
-  .menu a{padding:6px 8px;font-size:.88rem}
+  .logo{font-size:1.05rem;white-space:nowrap;gap:6px}
+  .logo svg{width:26px;height:26px}
+  .menu{gap:0;flex-wrap:nowrap}
+  .menu a{padding:6px 7px;font-size:.85rem}
   .grade{grid-template-columns:1fr}
 }
