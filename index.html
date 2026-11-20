@@ -2,24 +2,28 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>document.documentElement.classList.add("js")</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Balsa Ilhabela Ao Vivo — Câmeras e Fila Agora | Vai de Balsa</title>
-<meta name="description" content="Veja ao vivo as câmeras da balsa São Sebastião–Ilhabela: fila de embarque dos dois lados, tempo e mar no canal, horários e dicas para a travessia.">
+<meta name="description" content="Veja ao vivo a travessia de balsa São Sebastião–Ilhabela: câmeras das filas, vento e ondas no canal, horários, tarifas e dicas. A travessia em tempo real, na palma da sua mão.">
 <link rel="canonical" href="https://vaidebalsa.com.br/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#0b3a5b">
+<meta name="theme-color" content="#0A2C52">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:site_name" content="Vai de Balsa">
-<meta property="og:title" content="Balsa Ilhabela Ao Vivo — como está a fila agora?">
-<meta property="og:description" content="Câmeras ao vivo da travessia São Sebastião–Ilhabela, tempo no canal e dicas para não pegar fila.">
+<meta property="og:title" content="Balsa Ilhabela ao vivo — como está a fila agora?">
+<meta property="og:description" content="A travessia São Sebastião–Ilhabela em tempo real, na palma da sua mão.">
 <meta property="og:url" content="https://vaidebalsa.com.br/">
-<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
+<link rel="stylesheet" href="css/style.css?v=2">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
   "@graph":[
-    {"@type":"WebSite","@id":"https://vaidebalsa.com.br/#site","name":"Vai de Balsa","url":"https://vaidebalsa.com.br/","inLanguage":"pt-BR"},
+    {"@type":"WebSite","@id":"https://vaidebalsa.com.br/#site","name":"Vai de Balsa","alternateName":"VAIDEBALSA","url":"https://vaidebalsa.com.br/","inLanguage":"pt-BR"},
     {"@type":"WebPage","@id":"https://vaidebalsa.com.br/#pagina","url":"https://vaidebalsa.com.br/","name":"Balsa Ilhabela Ao Vivo — Câmeras e Fila Agora","isPartOf":{"@id":"https://vaidebalsa.com.br/#site"},
      "about":{"@type":"Place","name":"Travessia São Sebastião–Ilhabela","address":{"@type":"PostalAddress","addressLocality":"São Sebastião","addressRegion":"SP","addressCountry":"BR"}}}
   ]
@@ -27,75 +31,241 @@
 </script>
 </head>
 <body>
+
 <header class="topo">
   <div class="wrap">
-    <a class="logo" href="./" aria-label="Vai de Balsa — início">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 36h40l-5 9H17z" fill="#ffc83d"/><rect x="22" y="26" width="20" height="10" rx="2" fill="#fff"/><path d="M8 50c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3 4-3 8-3 4 3 8 3" stroke="#5fb4e6" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
-      Vai de <b>Balsa</b>
+    <a class="marca" href="./" aria-label="Vai de Balsa — início">
+      <svg viewBox="0 0 120 84" aria-hidden="true"><use href="img/icones.svg#logo"/></svg>
+      <span class="marca-txt"><b>VAIDE</b><i>BALSA</i></span>
     </a>
     <nav class="menu" aria-label="Principal">
       <a href="./" aria-current="page">Ao vivo</a>
-      <a href="horarios-e-tarifas.html">Horários</a>
+      <a href="#cameras">Câmeras</a>
+      <a href="horarios-e-tarifas.html">Horários e tarifas</a>
       <a href="perguntas-frequentes.html">Dúvidas</a>
     </nav>
+    <a class="btn-agendar" data-link="oficial" href="#"><svg aria-hidden="true"><use href="img/icones.svg#i-calendario"/></svg>Agendar</a>
   </div>
 </header>
 
-<div class="hero">
-  <div class="wrap">
-    <h1>Balsa Ilhabela ao vivo: como está a fila agora?</h1>
-    <p>Câmeras da travessia São Sebastião–Ilhabela nos dois lados do canal. Olhe antes de sair e escolha o melhor horário.</p>
-    <span class="atualizado"><span class="pulso" aria-hidden="true"></span> Ao vivo · <span id="hora">--:--</span></span>
-  </div>
-</div>
+<section class="hero" aria-labelledby="titulo">
+  <svg class="hero-cena" viewBox="0 0 1440 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="ceu" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#0A2C52"/><stop offset=".45" stop-color="#174f8c"/><stop offset=".78" stop-color="#e79a4a"/><stop offset="1" stop-color="#ffcf6b"/>
+      </linearGradient>
+      <linearGradient id="agua" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#0D6EFD"/><stop offset=".35" stop-color="#0b4f9e"/><stop offset="1" stop-color="#0A2C52"/>
+      </linearGradient>
+      <radialGradient id="brilho"><stop offset="0" stop-color="#FFC107" stop-opacity=".9"/><stop offset="1" stop-color="#FFC107" stop-opacity="0"/></radialGradient>
+      <path id="ondaTile" d="M0 10 Q45 0 90 10 T180 10 T270 10 T360 10 T450 10 T540 10 T630 10 T720 10 T810 10 T900 10 T990 10 T1080 10 T1170 10 T1260 10 T1350 10 T1440 10 T1530 10 T1620 10 T1710 10 T1800 10 T1890 10 T1980 10 T2070 10 T2160 10 T2250 10"/>
+    </defs>
+    <rect width="1440" height="420" fill="url(#ceu)"/>
+    <circle class="sol-brilho" cx="1230" cy="190" r="240" fill="url(#brilho)"/>
+    <circle cx="1230" cy="190" r="62" fill="#FFC107"/>
+    <!-- Ilhabela (serra ao fundo, à direita) -->
+    <path d="M540 410 C620 320 700 270 800 238 C880 212 950 160 1035 150 C1120 140 1185 190 1265 210 C1345 230 1400 265 1440 285 V410 Z" fill="#123f6e"/>
+    <path d="M690 410 C750 362 820 340 900 330 C980 320 1040 292 1120 296 C1220 300 1300 330 1440 338 V410 Z" fill="#0b3358"/>
+    <!-- São Sebastião (morros à esquerda) -->
+    <path d="M0 410 V300 C80 278 160 252 240 262 C320 272 380 322 460 362 C500 382 540 400 560 410 Z" fill="#0e3a64"/>
+    <g fill="#FFC107" opacity=".85">
+      <rect x="760" y="396" width="5" height="4"/><rect x="800" y="392" width="4" height="4"/><rect x="842" y="398" width="5" height="4"/><rect x="905" y="394" width="4" height="4"/><rect x="1180" y="392" width="5" height="4"/><rect x="1240" y="396" width="4" height="4"/><rect x="1320" y="390" width="5" height="4"/>
+      <rect x="90" y="398" width="5" height="4"/><rect x="150" y="394" width="4" height="4"/><rect x="230" y="399" width="5" height="4"/><rect x="330" y="397" width="4" height="4"/>
+    </g>
+    <rect y="405" width="1440" height="235" fill="url(#agua)"/>
+    <g fill="#FFC107" opacity=".35">
+      <ellipse cx="1230" cy="425" rx="110" ry="4"/><ellipse cx="1220" cy="445" rx="70" ry="3"/><ellipse cx="1240" cy="468" rx="45" ry="3"/>
+    </g>
+    <g class="ondas-a" stroke="#fff" stroke-opacity=".18" stroke-width="2" fill="none"><use href="#ondaTile" y="430"/></g>
+    <g class="ondas-b" stroke="#00B8A9" stroke-opacity=".45" stroke-width="3" fill="none"><use href="#ondaTile" y="500"/></g>
+    <!-- balsa atravessando -->
+    <g transform="translate(0 452)">
+      <g class="balsa-mov">
+        <g class="balsa-bob">
+          <path d="M-150 58 Q-80 48 0 54" stroke="#fff" stroke-opacity=".5" stroke-width="3" fill="none"/>
+          <path d="M-110 64 Q-50 58 4 62" stroke="#fff" stroke-opacity=".3" stroke-width="2" fill="none"/>
+          <path d="M0 40 H230 L214 64 H16 Z" fill="#0A2C52"/>
+          <rect x="4" y="38" width="222" height="8" fill="#FFC107"/>
+          <rect x="10" y="20" width="22" height="18" fill="#fff"/><rect x="198" y="20" width="22" height="18" fill="#fff"/>
+          <g>
+            <rect x="38" y="27" width="20" height="11" rx="3" fill="#e53935"/><rect x="62" y="27" width="20" height="11" rx="3" fill="#fff"/><rect x="86" y="27" width="20" height="11" rx="3" fill="#0D6EFD"/>
+            <rect x="124" y="27" width="20" height="11" rx="3" fill="#cfd8dc"/><rect x="148" y="27" width="20" height="11" rx="3" fill="#FFC107"/><rect x="172" y="27" width="20" height="11" rx="3" fill="#00B8A9"/>
+          </g>
+          <rect x="106" y="4" width="20" height="23" rx="3" fill="#fff"/><rect x="109" y="8" width="14" height="6" rx="1" fill="#0A2C52"/>
+          <path d="M116 4 V-12" stroke="#fff" stroke-width="2"/>
+        </g>
+      </g>
+    </g>
+    <g class="ondas-c" stroke="#fff" stroke-opacity=".12" stroke-width="2" fill="none"><use href="#ondaTile" y="560"/></g>
+    <g class="gaivota" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".8">
+      <path d="M0 120 q8 -8 16 0 q8 -8 16 0"/><path d="M40 150 q6 -6 12 0 q6 -6 12 0"/>
+    </g>
+  </svg>
 
-<main class="wrap">
-  <div class="lados" role="group" aria-label="Filtrar câmeras">
-    <button data-lado="todas" aria-pressed="true">Todas</button>
-    <button data-lado="sao-sebastiao" aria-pressed="false">Lado São Sebastião</button>
-    <button data-lado="ilhabela" aria-pressed="false">Lado Ilhabela</button>
-    <button data-lado="canal" aria-pressed="false">Canal</button>
-  </div>
-  <div id="grade" class="grade" aria-live="polite"></div>
+  <div class="wrap hero-conteudo">
+    <span class="pill-vivo"><span class="ponto" aria-hidden="true"></span>Ao vivo <span class="hora" id="hora">--:--</span></span>
+    <h1 id="titulo">Travessia de Ilhabela <em>ao vivo</em></h1>
+    <p class="sub">A travessia em tempo real, <strong>na palma da sua mão.</strong> Veja as filas de São Sebastião e Ilhabela antes de sair de casa.</p>
+    <div class="hero-acoes">
+      <a class="btn-agendar" href="#cameras"><svg aria-hidden="true"><use href="img/icones.svg#i-camera"/></svg>Ver as câmeras</a>
+      <a class="btn-sec" href="horarios-e-tarifas.html"><svg aria-hidden="true"><use href="img/icones.svg#i-ticket"/></svg>Horários e tarifas</a>
+    </div>
 
-  <section id="tempo" aria-labelledby="tit-tempo">
-    <h2 id="tit-tempo">Tempo e mar no canal agora</h2>
-    <div class="cards">
-      <div class="card"><h3>Temperatura</h3><div class="numero" id="t-temp">—</div></div>
-      <div class="card"><h3>Vento</h3><div class="numero" id="t-vento">—</div></div>
-      <div class="card"><h3>Chuva</h3><div class="numero" id="t-chuva">—</div></div>
-      <div class="card"><h3>Ondas</h3><div class="numero" id="t-onda">—</div></div>
+    <div class="painel" id="tempo" aria-label="Condições agora">
+      <div class="item"><span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-relogio"/></svg></span><div><small>Saídas a cada</small><strong id="t-saidas">—</strong></div></div>
+      <div class="item"><span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-onda"/></svg></span><div><small>Ondas no canal</small><strong id="t-onda">—</strong></div></div>
+      <div class="item"><span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-vento"/></svg></span><div><small>Vento</small><strong id="t-vento">—</strong></div></div>
+      <div class="item"><span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-temp"/></svg></span><div><small>Temperatura</small><strong id="t-temp">—</strong></div></div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <section class="secao" id="cameras" aria-labelledby="tit-cams">
+    <div class="wrap">
+      <div class="secao-cab revela">
+        <div>
+          <span class="rotulo">Câmeras</span>
+          <h2 id="tit-cams">Como está a <em>fila agora?</em></h2>
+          <p class="lead">Os dois lados do canal num lugar só. Escolha o embarque e confira antes de pegar a estrada.</p>
+        </div>
+        <div class="chips" role="group" aria-label="Filtrar câmeras">
+          <button data-lado="todas" aria-pressed="true">Todas</button>
+          <button data-lado="sao-sebastiao" aria-pressed="false">São Sebastião</button>
+          <button data-lado="ilhabela" aria-pressed="false">Ilhabela</button>
+          <button data-lado="canal" aria-pressed="false">Canal</button>
+        </div>
+      </div>
+      <div id="grade" class="grade" aria-live="polite"></div>
     </div>
   </section>
 
-  <section aria-labelledby="tit-dicas">
-    <h2 id="tit-dicas">Dicas para pegar menos fila</h2>
-    <div class="cards">
-      <div class="card"><h3>Agende a travessia</h3><p>Com horário agendado você evita a fila comum. Faça pelo canal oficial.</p></div>
-      <div class="card"><h3>Fuja dos picos</h3><p>Sexta à tarde (ida) e domingo à tarde (volta) costumam ser os horários mais cheios, principalmente em feriado.</p></div>
-      <div class="card"><h3>Confira antes de sair</h3><p>Olhe as câmeras daqui e o tempo no canal. Vento forte pode alterar a operação.</p></div>
+  <div class="faixa-azul">
+    <section class="secao" aria-labelledby="tit-precos">
+      <div class="wrap">
+        <div class="secao-cab revela">
+          <div>
+            <span class="rotulo">Tarifas</span>
+            <h2 id="tit-precos">Quanto custa a balsa</h2>
+            <p class="lead">Paga só na ida, no embarque em São Sebastião. A volta de Ilhabela não é cobrada.</p>
+          </div>
+        </div>
+        <div class="precos">
+          <div class="preco revela">
+            <span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-carro"/></svg></span>
+            <h3>Carro</h3>
+            <div class="valor">R$ 19,00 <small>dias úteis</small></div>
+            <p>R$ 28,50 aos sábados, domingos e feriados</p>
+          </div>
+          <div class="preco revela">
+            <span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-moto"/></svg></span>
+            <h3>Moto</h3>
+            <div class="valor">R$ 9,50 <small>dias úteis</small></div>
+            <p>R$ 14,20 aos sábados, domingos e feriados</p>
+          </div>
+          <div class="preco revela">
+            <span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-bike"/></svg></span>
+            <h3>A pé ou de bike</h3>
+            <div class="valor">Grátis</div>
+            <p>Pedestres e ciclistas não pagam a travessia</p>
+          </div>
+        </div>
+        <div class="nota-faixa">
+          <span>Valores conferidos em novembro de 2026.</span>
+          <a class="link-claro" href="horarios-e-tarifas.html">Ver tabela completa e horários →</a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="secao" aria-labelledby="tit-dicas">
+    <div class="wrap">
+      <div class="secao-cab revela">
+        <div>
+          <span class="rotulo">Dicas</span>
+          <h2 id="tit-dicas">Pegue <em>menos fila</em></h2>
+        </div>
+      </div>
+      <div class="dicas">
+        <article class="dica revela">
+          <span class="num" aria-hidden="true">1</span>
+          <span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-calendario"/></svg></span>
+          <h3>Agende a travessia</h3>
+          <p>Com o Hora Marcada você garante o horário e não entra na fila comum.</p>
+        </article>
+        <article class="dica revela">
+          <span class="num" aria-hidden="true">2</span>
+          <span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-relogio"/></svg></span>
+          <h3>Fuja dos picos</h3>
+          <p>Sexta à tarde na ida e domingo à tarde na volta são os horários mais cheios, ainda mais em feriado.</p>
+        </article>
+        <article class="dica revela">
+          <span class="num" aria-hidden="true">3</span>
+          <span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-alerta"/></svg></span>
+          <h3>Olhe o tempo</h3>
+          <p>Vento forte e mar agitado podem atrasar a operação. Confira o painel aqui em cima antes de sair.</p>
+        </article>
+      </div>
     </div>
-    <p style="margin-top:16px"><a class="btn" data-link="oficial" href="#">Agendar no site oficial</a></p>
   </section>
 
-  <section>
-    <div class="texto">
-      <h2>Travessia São Sebastião–Ilhabela</h2>
-      <p>A balsa liga o centro de São Sebastião à Ilhabela, cruzando o canal de São Sebastião, no litoral norte de São Paulo. Em alta temporada e feriados a espera pode passar de algumas horas. Por isso vale olhar a fila ao vivo antes de pegar a estrada.</p>
-      <p>Aqui você encontra as câmeras dos dois embarques num só lugar, as condições do tempo no canal e respostas para as dúvidas mais comuns. Veja também os <a href="horarios-e-tarifas.html">horários e tarifas</a> e as <a href="perguntas-frequentes.html">perguntas frequentes</a>.</p>
-      <p class="aviso">O Vai de Balsa é um site informativo independente e não é o operador da travessia. Para agendamento, tarifas oficiais e avisos de operação, consulte sempre o <a data-link="oficial" href="#">canal oficial</a>.</p>
+  <section class="wrap revela" aria-labelledby="tit-cta">
+    <div class="chamada">
+      <div>
+        <h2 id="tit-cta">Agende sua travessia e vá sem fila</h2>
+        <p>O agendamento é gratuito e feito no sistema oficial Hora Marcada.</p>
+      </div>
+      <a class="btn-escuro" data-link="oficial" href="#">Agendar agora <svg aria-hidden="true"><use href="img/icones.svg#i-seta"/></svg></a>
+      <svg class="deco" viewBox="0 0 120 84" aria-hidden="true"><use href="img/icones.svg#logo"/></svg>
     </div>
   </section>
 </main>
 
 <footer class="rodape">
+  <svg class="onda-topo" viewBox="0 0 1440 50" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0 H1440 V20 C1200 50 960 0 720 22 C480 44 240 4 0 26 Z" fill="#F1F6FC"/></svg>
   <div class="wrap">
-    <p><strong style="color:#fff">Vai de Balsa</strong> — câmeras ao vivo da balsa São Sebastião–Ilhabela.</p>
-    <p>Imagens das câmeras pertencem aos seus responsáveis, indicados em cada câmera. © <span data-ano></span> vaidebalsa.com.br</p>
+    <div class="rodape-grade">
+      <div>
+        <a class="marca" href="./" aria-label="Vai de Balsa — início">
+          <svg viewBox="0 0 120 84" aria-hidden="true"><use href="img/icones.svg#logo"/></svg>
+          <span class="marca-txt"><b>VAIDE</b><i>BALSA</i></span>
+        </a>
+        <p class="slogan">A travessia em tempo real, <em>na palma da sua mão.</em></p>
+        <p>Informação rápida, confiável e acessível sobre a balsa entre São Sebastião e Ilhabela.</p>
+      </div>
+      <div>
+        <h4>Navegue</h4>
+        <ul>
+          <li><a href="./">Ao vivo</a></li>
+          <li><a href="./#cameras">Câmeras</a></li>
+          <li><a href="horarios-e-tarifas.html">Horários e tarifas</a></li>
+          <li><a href="perguntas-frequentes.html">Dúvidas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Travessia</h4>
+        <ul>
+          <li><a data-link="oficial" href="#">Agendar (Hora Marcada)</a></li>
+          <li>Operação: AcquaVias</li>
+          <li>Fiscalização: Semil e ARTESP</li>
+        </ul>
+      </div>
+    </div>
+    <div class="base">
+      <span>© <span data-ano></span> vaidebalsa.com.br · Site informativo independente, não é o operador da travessia.</span>
+      <span>As imagens das câmeras pertencem aos responsáveis indicados em cada uma.</span>
+    </div>
   </div>
 </footer>
 
-<script src="js/config.js"></script>
-<script src="js/app.js"></script>
+<nav class="tabbar" aria-label="Atalhos">
+  <a href="./" aria-current="page"><svg aria-hidden="true"><use href="img/icones.svg#i-vivo"/></svg>Ao vivo</a>
+  <a href="./#cameras"><svg aria-hidden="true"><use href="img/icones.svg#i-camera"/></svg>Câmeras</a>
+  <a href="horarios-e-tarifas.html"><svg aria-hidden="true"><use href="img/icones.svg#i-ticket"/></svg>Tarifas</a>
+  <a href="perguntas-frequentes.html"><svg aria-hidden="true"><use href="img/icones.svg#i-duvida"/></svg>Dúvidas</a>
+</nav>
+
+<script src="js/config.js?v=2"></script>
+<script src="js/app.js?v=2"></script>
 </body>
 </html>

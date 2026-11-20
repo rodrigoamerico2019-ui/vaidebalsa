@@ -2,89 +2,142 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<script>document.documentElement.classList.add("js")</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Horário e Preço da Balsa Ilhabela | Vai de Balsa</title>
 <meta name="description" content="Horários da balsa São Sebastião–Ilhabela, tarifas por tipo de veículo, como agendar a travessia e os melhores horários para evitar fila.">
 <link rel="canonical" href="https://vaidebalsa.com.br/horarios-e-tarifas.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#0b3a5b">
+<meta name="theme-color" content="#0A2C52">
 <meta property="og:title" content="Horário e preço da balsa Ilhabela">
 <meta property="og:description" content="Horários, tarifas e como agendar a travessia São Sebastião–Ilhabela.">
-<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
+<link rel="stylesheet" href="css/style.css?v=2">
+
 </head>
 <body>
+
 <header class="topo">
   <div class="wrap">
-    <a class="logo" href="./" aria-label="Vai de Balsa — início">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 36h40l-5 9H17z" fill="#ffc83d"/><rect x="22" y="26" width="20" height="10" rx="2" fill="#fff"/><path d="M8 50c4 0 4-3 8-3s4 3 8 3 4-3 8-3 4 3 8 3 4-3 8-3 4 3 8 3" stroke="#5fb4e6" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
-      Vai de <b>Balsa</b>
+    <a class="marca" href="./" aria-label="Vai de Balsa — início">
+      <svg viewBox="0 0 120 84" aria-hidden="true"><use href="img/icones.svg#logo"/></svg>
+      <span class="marca-txt"><b>VAIDE</b><i>BALSA</i></span>
     </a>
     <nav class="menu" aria-label="Principal">
       <a href="./">Ao vivo</a>
-      <a href="horarios-e-tarifas.html" aria-current="page">Horários</a>
+      <a href="./#cameras">Câmeras</a>
+      <a href="horarios-e-tarifas.html" aria-current="page">Horários e tarifas</a>
       <a href="perguntas-frequentes.html">Dúvidas</a>
     </nav>
+    <a class="btn-agendar" data-link="oficial" href="#"><svg aria-hidden="true"><use href="img/icones.svg#i-calendario"/></svg>Agendar</a>
   </div>
 </header>
 
-<div class="hero"><div class="wrap">
-  <h1>Horário e preço da balsa Ilhabela</h1>
-  <p>Tudo o que você precisa saber antes de fazer a travessia São Sebastião–Ilhabela.</p>
-</div></div>
+<section class="hero-int">
+  <div class="wrap">
+    <span class="rotulo" style="color:#FFC107">Horários e tarifas</span>
+    <h1>Horário e preço da <em>balsa Ilhabela</em></h1>
+    <p>Tudo o que você precisa saber antes de fazer a travessia São Sebastião–Ilhabela.</p>
+  </div>
+  <svg class="onda-base" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 C240 10 480 60 720 34 C960 8 1200 50 1440 24 V60 H0 Z" fill="#F1F6FC"/></svg>
+</section>
 
-<main class="wrap">
-  <section>
-    <div class="texto">
-      <h2>Horários de funcionamento</h2>
-      <p>A balsa funciona <strong>24 horas por dia</strong>, todos os dias:</p>
-      <ul>
-        <li><strong>Das 5h30 às 23h30:</strong> saídas a cada 30 minutos, aproximadamente.</li>
-        <li><strong>Depois das 23h30:</strong> saídas de hora em hora, aproximadamente.</li>
-        <li>A frequência pode mudar conforme a demanda e as condições do tempo.</li>
-      </ul>
-      <p>A travessia tem cerca de 800 metros e leva em média <strong>20 a 30 minutos</strong>. Cada balsa leva até 40 veículos.</p>
-      <p><strong>Embarques:</strong> em São Sebastião, na Av. Antônio Januário do Nascimento; em Ilhabela, na Av. Princesa Isabel.</p>
-
-      <h2 style="margin-top:24px">Tarifas</h2>
-      <p>A tarifa é cobrada <strong>só na ida</strong>, no embarque em São Sebastião. A volta de Ilhabela não é cobrada. <strong>Pedestres e ciclistas não pagam.</strong></p>
-      <div style="overflow-x:auto">
-      <table class="tabela">
-        <thead><tr><th>Veículo</th><th>Dias úteis</th><th>Sáb., dom. e feriados</th></tr></thead>
-        <tbody>
-          <tr><td>Motos e motonetas</td><td>R$ 9,50</td><td>R$ 14,20</td></tr>
-          <tr><td>Carros e camionetes</td><td>R$ 19,00</td><td>R$ 28,50</td></tr>
-          <tr><td>Carros e camionetes com reboque</td><td>R$ 38,00</td><td>R$ 56,90</td></tr>
-          <tr><td>Ônibus e caminhões de 2 eixos, trailers</td><td>R$ 66,30</td><td>R$ 99,40</td></tr>
-          <tr><td>Ônibus e caminhões de 3 eixos</td><td>R$ 151,50</td><td>R$ 227,30</td></tr>
-          <tr><td>Caminhões com reboque ou semirreboque</td><td>R$ 189,50</td><td>R$ 284,20</td></tr>
-        </tbody>
-      </table>
-      </div>
-      <p><strong>Pagamento:</strong> dinheiro e TAG (Sem Parar, Veloe, ConectCar). Pix e cartão estão sendo implantados aos poucos desde 9/11/2026.</p>
-      <p class="aviso">Desde 9 de novembro de 2026 a travessia é operada pela concessionária AcquaVias, com fiscalização da Semil e da ARTESP. As tarifas atuais foram mantidas nos três primeiros meses da concessão, então podem mudar a partir de fevereiro de 2027. Valores conferidos em novembro de 2026.</p>
-
-      <h2 style="margin-top:24px">Como agendar a travessia</h2>
-      <p>O agendamento é feito pelo sistema <strong>Hora Marcada</strong>, do governo do estado. Com ele você garante o horário de embarque e evita a fila comum. Chegue ao embarque com antecedência.</p>
-      <p><a class="btn" data-link="oficial" href="#">Ir para o agendamento oficial</a></p>
-
-      <h2 style="margin-top:24px">Melhores horários para evitar fila</h2>
-      <ul>
-        <li><strong>Ida para Ilhabela:</strong> evite sexta à tarde e sábado de manhã em feriado.</li>
-        <li><strong>Volta para São Sebastião:</strong> evite domingo e o último dia de feriado à tarde.</li>
-        <li><strong>Melhor janela:</strong> cedo pela manhã ou à noite, fora de feriado.</li>
-      </ul>
-      <p>Antes de sair, veja a <a href="./">fila da balsa ao vivo</a>.</p>
+<main class="wrap conteudo">
+  <section class="bloco" aria-labelledby="h-hor">
+    <h2 id="h-hor"><span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-relogio"/></svg></span>Horários de funcionamento</h2>
+    <div class="horarios">
+      <div class="horario"><strong>24 horas</strong><span>Funciona todos os dias, inclusive de madrugada</span></div>
+      <div class="horario"><strong>~30 min</strong><span>Intervalo das saídas entre 5h30 e 23h30</span></div>
+      <div class="horario"><strong>~1 hora</strong><span>Intervalo das saídas depois das 23h30</span></div>
     </div>
+    <p>A frequência pode mudar conforme a demanda e as condições do tempo. A travessia tem cerca de 800 metros e leva em média <strong>20 a 30 minutos</strong>. Cada balsa leva até 40 veículos.</p>
+    <p><strong>Embarques:</strong> em São Sebastião, na Av. Antônio Januário do Nascimento; em Ilhabela, na Av. Princesa Isabel.</p>
+  </section>
+
+  <section class="bloco" aria-labelledby="h-tar">
+    <h2 id="h-tar"><span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-ticket"/></svg></span>Tarifas</h2>
+    <p>A tarifa é cobrada <strong>só na ida</strong>, no embarque em São Sebastião. A volta de Ilhabela não é cobrada. Pedestres e ciclistas: <span class="gratis">grátis</span></p>
+    <div style="overflow-x:auto">
+    <table class="tabela">
+      <thead><tr><th>Veículo</th><th>Dias úteis</th><th>Sáb., dom. e feriados</th></tr></thead>
+      <tbody>
+        <tr><td>Motos e motonetas</td><td>R$ 9,50</td><td>R$ 14,20</td></tr>
+        <tr class="destaque"><td>Carros e camionetes</td><td>R$ 19,00</td><td>R$ 28,50</td></tr>
+        <tr><td>Carros e camionetes com reboque</td><td>R$ 38,00</td><td>R$ 56,90</td></tr>
+        <tr><td>Ônibus e caminhões de 2 eixos, trailers</td><td>R$ 66,30</td><td>R$ 99,40</td></tr>
+        <tr><td>Ônibus e caminhões de 3 eixos</td><td>R$ 151,50</td><td>R$ 227,30</td></tr>
+        <tr><td>Caminhões com reboque ou semirreboque</td><td>R$ 189,50</td><td>R$ 284,20</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p><strong>Pagamento:</strong> dinheiro e TAG (Sem Parar, Veloe, ConectCar). Pix e cartão estão sendo implantados aos poucos desde 9/11/2026.</p>
+    <div class="aviso"><svg aria-hidden="true"><use href="img/icones.svg#i-alerta"/></svg><div>Desde 9 de novembro de 2026 a travessia é operada pela concessionária AcquaVias, com fiscalização da Semil e da ARTESP. As tarifas atuais foram mantidas nos três primeiros meses da concessão, então podem mudar a partir de fevereiro de 2027. Valores conferidos em novembro de 2026.</div></div>
+  </section>
+
+  <section class="bloco" aria-labelledby="h-ag">
+    <h2 id="h-ag"><span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-calendario"/></svg></span>Como agendar a travessia</h2>
+    <p>O agendamento é feito pelo sistema <strong>Hora Marcada</strong>, do governo do estado. Com ele você garante o horário de embarque e evita a fila comum. Chegue ao embarque com antecedência.</p>
+    <p><a class="btn-agendar" data-link="oficial" href="#"><svg aria-hidden="true"><use href="img/icones.svg#i-calendario"/></svg>Ir para o agendamento oficial</a></p>
+  </section>
+
+  <section class="bloco" aria-labelledby="h-fila">
+    <h2 id="h-fila"><span class="ic"><svg aria-hidden="true"><use href="img/icones.svg#i-carro"/></svg></span>Melhores horários para evitar fila</h2>
+    <ul>
+      <li><strong>Ida para Ilhabela:</strong> evite sexta à tarde e sábado de manhã em feriado.</li>
+      <li><strong>Volta para São Sebastião:</strong> evite domingo e o último dia de feriado à tarde.</li>
+      <li><strong>Melhor janela:</strong> cedo pela manhã ou à noite, fora de feriado.</li>
+    </ul>
+    <p>Antes de sair, veja a <a href="./">fila da balsa ao vivo</a>.</p>
   </section>
 </main>
 
 <footer class="rodape">
+  <svg class="onda-topo" viewBox="0 0 1440 50" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0 H1440 V20 C1200 50 960 0 720 22 C480 44 240 4 0 26 Z" fill="#F1F6FC"/></svg>
   <div class="wrap">
-    <p><strong style="color:#fff">Vai de Balsa</strong> — site informativo independente, não é o operador da travessia.</p>
-    <p>© <span data-ano></span> vaidebalsa.com.br</p>
+    <div class="rodape-grade">
+      <div>
+        <a class="marca" href="./" aria-label="Vai de Balsa — início">
+          <svg viewBox="0 0 120 84" aria-hidden="true"><use href="img/icones.svg#logo"/></svg>
+          <span class="marca-txt"><b>VAIDE</b><i>BALSA</i></span>
+        </a>
+        <p class="slogan">A travessia em tempo real, <em>na palma da sua mão.</em></p>
+        <p>Informação rápida, confiável e acessível sobre a balsa entre São Sebastião e Ilhabela.</p>
+      </div>
+      <div>
+        <h4>Navegue</h4>
+        <ul>
+          <li><a href="./">Ao vivo</a></li>
+          <li><a href="./#cameras">Câmeras</a></li>
+          <li><a href="horarios-e-tarifas.html" aria-current="page">Horários e tarifas</a></li>
+          <li><a href="perguntas-frequentes.html">Dúvidas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Travessia</h4>
+        <ul>
+          <li><a data-link="oficial" href="#">Agendar (Hora Marcada)</a></li>
+          <li>Operação: AcquaVias</li>
+          <li>Fiscalização: Semil e ARTESP</li>
+        </ul>
+      </div>
+    </div>
+    <div class="base">
+      <span>© <span data-ano></span> vaidebalsa.com.br · Site informativo independente, não é o operador da travessia.</span>
+      <span>As imagens das câmeras pertencem aos responsáveis indicados em cada uma.</span>
+    </div>
   </div>
 </footer>
-<script src="js/config.js"></script>
-<script src="js/app.js"></script>
+
+<nav class="tabbar" aria-label="Atalhos">
+  <a href="./"><svg aria-hidden="true"><use href="img/icones.svg#i-vivo"/></svg>Ao vivo</a>
+  <a href="./#cameras"><svg aria-hidden="true"><use href="img/icones.svg#i-camera"/></svg>Câmeras</a>
+  <a href="horarios-e-tarifas.html" aria-current="page"><svg aria-hidden="true"><use href="img/icones.svg#i-ticket"/></svg>Tarifas</a>
+  <a href="perguntas-frequentes.html"><svg aria-hidden="true"><use href="img/icones.svg#i-duvida"/></svg>Dúvidas</a>
+</nav>
+
+<script src="js/config.js?v=2"></script>
+<script src="js/app.js?v=2"></script>
 </body>
 </html>
