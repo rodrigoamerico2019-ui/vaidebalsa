@@ -12,11 +12,11 @@ Olá, equipe AcquaVias,
 
 Meu nome é [seu nome] e sou responsável pelo **VAIDEBALSA** (vaidebalsa.onrender.com), um site gratuito de utilidade pública sobre a travessia São Sebastião–Ilhabela. O site reúne a situação da fila em tempo real, previsão do tempo e do mar, horários, tarifas e o link oficial de agendamento Hora Marcada.
 
-Hoje mostramos a situação da fila a partir de relatos e medições feitas pelos próprios usuários. Gostaríamos de exibir também o **tempo de espera oficial** de cada lado, sempre com crédito à AcquaVias e link para os canais oficiais.
+Hoje mostramos a situação da fila a partir de relatos e medições feitas pelos próprios usuários. Vimos que o portal **Hora Marcada** (horamarcada.acquavias.com.br) já exibe o **tempo de espera de cada sentido e o número de embarcações** de todas as travessias, e gostaríamos de mostrar essa informação oficial também no VAIDEBALSA, sempre com crédito à AcquaVias e link para os canais oficiais.
 
-Por isso, perguntamos se seria possível:
+Por isso, pedimos a autorização de vocês para:
 
-1. Ter acesso ao **tempo de espera e à situação da fila** de cada embarque (São Sebastião e Ilhabela), por um endereço de dados (API), planilha ou outro formato que se atualize periodicamente;
+1. Usar os **dados de tempo de espera e de embarcações em operação** que o portal Hora Marcada já publica, consultando-os automaticamente em intervalos regulares (por exemplo, a cada 5 ou 30 minutos), pelo endereço de dados (API) e com a chave de acesso que vocês indicarem;
 2. Receber os **avisos operacionais** (alterações de operação, embarcações em manutenção, interrupções por mau tempo), para publicarmos na faixa de avisos do site.
 
 Em troca, oferecemos divulgação gratuita dessas informações para os usuários do site e das nossas redes (@vaidebalsa), sempre apontando a AcquaVias como fonte oficial.
@@ -51,3 +51,13 @@ Solicito que a resposta seja enviada em formato eletrônico.
 
 - Anote o número de protocolo do Fala.SP. O órgão tem prazo legal para responder, e, se o acesso for negado, você pode recorrer pela própria plataforma.
 - Se a AcquaVias ou a Semil liberarem os dados, o VAIDEBALSA pode buscá-los automaticamente (a cada 30 minutos ou menos) e mostrar no semáforo, na faixa AO VIVO, no "Embarque agora" e no gráfico das 12 horas, com o selo "dado oficial".
+
+---
+
+## O que já existe (verificado em 21/11/2026)
+
+| Fonte | O que tem | Pode usar? |
+|---|---|---|
+| **Portal Hora Marcada — AcquaVias** (horamarcada.acquavias.com.br) | Tempo de espera **ao vivo** dos dois sentidos de cada travessia e nº de embarcações (ex.: São Sebastião 30 min · Ilhabela 30 min · 7 embarcações, "atualizado às 13:21") | **Só com autorização.** A página busca os números num endereço da AcquaVias marcado como privado (`.../priv/...`). Por isso o pedido acima. |
+| **Portal de Dados Abertos do Estado de SP** — "Volume transportado nas Travessias Litorâneas" (Semil) | Planilhas XLSX com a demanda transportada por ano (2019 a 2026, este até setembro) | **Sim**, licença Creative Commons BY 4.0 (citar a fonte). Não tem tempo de espera; serve para estatísticas de movimento. |
+| travessias.dh.sp.gov.br (serviço antigo do governo) | Tempo de espera (antes da concessão) | Fora do ar ("Web App – Unavailable"). |
