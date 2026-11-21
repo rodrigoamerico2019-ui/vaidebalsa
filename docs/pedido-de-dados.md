@@ -6,7 +6,7 @@ Preencha os campos entre [colchetes] antes de enviar.
 
 ## 1) E-mail para a AcquaVias (proposta de parceria)
 
-**Assunto:** Parceria para divulgar o tempo de espera da travessia São Sebastião–Ilhabela
+**Assunto:** Parceria para divulgar o tempo de espera e as câmeras da travessia São Sebastião–Ilhabela
 
 Olá, equipe AcquaVias,
 
@@ -17,7 +17,8 @@ Hoje mostramos a situação da fila a partir de relatos e medições feitas pelo
 Por isso, pedimos a autorização de vocês para:
 
 1. Usar os **dados de tempo de espera e de embarcações em operação** que o portal Hora Marcada já publica, consultando-os automaticamente em intervalos regulares (por exemplo, a cada 5 ou 30 minutos), pelo endereço de dados (API) e com a chave de acesso que vocês indicarem;
-2. Receber os **avisos operacionais** (alterações de operação, embarcações em manutenção, interrupções por mau tempo), para publicarmos na faixa de avisos do site.
+2. Exibir as **imagens das câmeras** das filas e dos atracadouros (São Sebastião e Ilhabela), por meio de um player oficial para incorporar no site, de um endereço de transmissão ao vivo ou de imagens que se atualizem a cada poucos segundos — sempre com o crédito "Imagem: AcquaVias" e sem gravar nem redistribuir as imagens;
+3. Receber os **avisos operacionais** (alterações de operação, embarcações em manutenção, interrupções por mau tempo), para publicarmos na faixa de avisos do site.
 
 Em troca, oferecemos divulgação gratuita dessas informações para os usuários do site e das nossas redes (@vaidebalsa), sempre apontando a AcquaVias como fonte oficial.
 
@@ -42,6 +43,7 @@ Com base na Lei nº 12.527/2011 (Lei de Acesso à Informação), solicito as seg
 2. O serviço eletrônico que publicava esse tempo de espera (travessias.dh.sp.gov.br) foi desativado? Há previsão de um novo canal público para essa informação?
 3. Existe disponibilização desses dados em formato aberto (por exemplo, API ou arquivo atualizado periodicamente) que possa ser usado por terceiros para divulgação ao público? Se não houver, solicito que me informem qual órgão ou empresa detém esses dados.
 4. O contrato de concessão prevê a obrigação de a concessionária divulgar ao público o tempo de espera ou a situação das filas? Em caso positivo, solicito a indicação da cláusula correspondente.
+5. Existem câmeras de monitoramento das filas e dos atracadouros da travessia São Sebastião–Ilhabela com imagens disponibilizadas ao público? Em caso positivo, em qual endereço eletrônico, e se há forma autorizada (por exemplo, player oficial ou endereço de transmissão) para que terceiros exibam essas imagens com crédito à fonte. Caso as câmeras sejam de responsabilidade da concessionária, solicito a indicação do responsável.
 
 Solicito que a resposta seja enviada em formato eletrônico.
 
