@@ -1,4 +1,4 @@
-/* VAIDEBALSA — gráfico da espera ao longo de hoje (dados próprios: esperas medidas + relatos) */
+/* VAIDEBALSA — gráfico da espera nas últimas 12 horas (janela móvel; dados próprios: esperas medidas + fotos) */
 (function () {
   var cfg = window.VAIDEBALSA || {};
   var caixa = document.getElementById("grafico-dia");
@@ -8,74 +8,87 @@
     { lado: "sao-sebastiao", nome: "São Sebastião", cor: "#0D6EFD" },
     { lado: "ilhabela", nome: "Ilhabela", cor: "#00B8A9" }
   ];
-  var H0 = 5, H1 = 23;               // eixo das horas: 5h às 23h
+  var JANELA = 12;                    // horas
+  var HORA = 3600000;
   var W = 720, H = 260, M = { t: 16, r: 120, b: 30, l: 44 };
   function medidas() {
     W = Math.max(300, Math.round(caixa.clientWidth || 720));
     H = W < 520 ? 220 : 260;
     M.r = W < 520 ? 96 : 120; M.l = W < 520 ? 34 : 44;
   }
-  var dados = [];
+  var dados = [], inicio = 0;         // inicio = começo da 1ª hora da janela (ms)
 
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function horaDoDia(ms) {
+    return +new Intl.DateTimeFormat("pt-BR", { hour: "numeric", hour12: false, timeZone: "America/Sao_Paulo" }).format(new Date(ms));
+  }
+  function calcInicio() {
+    var agora = Date.now();
+    return Math.floor(agora / HORA) * HORA - (JANELA - 1) * HORA;   // 12 faixas: 11 horas cheias + a hora atual
+  }
 
   function carregar() {
+    inicio = calcInicio();
     if (DEMO) {
       dados = [];
-      [[7, 15, 8], [9, 25, 18], [11, 48, 30], [13, 70, 35], [15, 82, 28], [17, 55, 20], [19, 30, 12]].forEach(function (r) {
-        dados.push({ lado: "sao-sebastiao", hora: r[0], minutos: r[1], medidas: 2, relatos: 3 });
-        dados.push({ lado: "ilhabela", hora: r[0], minutos: r[2], medidas: 1, relatos: 2 });
+      [[0, 15, 8], [2, 25, 18], [4, 48, 30], [6, 70, 35], [8, 82, 28], [10, 55, 20], [11, 40, 15]].forEach(function (r) {
+        dados.push({ lado: "sao-sebastiao", k: r[0], minutos: r[1], medidas: 2, relatos: 3 });
+        dados.push({ lado: "ilhabela", k: r[0], minutos: r[2], medidas: 1, relatos: 2 });
       });
       return Promise.resolve(desenhar());
     }
     if (!cfg.supabaseUrl) return Promise.resolve(desenhar());
-    return fetch(cfg.supabaseUrl + "/rest/v1/rpc/espera_hoje", {
+    return fetch(cfg.supabaseUrl + "/rest/v1/rpc/espera_12h", {
       method: "POST", headers: { apikey: cfg.supabaseAnonKey, "Content-Type": "application/json" }, body: "{}"
     }).then(function (r) { return r.ok ? r.json() : []; })
-      .then(function (j) { dados = Array.isArray(j) ? j : []; desenhar(); })
+      .then(function (j) {
+        dados = (Array.isArray(j) ? j : []).map(function (d) {
+          return { lado: d.lado, k: Math.round((new Date(d.hora).getTime() - inicio) / HORA), minutos: d.minutos, medidas: d.medidas, relatos: d.relatos };
+        }).filter(function (d) { return d.k >= 0 && d.k < JANELA; });
+        desenhar();
+      })
       .catch(function () { desenhar(); });
   }
 
   function desenhar() {
     medidas(); larguraAnterior = W;
-    var pontos = dados.filter(function (d) { return d.hora >= H0 && d.hora <= H1; });
+    if (!inicio) inicio = calcInicio();
+    var pontos = dados;
+    var rotH = function (k) { return horaDoDia(inicio + k * HORA); };
     var maxV = Math.max(60, Math.ceil(Math.max.apply(null, pontos.map(function (d) { return d.minutos; }).concat([0])) / 30) * 30);
-    var x = function (h) { return M.l + (h - H0) / (H1 - H0) * (W - M.l - M.r); };
+    var x = function (k) { return M.l + k / JANELA * (W - M.l - M.r); };
     var y = function (v) { return H - M.b - v / maxV * (H - M.t - M.b); };
-    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" class="g-svg" role="img" aria-label="Espera na fila da balsa ao longo de hoje, por lado">';
+    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" class="g-svg" role="img" aria-label="Espera na fila da balsa nas últimas 12 horas, por lado">';
 
     // grade e eixos (recessivos)
     for (var v = 0; v <= maxV; v += 30) {
       svg += '<line x1="' + M.l + '" x2="' + (W - M.r) + '" y1="' + y(v) + '" y2="' + y(v) + '" class="g-grade' + (v === 0 ? " base" : "") + '"/>';
       svg += '<text x="' + (M.l - 8) + '" y="' + (y(v) + 4) + '" class="g-eixo" text-anchor="end">' + v + "</text>";
     }
-    for (var h = 6; h <= H1; h += 3) {
-      svg += '<text x="' + x(h) + '" y="' + (H - 8) + '" class="g-eixo" text-anchor="middle">' + h + "h</text>";
+    var passo = W < 520 ? 3 : 2;
+    for (var k = 0; k <= JANELA; k += passo) {
+      svg += '<text x="' + x(k) + '" y="' + (H - 8) + '" class="g-eixo" text-anchor="middle">' + rotH(k) + "h</text>";
     }
-    // hora atual
-    var agora = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-    var hAgora = agora.getHours() + agora.getMinutes() / 60;
-    if (hAgora >= H0 && hAgora <= H1) {
-      svg += '<line x1="' + x(hAgora) + '" x2="' + x(hAgora) + '" y1="' + M.t + '" y2="' + (H - M.b) + '" class="g-agora"/>';
-      svg += '<text x="' + (x(hAgora) + 4) + '" y="' + (M.t + 10) + '" class="g-eixo">agora</text>';
-    }
+    // agora (dentro da última faixa)
+    var kAgora = (Date.now() - inicio) / HORA;
+    svg += '<line x1="' + x(kAgora) + '" x2="' + x(kAgora) + '" y1="' + M.t + '" y2="' + (H - M.b) + '" class="g-agora"/>';
+    svg += '<text x="' + (x(kAgora) - 4) + '" y="' + (M.t + 10) + '" class="g-eixo" text-anchor="end">agora</text>';
 
     // séries
     var rotulos = [];
     SERIES.forEach(function (s) {
-      var ps = pontos.filter(function (d) { return d.lado === s.lado; }).sort(function (a, b) { return a.hora - b.hora; });
+      var ps = pontos.filter(function (d) { return d.lado === s.lado; }).sort(function (a, b) { return a.k - b.k; });
       if (!ps.length) return;
       if (ps.length > 1) {
         svg += '<polyline fill="none" stroke="' + s.cor + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="' +
-          ps.map(function (d) { return x(d.hora + .5) + "," + y(d.minutos); }).join(" ") + '"/>';
+          ps.map(function (d) { return x(d.k + .5) + "," + y(d.minutos); }).join(" ") + '"/>';
       }
       ps.forEach(function (d) {
-        svg += '<circle cx="' + x(d.hora + .5) + '" cy="' + y(d.minutos) + '" r="4" fill="' + s.cor + '" stroke="#fff" stroke-width="2"/>';
+        svg += '<circle cx="' + x(d.k + .5) + '" cy="' + y(d.minutos) + '" r="4" fill="' + s.cor + '" stroke="#fff" stroke-width="2"/>';
       });
       var ult = ps[ps.length - 1];
-      rotulos.push({ y: y(ult.minutos), x: x(ult.hora + .5), txt: (W < 520 ? s.nome.replace("São Sebastião", "S. Sebastião") : s.nome) + " · " + ult.minutos + " min", cor: s.cor });
+      rotulos.push({ y: y(ult.minutos), x: x(ult.k + .5), txt: (W < 520 ? s.nome.replace("São Sebastião", "S. Sebastião") : s.nome) + " · " + ult.minutos + " min" });
     });
-    // rótulos diretos no último ponto, sem sobrepor
     rotulos.sort(function (a, b) { return a.y - b.y; });
     for (var i = 1; i < rotulos.length; i++) if (rotulos[i].y - rotulos[i - 1].y < 16) rotulos[i].y = rotulos[i - 1].y + 16;
     rotulos.forEach(function (r) {
@@ -88,11 +101,11 @@
 
     var total = pontos.reduce(function (s, d) { return s + d.medidas + d.relatos; }, 0);
     var aviso = !pontos.length
-      ? '<p class="g-vazio">Ainda sem dados hoje. O gráfico se forma com as <b>esperas medidas</b> e as <b>fotos da fila</b> enviadas por quem está lá.</p>'
-      : (total < 4 ? '<p class="g-vazio">Poucos dados hoje (' + total + "). Quanto mais gente medir a espera, mais preciso fica.</p>" : "");
+      ? '<p class="g-vazio">Sem dados nas últimas 12 horas. O gráfico se forma com as <b>esperas medidas</b> e as <b>fotos da fila</b> enviadas por quem está lá.</p>'
+      : (total < 4 ? '<p class="g-vazio">Poucos dados nas últimas 12 horas (' + total + "). Quanto mais gente medir a espera, mais preciso fica.</p>" : "");
 
-    var linhas = pontos.slice().sort(function (a, b) { return a.hora - b.hora || a.lado.localeCompare(b.lado); }).map(function (d) {
-      return "<tr><td>" + d.hora + "h</td><td>" + (d.lado === "ilhabela" ? "Ilhabela" : "São Sebastião") + "</td><td>" + d.minutos + " min</td><td>" + d.medidas + "</td><td>" + d.relatos + "</td></tr>";
+    var linhas = pontos.slice().sort(function (a, b) { return a.k - b.k || a.lado.localeCompare(b.lado); }).map(function (d) {
+      return "<tr><td>" + rotH(d.k) + "h</td><td>" + (d.lado === "ilhabela" ? "Ilhabela" : "São Sebastião") + "</td><td>" + d.minutos + " min</td><td>" + d.medidas + "</td><td>" + d.relatos + "</td></tr>";
     }).join("");
 
     caixa.innerHTML =
@@ -100,23 +113,23 @@
       '<div class="g-area">' + svg + '<div class="g-dica" hidden></div></div>' + aviso +
       (linhas ? '<details class="g-tabela"><summary>Ver em tabela</summary><table class="tabela"><thead><tr><th>Hora</th><th>Lado</th><th>Espera</th><th>Medições</th><th>Relatos</th></tr></thead><tbody>' + linhas + "</tbody></table></details>" : "");
 
-    // tooltip com mira (mouse e toque)
+    // dica com mira (mouse e toque): pula para a hora com dado mais próxima
     var area = caixa.querySelector(".g-area"), alvo = caixa.querySelector(".g-alvo"), mira = caixa.querySelector(".g-mira"), dica = caixa.querySelector(".g-dica");
     function mover(ev) {
       var r = caixa.querySelector(".g-svg").getBoundingClientRect();
       var cx = ((ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left) / r.width * W;
-      var alvoH = H0 + (cx - M.l) / (W - M.l - M.r) * (H1 - H0) - .5;
-      var horas = pontos.map(function (p) { return p.hora; });
-      if (!horas.length) return;
-      var hora = horas.reduce(function (m, h) { return Math.abs(h - alvoH) < Math.abs(m - alvoH) ? h : m; }, horas[0]);
-      var px = x(hora + .5);
+      var alvoK = (cx - M.l) / (W - M.l - M.r) * JANELA - .5;
+      var ks = pontos.map(function (p) { return p.k; });
+      if (!ks.length) return;
+      var k = ks.reduce(function (m, h) { return Math.abs(h - alvoK) < Math.abs(m - alvoK) ? h : m; }, ks[0]);
+      var px = x(k + .5);
       mira.setAttribute("x1", px); mira.setAttribute("x2", px); mira.setAttribute("visibility", "visible");
       var itens = SERIES.map(function (s) {
-        var d = pontos.find(function (p) { return p.lado === s.lado && p.hora === hora; });
+        var d = pontos.find(function (p) { return p.lado === s.lado && p.k === k; });
         return '<div><i style="background:' + s.cor + '"></i>' + s.nome + ": <b>" + (d ? d.minutos + " min" : "sem dados") + "</b>" +
           (d ? ' <small>(' + d.medidas + " med. · " + d.relatos + " rel.)</small>" : "") + "</div>";
       }).join("");
-      dica.innerHTML = "<strong>" + hora + "h às " + (hora + 1) + "h</strong>" + itens;
+      dica.innerHTML = "<strong>" + rotH(k) + "h às " + rotH(k + 1) + "h</strong>" + itens;
       dica.hidden = false;
       var esquerda = px / W * r.width;
       dica.style.left = Math.min(Math.max(0, esquerda - 90), r.width - 190) + "px";
