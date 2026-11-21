@@ -6,6 +6,10 @@ Preencha os campos entre [colchetes] antes de enviar.
 
 ## 1) E-mail para a AcquaVias (proposta de parceria)
 
+**Para:** comunicacao@acquavias.com.br (Assessoria de Imprensa/Comunicação)
+**Cópia (Cc):** horamarcada@acquavias.com.br (equipe do Hora Marcada)
+Fontes: acquavias.com.br/canais-de-atendimento e aviso em horamarcada.dh.sp.gov.br (conferidos em 21/11/2026). SAC: 0800-0800038.
+
 **Assunto:** Parceria para divulgar o tempo de espera e as câmeras da travessia São Sebastião–Ilhabela
 
 Olá, equipe AcquaVias,
