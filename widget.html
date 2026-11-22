@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fila da balsa ao vivo — widget VAIDEBALSA</title>
+<meta name="robots" content="noindex">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;background:transparent;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  a.w{display:block;text-decoration:none;color:#fff;background:linear-gradient(135deg,#0D6EFD,#0A2C52);border-radius:16px;padding:12px 14px;max-width:420px}
+  .topo{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .marca{font-weight:900;font-style:italic;font-size:15px;letter-spacing:-.02em}
+  .marca i{color:#FFC107;font-style:italic}
+  .vivo{font-size:10px;font-weight:800;letter-spacing:.08em;background:#E53935;padding:3px 7px;border-radius:6px}
+  .lados{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .lado{background:rgba(255,255,255,.1);border-radius:12px;padding:8px 10px;border-left:4px solid rgba(255,255,255,.3)}
+  .lado small{display:block;font-size:11px;color:#cfe0f5}
+  .lado b{display:block;font-size:18px;font-weight:900;font-style:italic;margin-top:2px}
+  .lado span{display:block;font-size:10px;color:#cfe0f5;margin-top:2px}
+  .verde{border-left-color:#22C55E}.amarelo{border-left-color:#FFC107}.vermelho{border-left-color:#ff5252}
+  .rodape{margin-top:8px;font-size:11px;color:#FFC107;font-weight:700}
+</style>
+</head>
+<body>
+<a class="w" id="w" href="https://vaidebalsa.com.br/?utm_source=widget#fila" target="_blank" rel="noopener">
+  <div class="topo"><span class="marca">VAIDE<i>BALSA</i></span><span class="vivo">AO VIVO</span></div>
+  <div class="lados">
+    <div class="lado" data-lado="sao-sebastiao"><small>Embarque em São Sebastião</small><b>…</b><span></span></div>
+    <div class="lado" data-lado="ilhabela"><small>Embarque em Ilhabela</small><b>…</b><span></span></div>
+  </div>
+  <div class="rodape">Ver fila, fotos e trânsito ao vivo →</div>
+</a>
+<script src="js/config.js?v=8"></script>
+<script src="js/estimativa.js?v=1"></script>
+<script>
+(function () {
+  var cfg = window.VAIDEBALSA || {};
+  var FAIXA = { verde: "menos de 20 min", amarelo: "20 a 60 min", vermelho: "mais de 1 hora" };
+  function atualizar() {
+    fetch(cfg.supabaseUrl + "/rest/v1/rpc/semaforo_atual", {
+      method: "POST", headers: { apikey: cfg.supabaseAnonKey, "Content-Type": "application/json" }, body: "{}"
+    }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }).then(function (dados) {
+      var por = {}; (dados || []).forEach(function (d) { por[d.lado] = d; });
+      ["sao-sebastiao", "ilhabela"].forEach(function (l) {
+        var el = document.querySelector('[data-lado="' + l + '"]'), d = por[l] || {}, valor, nota, nivel = d.nivel;
+        if (d.espera_mediana != null) { valor = "≈ " + d.espera_mediana + " min"; nota = "medido agora"; }
+        else if (FAIXA[d.nivel]) { valor = FAIXA[d.nivel]; nota = "relatos de agora"; }
+        else { var e = window.VDB_ESTIMATIVA ? window.VDB_ESTIMATIVA(l) : null; valor = e ? e.texto : "—"; nota = "estimativa"; nivel = e ? e.nivel : ""; }
+        el.className = "lado " + (nivel || "");
+        el.querySelector("b").textContent = valor;
+        el.querySelector("span").textContent = nota;
+      });
+    });
+  }
+  atualizar(); setInterval(atualizar, 120000);
+})();
+</script>
+</body>
+</html>

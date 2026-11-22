@@ -38,6 +38,11 @@ window.VAIDEBALSA = {
   // Mascote / apresentador (nome opcional; instagram sem @, vazio = "em breve")
   mascote: { nome: "", imagem: "img/mascote.webp", instagram: "vaidebalsa" },
 
+  // Medição de audiência (Google Analytics 4): ex. "G-XXXXXXXXXX". Vazio = desligado.
+  analytics: { ga4: "" },
+  // Google AdSense: client "ca-pub-XXXXXXXXXXXXXXXX" e o ID de cada bloco. Vazio = desligado.
+  anuncios: { client: "", slots: { meio: "", conteudo: "" } },
+
   // Contato para quem quer anunciar (WhatsApp com DDI, ex.: "5512999999999"). Vazio = sem botão.
   contatoAnuncie: "",
 

@@ -46,3 +46,10 @@ Ajustes:
 ## Tempo aproximado quando não há relatos
 - Ordem: dado ao vivo (esperas medidas/fotos) > histórico próprio (`supabase/006_espera_tipica.sql`, 5+ medições no mesmo dia/horário nas últimas 8 semanas) > estimativa de referência (`js/estimativa.js`).
 - A estimativa de referência são faixas aproximadas por dia da semana, horário, sentido, feriados e alta temporada. Ajuste os números em `js/estimativa.js` e mantenha a lista de feriados atualizada.
+
+## Monetização e audiência (ligar quando tiver as contas)
+- **Google Analytics 4**: criar propriedade em analytics.google.com → copiar o ID `G-XXXXXXXXXX` → `analytics.ga4` em `js/config.js`.
+- **Google AdSense**: solicitar em adsense.google.com com o domínio vaidebalsa.com.br. Após aprovação: `anuncios.client` (`ca-pub-...`) e os IDs dos blocos `meio` e `conteudo` em `js/config.js`; criar `ads.txt` na raiz com a linha que o AdSense fornecer.
+- Nada de terceiros carrega antes do "Aceitar" no aviso de cookies (`js/consentimento.js`). Sem IDs configurados, o aviso nem aparece.
+- Espaços de anúncio: `data-anuncio="meio"` (início, entre mural e previsão) e `data-anuncio="conteudo"` (fim das páginas de guia).
+- Widget para parceiros: `widget.html` (código em anuncie.html#widget) — gera links de volta para o site.
