@@ -584,3 +584,33 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
 .cookies button{border:2px solid var(--borda);background:#fff;border-radius:999px;padding:9px 14px;font:700 .88rem var(--corpo);cursor:pointer}
 .cookies button.sim{background:var(--oceano);border-color:var(--oceano);color:#fff}
 @media (max-width:760px){.cookies{bottom:86px}}
+
+
+/* ===== VAIDEBALSA Social (Américo Social — verde sálvia #7F8F7A) ===== */
+.menu a.menu-social{color:#d9f0d0}
+.menu a.menu-social[aria-current]{background:#7F8F7A;color:#fff}
+.historia{display:grid;grid-template-columns:260px 1fr;gap:26px;align-items:center}
+.historia-foto{width:100%;border-radius:20px;object-fit:cover;object-position:50% 10%;max-height:300px;background:var(--mar)}
+.historia h2{margin-top:4px}
+.destaque-social{border-left:6px solid #7F8F7A}
+.destaque-social .grande{font-size:1.15rem;color:var(--oceano);font-weight:600}
+.botoes-social{display:flex;gap:10px;flex-wrap:wrap}
+.pvv{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:20px}
+.pvv-card{background:#fff;border-radius:var(--raio);box-shadow:var(--sombra);padding:24px;border-top:5px solid #7F8F7A}
+.pvv-card h2{font:900 italic 1.35rem var(--titulo);color:var(--oceano);margin:8px 0 8px}
+.pvv-card p,.pvv-card li{color:#33475f}
+.pvv-card ul{padding-left:18px;margin:0}
+.pvv-card li{margin-bottom:6px}
+.pvv-ic{font-size:2rem}
+.slogan-instituto{margin-top:14px;font:800 1.05rem var(--titulo);color:#5d6b59}
+.slogan-instituto em{color:#7F8F7A}
+.faixa-social{margin:0 auto 24px}
+.fs-card{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:linear-gradient(135deg,#eef3ec,#fff);border:2px solid #cfd9cc;border-radius:24px;padding:22px 26px}
+.fs-card>div{flex:1;min-width:240px}
+.fs-card h2{font-size:clamp(1.4rem,3.5vw,2rem);font-weight:900;font-style:italic;color:var(--oceano)}
+.fs-card h2 em{color:#7F8F7A}
+.fs-card p{margin:6px 0 0;color:#33475f}
+.fs-card .rotulo{color:#5d6b59}
+.fs-ic{font-size:2.6rem}
+@media (max-width:960px){.pvv{grid-template-columns:1fr}}
+@media (max-width:760px){.historia{grid-template-columns:1fr}.historia-foto{max-height:240px}}
