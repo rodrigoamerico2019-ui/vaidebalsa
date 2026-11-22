@@ -39,7 +39,7 @@ window.VAIDEBALSA = {
   mascote: { nome: "", imagem: "img/mascote.webp", instagram: "vaidebalsa" },
 
   // Medição de audiência (Google Analytics 4): ex. "G-XXXXXXXXXX". Vazio = desligado.
-  analytics: { ga4: "" },
+  analytics: { ga4: "G-WJ56XKYKMT" },
   // Google AdSense: client "ca-pub-XXXXXXXXXXXXXXXX" e o ID de cada bloco. Vazio = desligado.
   anuncios: { client: "", slots: { meio: "", conteudo: "" } },
 
