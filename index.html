@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
 <link rel="preload" as="image" href="img/embaixador.webp">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=24">
+<link rel="stylesheet" href="css/style.css?v=25">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -254,6 +254,24 @@
 
   <div class="wrap"><div class="anuncio" data-anuncio="meio" hidden></div></div>
 
+  <section class="secao planeje" id="planeje-travessia" aria-labelledby="tit-planeje">
+    <div class="wrap">
+      <div class="secao-cab">
+        <div>
+          <span class="rotulo">Planeje</span>
+          <h2 id="tit-planeje">Qual o <em>melhor horário</em> para atravessar?</h2>
+          <p class="lead">Espera prevista hora a hora para os próximos 7 dias, com o vento na travessia. Fica mais precisa a cada espera medida no site.</p>
+        </div>
+        <div class="chips" role="group" aria-label="Lado do embarque">
+          <button data-pl-lado="sao-sebastiao" aria-pressed="true">Saindo de São Sebastião</button>
+          <button data-pl-lado="ilhabela" aria-pressed="false">Saindo de Ilhabela</button>
+        </div>
+      </div>
+      <div id="planeje"><p class="g-vazio">Carregando…</p></div>
+      <p class="pl-aviso">Previsões são estimativas do VAIDEBALSA, não informação oficial. Confira sempre os canais oficiais da travessia.</p>
+    </div>
+  </section>
+
   <section class="secao tempo" id="tempo-7-dias" aria-labelledby="tit-tempo">
     <div class="wrap">
       <div class="secao-cab revela">
@@ -468,5 +486,6 @@
 <script src="js/mural.js?v=4"></script>
 <script src="js/modo-fila.js?v=2"></script>
 <script src="js/grafico.js?v=5"></script>
+<script src="js/planeje.js?v=1"></script>
 </body>
 </html>
