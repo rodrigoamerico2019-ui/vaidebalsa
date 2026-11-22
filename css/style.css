@@ -614,3 +614,23 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
 .fs-ic{font-size:2.6rem}
 @media (max-width:960px){.pvv{grid-template-columns:1fr}}
 @media (max-width:760px){.historia{grid-template-columns:1fr}.historia-foto{max-height:240px}}
+
+
+/* ===== Menu do topo: sempre numa linha ===== */
+.topo .wrap{flex-wrap:nowrap}
+.menu{flex-wrap:nowrap;gap:2px;flex:0 1 auto;min-width:0}
+.menu a{white-space:nowrap;padding:8px 12px}
+.topo-esq{flex:none}
+@media (max-width:1240px){.tm-selo{display:none}}
+@media (max-width:1100px){.menu a{padding:8px 9px;font-size:.9rem}}
+/* telas médias: menu de cima dá lugar à barra de atalhos de baixo */
+@media (max-width:1000px){
+  .menu{display:none}
+  body{padding-bottom:74px}
+  .tabbar{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 20px));bottom:10px;z-index:60;background:rgba(10,44,82,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:20px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:3px;color:#9fb8d6;text-decoration:none;font-size:.72rem;font-weight:600;padding:7px 2px;border-radius:14px}
+  .tabbar a svg{width:22px;height:22px}
+  .tabbar a[aria-current]{color:var(--oceano);background:var(--sol)}
+  .medindo{bottom:88px}
+  .cookies{bottom:86px}
+}
