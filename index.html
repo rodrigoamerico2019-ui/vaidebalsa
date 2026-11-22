@@ -19,8 +19,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
+<link rel="preload" as="image" href="img/embaixador.webp">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=19">
+<link rel="stylesheet" href="css/style.css?v=20">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -33,6 +34,24 @@
 </script>
 </head>
 <body>
+<div id="abertura" class="abertura" aria-hidden="true">
+  <div class="ab-palco">
+    <img class="ab-foto" src="img/embaixador.webp" width="589" height="1047" alt="" fetchpriority="high">
+    <span class="ab-joia">👍</span>
+  </div>
+  <div class="ab-texto"><b>VAIDE<i>BALSA</i></b><span>Bora de balsa!</span></div>
+</div>
+<script>
+(function () {
+  var el = document.getElementById("abertura");
+  var calmo = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var visto = false; try { visto = sessionStorage.getItem("vdb-abertura") === "1"; sessionStorage.setItem("vdb-abertura", "1"); } catch (e) {}
+  if (visto || calmo) { el.remove(); return; }
+  function sair() { if (!el.isConnected) return; el.classList.add("sai"); setTimeout(function () { el.remove(); }, 450); }
+  el.addEventListener("click", sair);
+  setTimeout(sair, 2000);
+})();
+</script>
 
 <header class="topo">
   <div class="wrap">
