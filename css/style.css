@@ -671,3 +671,24 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
 .fita-autismo img{display:block;width:54px}
 .fita-autismo span{position:absolute;right:calc(100% + 8px);top:14px}
 @media (max-width:760px){.fita-autismo img{width:36px}.fita-autismo span{display:none}}
+
+
+/* ===== Parceiros do painel + serviços úteis ===== */
+.parceiro.destaque{outline:3px solid var(--sol);outline-offset:-3px}
+.p-inclusao{position:absolute;bottom:10px;left:10px;background:#fff;color:var(--oceano);font:800 .7rem var(--titulo);padding:4px 8px;border-radius:999px;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.p-oferta{color:#9A3412 !important;font-weight:700;background:#FFEDD5;border-radius:10px;padding:6px 8px;margin-top:4px !important}
+.p-apoia{display:block;font-style:normal;font-size:.75rem;color:#5d6b59;margin-top:4px}
+.parceiro.livre{text-decoration:none}
+.parceiro.livre em{font-style:normal;font-weight:800;color:var(--mar);margin-top:4px}
+.servicos-lista{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.serv-lado{background:#fff;border-radius:var(--raio);box-shadow:var(--sombra);padding:18px}
+.serv-lado h3{font:900 italic 1.15rem var(--titulo);color:var(--oceano);margin-bottom:8px}
+.serv-lado ul{list-style:none;margin:0;padding:0}
+.serv-lado li{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--borda);flex-wrap:wrap}
+.serv-lado li:last-child{border-bottom:0}
+.serv-lado li strong{display:block;color:var(--oceano)}
+.serv-lado li span,.serv-lado li small{display:block;color:var(--suave);font-size:.85rem}
+.serv-acoes{display:flex;gap:6px;flex-wrap:wrap}
+.serv-acoes a{font:700 .8rem var(--corpo);text-decoration:none;background:var(--nevoa);color:var(--oceano);padding:7px 10px;border-radius:999px}
+.serv-acoes a:hover{background:#E3ECF7}
+@media (max-width:760px){.servicos-lista{grid-template-columns:1fr}}

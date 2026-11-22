@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel VAIDEBALSA</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
+<link rel="stylesheet" href="css/style.css?v=23">
+<style>
+  body{padding-bottom:40px}
+  .pn-topo{background:var(--oceano);color:#fff}
+  .pn-topo .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px}
+  .pn-topo .marca-txt small{font:700 .75rem var(--corpo);color:var(--sol);margin-left:8px;font-style:normal}
+  .pn-sair{background:transparent;border:2px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:7px 14px;font:700 .85rem var(--corpo);cursor:pointer}
+  .pn-login{max-width:380px;margin:60px auto;background:#fff;border-radius:20px;box-shadow:var(--sombra);padding:26px}
+  .pn-login h1{font:900 italic 1.5rem var(--titulo);color:var(--oceano);margin-bottom:14px}
+  .campo{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;font-weight:700;color:var(--oceano);font-size:.88rem}
+  .campo input,.campo select,.campo textarea{font:1rem var(--corpo);padding:10px 12px;border:2px solid var(--borda);border-radius:12px;color:var(--texto);background:#fff}
+  .campo small{font-weight:500;color:var(--suave)}
+  .linha2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .btn{border:0;cursor:pointer;border-radius:999px;padding:10px 16px;font:800 .9rem var(--titulo)}
+  .btn.prim{background:var(--sol);color:var(--oceano)}
+  .btn.sec{background:var(--nevoa);color:var(--oceano)}
+  .btn.perigo{background:#FEE2E2;color:#991B1B}
+  .btn:disabled{opacity:.5;cursor:default}
+  .msg{font-weight:600;font-size:.9rem;margin:8px 0 0;min-height:1.2em}
+  .msg.erro{color:#991B1B}.msg.ok{color:#166534}
+  .abas{display:flex;gap:6px;flex-wrap:wrap;margin:20px 0 16px}
+  .abas button{border:2px solid var(--borda);background:#fff;color:var(--oceano);font:700 .9rem var(--corpo);padding:9px 14px;border-radius:999px;cursor:pointer}
+  .abas button[aria-pressed="true"]{background:var(--oceano);border-color:var(--oceano);color:#fff}
+  .pn-cab{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .pn-cab h2{font:900 italic 1.3rem var(--titulo);color:var(--oceano)}
+  .lista{display:grid;gap:10px}
+  .item{background:#fff;border-radius:16px;box-shadow:var(--sombra);padding:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .item img{width:64px;height:64px;border-radius:12px;object-fit:cover;background:var(--nevoa);flex:none}
+  .item .txt{flex:1;min-width:200px}
+  .item .txt strong{display:block;color:var(--oceano)}
+  .item .txt small{color:var(--suave)}
+  .item .acoes{display:flex;gap:6px;flex-wrap:wrap}
+  .item.inativo{opacity:.55}
+  .chip{display:inline-block;font:800 .7rem var(--corpo);padding:3px 8px;border-radius:999px;margin-right:4px;background:var(--nevoa);color:var(--oceano)}
+  .chip.embaixador{background:var(--sol)}.chip.utilidade{background:#DCFCE7;color:#166534}.chip.oculto{background:#FEE2E2;color:#991B1B}
+  .vazio-pn{background:#fff;border:2px dashed var(--borda);border-radius:16px;padding:24px;text-align:center;color:var(--suave)}
+  dialog.pn-form{border:0;border-radius:20px;padding:0;width:min(620px,calc(100% - 20px));max-height:calc(100% - 20px);box-shadow:0 30px 80px rgba(0,0,0,.4)}
+  dialog.pn-form::backdrop{background:rgba(10,44,82,.55)}
+  .pn-form form{padding:20px}
+  .pn-form h3{font:900 italic 1.3rem var(--titulo);color:var(--oceano);margin-bottom:12px}
+  .pn-form .rodape-form{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+  .previa-foto{width:100%;max-height:160px;object-fit:cover;border-radius:12px;margin-top:6px;display:none}
+  table.rel{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;box-shadow:var(--sombra)}
+  table.rel th,table.rel td{padding:10px 12px;border-bottom:1px solid var(--borda);text-align:left}
+  table.rel th{background:var(--oceano);color:#fff;font:700 .85rem var(--titulo)}
+  table.rel td:not(:first-child){text-align:center;font-weight:700}
+  @media (max-width:600px){.linha2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="pn-topo"><div class="wrap">
+  <span class="marca"><svg viewBox="0 0 120 84" aria-hidden="true"><use href="img/icones.svg#logo"/></svg><span class="marca-txt"><b>VAIDE</b><i>BALSA</i><small>PAINEL</small></span></span>
+  <button class="pn-sair" id="sair" hidden>Sair</button>
+</div></div>
+
+<main class="wrap">
+  <!-- login -->
+  <section class="pn-login" id="tela-login" hidden>
+    <h1>Entrar no painel</h1>
+    <form id="form-login">
+      <label class="campo">E-mail<input type="email" name="email" required autocomplete="username"></label>
+      <label class="campo">Senha<input type="password" name="senha" required autocomplete="current-password"></label>
+      <button class="btn prim" type="submit" style="width:100%">Entrar</button>
+      <p class="msg" id="msg-login"></p>
+    </form>
+  </section>
+
+  <section id="tela-sem" class="pn-login" hidden>
+    <h1>Sem permissão</h1>
+    <p>Este usuário não está cadastrado como administrador do VAIDEBALSA.</p>
+  </section>
+
+  <!-- painel -->
+  <section id="tela-painel" hidden>
+    <div class="abas" role="group" aria-label="Seções do painel">
+      <button data-aba="parceiros" aria-pressed="true">Parceiros</button>
+      <button data-aba="utilidade" aria-pressed="false">Serviços úteis</button>
+      <button data-aba="avisos" aria-pressed="false">Avisos</button>
+      <button data-aba="mural" aria-pressed="false">Mural</button>
+      <button data-aba="relatorio" aria-pressed="false">Relatório</button>
+    </div>
+
+    <div data-painel="parceiros">
+      <div class="pn-cab"><h2>Parceiros</h2><button class="btn prim" data-novo="apoiador">+ Novo parceiro</button></div>
+      <div class="lista" id="lista-parceiros"></div>
+    </div>
+    <div data-painel="utilidade" hidden>
+      <div class="pn-cab"><h2>Serviços úteis (grátis)</h2><button class="btn prim" data-novo="utilidade">+ Novo serviço</button></div>
+      <p class="lead" style="margin:0 0 12px">Farmácia 24h, posto, guincho, hospital, banheiro… aparecem de graça na página inicial, sem anúncio.</p>
+      <div class="lista" id="lista-utilidade"></div>
+    </div>
+    <div data-painel="avisos" hidden>
+      <div class="pn-cab"><h2>Avisos da faixa AO VIVO</h2><button class="btn prim" id="novo-aviso">+ Novo aviso</button></div>
+      <div class="lista" id="lista-avisos"></div>
+    </div>
+    <div data-painel="mural" hidden>
+      <div class="pn-cab"><h2>Mural (últimos 7 dias)</h2><button class="btn sec" id="recarregar-mural">Atualizar</button></div>
+      <div class="lista" id="lista-mural"></div>
+    </div>
+    <div data-painel="relatorio" hidden>
+      <div class="pn-cab"><h2>Cliques nos parceiros</h2>
+        <label class="campo" style="margin:0;flex-direction:row;align-items:center;gap:8px">Período
+          <select id="rel-dias"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="90">90 dias</option></select></label>
+      </div>
+      <div id="relatorio"></div>
+      <p class="lead" style="margin-top:10px">Use esses números para mostrar ao parceiro quantas pessoas chamaram no WhatsApp, abriram o mapa ou visitaram o site.</p>
+    </div>
+  </section>
+</main>
+
+<!-- formulário de parceiro / serviço -->
+<dialog class="pn-form" id="dlg-parceiro">
+  <form id="form-parceiro" method="dialog">
+    <h3 id="tit-parceiro">Parceiro</h3>
+    <input type="hidden" name="id">
+    <label class="campo">Nome<input name="nome" required maxlength="80"></label>
+    <div class="linha2">
+      <label class="campo">Plano<select name="plano">
+        <option value="apoiador">Apoiador (pago)</option><option value="embaixador">Embaixador (pago, destaque)</option><option value="utilidade">Serviço útil (grátis)</option></select></label>
+      <label class="campo">Categoria<select name="categoria">
+        <option value="hospedagem">Hospedagem</option><option value="alimentacao">Onde comer</option><option value="passeios">Passeios</option>
+        <option value="comercio">Comércio</option><option value="servicos">Serviços</option><option value="utilidade">Utilidade pública</option></select></label>
+    </div>
+    <div class="linha2">
+      <label class="campo">Lado<select name="lado"><option value="ilhabela">Ilhabela</option><option value="sao-sebastiao">São Sebastião</option><option value="ambos">Os dois lados</option></select></label>
+      <label class="campo">Ordem <small>(menor aparece primeiro)</small><input type="number" name="ordem" value="0"></label>
+    </div>
+    <label class="campo">Descrição curta <small>(até 160 caracteres)</small><input name="descricao" maxlength="160"></label>
+    <label class="campo">Oferta / cupom <small>(opcional, ex.: 10% para quem mostrar o VAIDEBALSA)</small><input name="oferta" maxlength="120"></label>
+    <div class="linha2">
+      <label class="campo">WhatsApp <small>(com DDI e DDD, só números: 5512999999999)</small><input name="whatsapp" inputmode="numeric" maxlength="20"></label>
+      <label class="campo">Telefone<input name="telefone" maxlength="20"></label>
+    </div>
+    <label class="campo">Endereço<input name="endereco" maxlength="160"></label>
+    <div class="linha2">
+      <label class="campo">Link do Google Maps<input name="link_mapa" type="url" placeholder="https://maps.app.goo.gl/..."></label>
+      <label class="campo">Site<input name="site" type="url" placeholder="https://"></label>
+    </div>
+    <label class="campo">Foto <small>(é reduzida automaticamente)</small><input type="file" name="foto" accept="image/*"><img class="previa-foto" id="previa-parceiro" alt="Prévia da foto"></label>
+    <label class="check"><input type="checkbox" name="selo_inclusao"> Selo "Amigo da inclusão" 🧩</label>
+    <label class="check"><input type="checkbox" name="ativo" checked> Ativo (aparece no site)</label>
+    <p class="msg" id="msg-parceiro"></p>
+    <div class="rodape-form"><button type="button" class="btn sec" data-fechar>Cancelar</button><button type="submit" class="btn prim">Salvar</button></div>
+  </form>
+</dialog>
+
+<!-- formulário de aviso -->
+<dialog class="pn-form" id="dlg-aviso">
+  <form id="form-aviso" method="dialog">
+    <h3>Novo aviso</h3>
+    <label class="campo">Texto <small>(até 120 caracteres)</small><input name="texto" required maxlength="120"></label>
+    <div class="linha2">
+      <label class="campo">Emoji <small>(opcional)</small><input name="emoji" maxlength="8" placeholder="⚠️"></label>
+      <label class="campo">Mostrar até<input type="datetime-local" name="fim"></label>
+    </div>
+    <label class="campo">Link da fonte <small>(opcional, começando com https://)</small><input name="link" type="url"></label>
+    <p class="msg" id="msg-aviso"></p>
+    <div class="rodape-form"><button type="button" class="btn sec" data-fechar>Cancelar</button><button type="submit" class="btn prim">Publicar aviso</button></div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="js/config.js?v=10"></script>
+<script src="js/painel.js?v=1"></script>
+</body>
+</html>

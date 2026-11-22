@@ -171,20 +171,94 @@
     }
   }
 
-  // ---------- Parceiros ----------
+  // ---------- Parceiros (vindos do painel) e serviços úteis ----------
+  var CATS = { hospedagem: "Hospedagem", alimentacao: "Onde comer", passeios: "Passeios", comercio: "Comércio", servicos: "Serviços", utilidade: "Utilidade pública" };
+  var LADOS = { "sao-sebastiao": "São Sebastião", ilhabela: "Ilhabela", ambos: "Os dois lados" };
+  function fotoParceiro(p) {
+    if (p.foto_path) return cfg.supabaseUrl + "/storage/v1/object/public/parceiros/" + p.foto_path;
+    return p.foto_url || "";
+  }
+  function linkParceiro(p) {
+    if (p.whatsapp) return { tipo: "whatsapp", url: "https://wa.me/" + String(p.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent("Olá! Vi vocês no VAIDEBALSA e gostaria de informações."), rotulo: "Chamar no WhatsApp" };
+    if (p.site) return { tipo: "site", url: p.site, rotulo: "Visitar site" };
+    if (p.link_mapa) return { tipo: "mapa", url: p.link_mapa, rotulo: "Ver no mapa" };
+    if (p.telefone) return { tipo: "telefone", url: "tel:" + String(p.telefone).replace(/[^\d+]/g, ""), rotulo: "Ligar" };
+    return null;
+  }
+  function contarClique(id, tipo) {
+    if (!cfg.supabaseUrl || !id) return;
+    try {
+      fetch(cfg.supabaseUrl + "/rest/v1/rpc/registrar_clique", {
+        method: "POST", keepalive: true,
+        headers: { apikey: cfg.supabaseAnonKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ p_parceiro: id, p_tipo: tipo })
+      });
+    } catch (e) {}
+  }
+  document.addEventListener("click", function (ev) {
+    var a = ev.target.closest("a[data-parceiro]");
+    if (a) contarClique(a.dataset.parceiro, a.dataset.tipo);
+  });
+
+  function cardParceiro(p) {
+    var l = linkParceiro(p), foto = fotoParceiro(p);
+    var tag = l ? 'a href="' + esc(l.url) + '" target="_blank" rel="noopener sponsored" data-parceiro="' + esc(p.id) + '" data-tipo="' + l.tipo + '"' : "div";
+    return "<" + tag + ' class="parceiro' + (p.plano === "embaixador" ? " destaque" : "") + '">' +
+      '<div class="p-foto">' + (foto ? '<img loading="lazy" src="' + esc(foto) + '" alt="' + esc(p.nome) + '">' : "") +
+        '<span class="p-selo">' + (p.plano === "embaixador" ? "Parceiro embaixador" : "Parceiro") + "</span>" +
+        (p.selo_inclusao ? '<span class="p-inclusao" title="Parceiro Amigo da Inclusão">🧩 Amigo da inclusão</span>' : "") + "</div>" +
+      '<div class="p-info"><small>' + esc(CATS[p.categoria] || "") + " · " + esc(LADOS[p.lado] || "") + "</small><strong>" + esc(p.nome) + "</strong>" +
+        (p.descricao ? "<p>" + esc(p.descricao) + "</p>" : "") +
+        (p.oferta ? '<p class="p-oferta">🎁 ' + esc(p.oferta) + "</p>" : "") +
+        '<em class="p-apoia">💛 Apoia o Instituto Américo</em>' +
+        (l ? '<span class="p-botao">' + l.rotulo + " →</span>" : "") + "</div></" + tag.split(" ")[0] + ">";
+  }
+  function cardLivre() {
+    var link = cfg.contatoAnuncie ? "https://wa.me/" + cfg.contatoAnuncie + "?text=" + encodeURIComponent("Olá! Quero ser parceiro do VAIDEBALSA.") : "anuncie.html";
+    return '<a class="parceiro livre" href="' + esc(link) + '"><span class="pl-ic">＋</span><strong>Sua marca aqui</strong><span>Fale com quem está chegando em Ilhabela e apoie o Instituto Américo.</span><em>Quero ser parceiro →</em></a>';
+  }
+
   var parc = document.getElementById("parceiros");
-  if (parc && cfg.parceiros) {
-    parc.innerHTML = cfg.parceiros.slice(0, 3).map(function (p) {
-      if (!p) {
-        var link = cfg.contatoAnuncie ? "https://wa.me/" + cfg.contatoAnuncie + "?text=" + encodeURIComponent("Olá! Quero anunciar no VAIDEBALSA.") : "";
-        return '<div class="parceiro livre"><span class="pl-ic">＋</span><strong>Sua marca aqui</strong><span>Fale com quem está chegando em Ilhabela.</span>' +
-          (link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">Quero anunciar</a>' : '<em>Espaço reservado para parceiro</em>') + "</div>";
-      }
-      return '<a class="parceiro" href="' + esc(p.link) + '" target="_blank" rel="noopener sponsored">' +
-        '<div class="p-foto"><img loading="lazy" src="' + esc(p.imagem) + '" alt="' + esc(p.nome) + '"><span class="p-selo">Parceiro</span></div>' +
-        '<div class="p-info"><small>' + esc(p.categoria) + "</small><strong>" + esc(p.nome) + "</strong><p>" + esc(p.texto) + "</p>" +
-        '<span class="p-botao">' + esc(p.botao || "Saiba mais") + " →</span></div></a>";
-    }).join("");
+  var serv = document.getElementById("servicos");
+  if ((parc || serv) && cfg.supabaseUrl) {
+    fetch(cfg.supabaseUrl + "/rest/v1/parceiros?select=*&ativo=eq.true&order=ordem.asc,criado_em.asc", { headers: { apikey: cfg.supabaseAnonKey } })
+      .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      .then(function (lista) {
+        if (!Array.isArray(lista)) {
+          // banco ainda sem a tabela de parceiros: usa os parceiros do config.js
+          lista = (cfg.parceiros || []).filter(Boolean).map(function (c) {
+            var w = /wa\.me\/(\d+)/.exec(c.link || "");
+            return { id: null, nome: c.nome, categoria: "hospedagem", lado: "ilhabela", plano: "embaixador", ordem: 0,
+                     descricao: c.texto, foto_url: c.imagem, whatsapp: w ? w[1] : "", site: w ? "" : c.link };
+          });
+        }
+        if (parc) {
+          var pagos = lista.filter(function (p) { return p.plano !== "utilidade"; })
+            .sort(function (a, b) { return (b.plano === "embaixador") - (a.plano === "embaixador") || a.ordem - b.ordem; }).slice(0, 3);
+          var html = pagos.map(cardParceiro);
+          while (html.length < 3) html.push(cardLivre());
+          parc.innerHTML = html.join("");
+        }
+        if (serv) {
+          var uteis = lista.filter(function (p) { return p.plano === "utilidade"; });
+          if (!uteis.length) return;
+          var grupos = { "sao-sebastiao": [], ilhabela: [] };
+          uteis.forEach(function (p) {
+            if (p.lado === "ambos") { grupos["sao-sebastiao"].push(p); grupos.ilhabela.push(p); } else (grupos[p.lado] || []).push(p);
+          });
+          serv.querySelector(".servicos-lista").innerHTML = ["sao-sebastiao", "ilhabela"].filter(function (l) { return grupos[l].length; }).map(function (l) {
+            return '<div class="serv-lado"><h3>' + LADOS[l] + "</h3><ul>" + grupos[l].map(function (p) {
+              var acoes = [];
+              if (p.telefone) acoes.push('<a href="tel:' + esc(String(p.telefone).replace(/[^\d+]/g, "")) + '" data-parceiro="' + esc(p.id) + '" data-tipo="telefone">📞 Ligar</a>');
+              if (p.whatsapp) acoes.push('<a href="https://wa.me/' + esc(String(p.whatsapp).replace(/\D/g, "")) + '" target="_blank" rel="noopener" data-parceiro="' + esc(p.id) + '" data-tipo="whatsapp">💬 WhatsApp</a>');
+              if (p.link_mapa) acoes.push('<a href="' + esc(p.link_mapa) + '" target="_blank" rel="noopener" data-parceiro="' + esc(p.id) + '" data-tipo="mapa">📍 Mapa</a>');
+              return "<li><div><strong>" + esc(p.nome) + "</strong>" + (p.descricao ? "<span>" + esc(p.descricao) + "</span>" : "") +
+                (p.endereco ? "<small>" + esc(p.endereco) + "</small>" : "") + '</div><div class="serv-acoes">' + acoes.join("") + "</div></li>";
+            }).join("") + "</ul></div>";
+          }).join("");
+          serv.hidden = false;
+        }
+      });
   }
 
   // ---------- Previsão de 7 dias ----------
