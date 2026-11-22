@@ -138,10 +138,9 @@
     rpc("concluir_espera", { p_id: s.id, p_aparelho: aparelho(), p_lat: p.lat, p_lon: p.lon })
       .then(function (minutos) {
         parar();
-        var res = document.getElementById("medido");
-        res.querySelector(".mr-min").textContent = minutos;
-        res.querySelector(".mr-lado").textContent = LADOS[s.lado];
-        res.showModal();
+        var ultima = { id: s.id, lado: s.lado, minutos: minutos, fim: Date.now() };
+        ls("vdb-ultima-espera", JSON.stringify(ultima));
+        mostrarResultado(ultima);
       })
       .catch(function (e) {
         if (manual || String(e.message).indexOf("espera_invalida") > -1) toast(erro(e));
@@ -173,6 +172,59 @@
     if (navigator.share) navigator.share({ text: texto, url: url }).catch(function () {});
     else window.open("https://wa.me/?text=" + encodeURIComponent(texto + " " + url), "_blank", "noopener");
   });
+
+  // ---------- "Chegou na ilha" + "sua espera vale desconto" ----------
+  function outroLado(l) { return l === "ilhabela" ? "sao-sebastiao" : "ilhabela"; }
+  function cuponsSalvos() { try { return JSON.parse(ls("vdb-cupons") || "[]").filter(function (c) { return Date.now() - c.quando < 864e5; }); } catch (e) { return []; } }
+  function salvarCupom(c) { var l = cuponsSalvos().filter(function (x) { return x.codigo !== c.codigo; }); l.unshift(c); ls("vdb-cupons", JSON.stringify(l.slice(0, 10))); botaoCupons(); }
+  function escH(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+  function mostrarResultado(u) {
+    var res = document.getElementById("medido"), destino = outroLado(u.lado);
+    res.querySelector(".mr-min").textContent = u.minutos;
+    res.querySelector(".mr-lado").textContent = LADOS[u.lado];
+    var bloco = res.querySelector(".mr-chegada");
+    bloco.hidden = true;
+    res.showModal();
+    fetch(cfg.supabaseUrl + "/rest/v1/parceiros?select=id,nome,oferta,categoria,plano&ativo=eq.true&plano=in.(apoiador,embaixador)&oferta=not.is.null&lado=in.(" + destino + ",ambos)&order=ordem.asc", { headers: { apikey: cfg.supabaseAnonKey } })
+      .then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; })
+      .then(function (lista) {
+        lista = (lista || []).filter(function (p) { return p.oferta; }).sort(function (a, b) { return (b.plano === "embaixador") - (a.plano === "embaixador"); });
+        if (!lista.length) return;
+        bloco.querySelector(".mr-tit-chegada").textContent = destino === "ilhabela" ? "🏝️ Chegou na ilha! Sua espera vale desconto:" : "🏙️ Chegando em São Sebastião! Sua espera vale desconto:";
+        bloco.querySelector(".mr-ofertas").innerHTML = lista.slice(0, 5).map(function (p) {
+          return '<li><div><strong>' + escH(p.nome) + "</strong><span>🎁 " + escH(p.oferta) + '</span></div><button type="button" class="btn-cupom" data-cupom="' + escH(p.id) + '" data-nome="' + escH(p.nome) + '" data-oferta="' + escH(p.oferta) + '">Pegar cupom</button></li>';
+        }).join("");
+        bloco.hidden = false;
+      });
+  }
+  medido.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cupom]"); if (!b) return;
+    var u; try { u = JSON.parse(ls("vdb-ultima-espera") || "null"); } catch (x) { u = null; }
+    if (!u) return;
+    b.disabled = true; b.textContent = "Gerando…";
+    rpc("gerar_cupom", { p_espera: u.id, p_parceiro: b.dataset.cupom }).then(function (codigo) {
+      salvarCupom({ codigo: codigo, nome: b.dataset.nome, oferta: b.dataset.oferta, quando: Date.now() });
+      b.outerHTML = '<span class="cupom-codigo">' + escH(codigo) + "<small>Mostre no estabelecimento · vale por 24 h</small></span>";
+    }).catch(function (err) {
+      b.disabled = false; b.textContent = "Pegar cupom";
+      toast(String(err.message).indexOf("espera_invalida") > -1 ? "O cupom vale até 6 horas depois da travessia." : "Não deu para gerar o cupom agora.");
+    });
+  });
+
+  // "Meus cupons" (guardados só neste celular)
+  var btnCupons = document.getElementById("meus-cupons"), dlgCupons = document.getElementById("dlg-cupons");
+  function botaoCupons() { if (btnCupons) btnCupons.hidden = !cuponsSalvos().length; }
+  if (btnCupons && dlgCupons) {
+    btnCupons.addEventListener("click", function () {
+      dlgCupons.querySelector(".lista-cupons").innerHTML = cuponsSalvos().map(function (c) {
+        return '<li><strong>' + escH(c.nome) + "</strong><span>🎁 " + escH(c.oferta) + '</span><span class="cupom-codigo">' + escH(c.codigo) + "</span></li>";
+      }).join("");
+      dlgCupons.showModal();
+    });
+    dlgCupons.querySelectorAll("[data-fechar]").forEach(function (b) { b.addEventListener("click", function () { dlgCupons.close(); }); });
+    botaoCupons();
+  }
 
   // retoma uma medição em andamento (ex.: página recarregada)
   if (estado()) { mostrarPill(); seguir(); }

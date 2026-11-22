@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Validar cupom | VAIDEBALSA</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
+<link rel="stylesheet" href="css/style.css?v=24">
+<style>
+  .val{max-width:440px;margin:40px auto;background:#fff;border-radius:22px;box-shadow:var(--sombra);padding:24px}
+  .val h1{font:900 italic 1.5rem var(--titulo);color:var(--oceano);margin-bottom:6px}
+  .val p{color:var(--suave);margin:0 0 14px}
+  .val input{width:100%;font:900 1.5rem ui-monospace,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:12px;border:2px solid var(--borda);border-radius:14px}
+  .val button{width:100%;margin-top:10px;border:0;cursor:pointer;background:var(--sol);color:var(--oceano);font:800 1rem var(--titulo);border-radius:999px;padding:13px}
+  .res{margin-top:16px;border-radius:16px;padding:14px;font-weight:600}
+  .res.ok{background:#DCFCE7;color:#166534}.res.erro{background:#FEE2E2;color:#991B1B}.res.alerta{background:#FEF3C7;color:#92400E}
+  .res strong{display:block;font:900 1.2rem var(--titulo);margin-bottom:4px}
+  .pn-topo{background:var(--oceano)}
+  .pn-topo .wrap{min-height:60px;display:flex;align-items:center}
+</style>
+</head>
+<body>
+<div class="pn-topo"><div class="wrap"><a class="marca" href="./"><svg viewBox="0 0 120 84" aria-hidden="true"><use href="img/icones.svg#logo"/></svg><span class="marca-txt"><b>VAIDE</b><i>BALSA</i></span></a></div></div>
+<main class="wrap">
+  <section class="val">
+    <h1>Validar cupom</h1>
+    <p>Para parceiros: digite o código que o cliente mostrou. Cada cupom vale <b>uma vez</b>, por até 24 horas.</p>
+    <form id="f">
+      <input name="c" required maxlength="12" placeholder="VB-XXXXXX" autocomplete="off" aria-label="Código do cupom">
+      <button type="submit">Validar</button>
+    </form>
+    <div id="res" class="res" hidden aria-live="polite"></div>
+  </section>
+</main>
+<script src="js/config.js?v=10"></script>
+<script>
+(function () {
+  var cfg = window.VAIDEBALSA || {}, res = document.getElementById("res");
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function quando(d) { return d ? new Date(d).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : ""; }
+  var q = new URLSearchParams(location.search).get("c"); if (q) document.querySelector("input").value = q;
+  document.getElementById("f").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var codigo = e.target.c.value.trim().toUpperCase();
+    if (codigo && codigo.indexOf("VB-") !== 0) codigo = "VB-" + codigo;
+    var b = e.target.querySelector("button"); b.disabled = true; b.textContent = "Validando…";
+    fetch(cfg.supabaseUrl + "/rest/v1/rpc/usar_cupom", { method: "POST", headers: { apikey: cfg.supabaseAnonKey, "Content-Type": "application/json" }, body: JSON.stringify({ p_codigo: codigo }) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var x = Array.isArray(d) ? d[0] : null;
+        if (!x) throw 0;
+        var M = {
+          ok: ["ok", "✅ Cupom válido!", esc(x.parceiro) + " · " + esc(x.oferta) + "<br>Cliente esperou " + x.minutos + " min na fila. Cupom marcado como usado agora."],
+          ja_usado: ["alerta", "⚠️ Cupom já usado", "Usado em " + quando(x.usado_em) + " · " + esc(x.parceiro)],
+          vencido: ["alerta", "⌛ Cupom vencido", "Gerado em " + quando(x.gerado_em) + ". Vale só por 24 horas."],
+          invalido: ["erro", "❌ Código não encontrado", "Confira se digitou certo (ex.: VB-K7P2QX)."]
+        }[x.status];
+        res.className = "res " + M[0]; res.innerHTML = "<strong>" + M[1] + "</strong>" + M[2]; res.hidden = false;
+      })
+      .catch(function () { res.className = "res erro"; res.innerHTML = "<strong>Não deu para validar agora</strong>Tente de novo em instantes."; res.hidden = false; })
+      .then(function () { b.disabled = false; b.textContent = "Validar"; });
+  });
+})();
+</script>
+</body>
+</html>

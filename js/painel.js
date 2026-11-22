@@ -203,10 +203,14 @@
 
   // ---------- relatório de cliques ----------
   function carregarRelatorio() {
-    db.rpc("relatorio_cliques", { p_dias: parseInt($("#rel-dias").value, 10) }).then(function (r) {
+    var dias = parseInt($("#rel-dias").value, 10);
+    Promise.all([db.rpc("relatorio_cliques", { p_dias: dias }), db.rpc("relatorio_cupons", { p_dias: dias })]).then(function (rs) {
+      var r = rs[0], cup = {};
       if (r.error) { $("#relatorio").innerHTML = '<div class="vazio-pn">Erro: ' + esc(r.error.message) + "</div>"; return; }
-      $("#relatorio").innerHTML = r.data.length ? '<div style="overflow-x:auto"><table class="rel"><thead><tr><th>Parceiro</th><th>WhatsApp</th><th>Telefone</th><th>Mapa</th><th>Site</th><th>Total</th></tr></thead><tbody>' +
-        r.data.map(function (l) { return "<tr><td>" + esc(l.nome) + ' <span class="chip ' + esc(l.plano) + '">' + esc(PLANOS[l.plano]) + "</span></td><td>" + l.whatsapp + "</td><td>" + l.telefone + "</td><td>" + l.mapa + "</td><td>" + l.site + "</td><td>" + l.total + "</td></tr>"; }).join("") +
+      (rs[1].data || []).forEach(function (c) { cup[c.parceiro_id] = c; });   // sem o SQL 009, só não mostra cupons
+      $("#relatorio").innerHTML = r.data.length ? '<div style="overflow-x:auto"><table class="rel"><thead><tr><th>Parceiro</th><th>WhatsApp</th><th>Telefone</th><th>Mapa</th><th>Site</th><th>Total cliques</th><th>Cupons gerados</th><th>Cupons usados</th></tr></thead><tbody>' +
+        r.data.map(function (l) { var c = cup[l.parceiro_id] || { gerados: 0, usados: 0 };
+          return "<tr><td>" + esc(l.nome) + ' <span class="chip ' + esc(l.plano) + '">' + esc(PLANOS[l.plano]) + "</span></td><td>" + l.whatsapp + "</td><td>" + l.telefone + "</td><td>" + l.mapa + "</td><td>" + l.site + "</td><td>" + l.total + "</td><td>" + c.gerados + "</td><td>" + c.usados + "</td></tr>"; }).join("") +
         "</tbody></table></div>" : '<div class="vazio-pn">Nenhum parceiro cadastrado.</div>';
     });
   }

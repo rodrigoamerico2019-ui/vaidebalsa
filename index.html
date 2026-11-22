@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
 <link rel="preload" as="image" href="img/embaixador.webp">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=23">
+<link rel="stylesheet" href="css/style.css?v=24">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -125,6 +125,7 @@
         <div class="fila-botoes">
           <button class="btn-postar" type="button" data-abrir-postar><svg aria-hidden="true"><use href="img/icones.svg#i-camera"/></svg>Postar foto da fila</button>
           <button class="btn-medir" type="button" data-medir><svg aria-hidden="true"><use href="img/icones.svg#i-relogio"/></svg>Medir minha espera</button>
+          <button class="btn-medir" type="button" id="meus-cupons" hidden>🎁 Meus cupons</button>
         </div>
       </div>
 
@@ -216,6 +217,7 @@
         <li>📍 Usa o GPS <strong>só enquanto este site estiver aberto</strong>.</li>
         <li>🔒 Guardamos apenas o lado e a hora de entrada e de embarque. <strong>Seu trajeto não é guardado</strong>, e a medição fica anônima.</li>
         <li>📱 Deixe o site aberto na tela. Se fechar, você pode reabrir e a medição continua.</li>
+        <li>🎁 Ao terminar, você pode ganhar <b>cupons de desconto</b> dos nossos parceiros do outro lado: sua espera vale desconto!</li>
         <li>📵 Motorista: comece a medir com o carro parado e não mexa no celular dirigindo.</li>
       </ul>
       <button type="button" class="btn-agendar enviar" data-comecar>Começar a medir</button>
@@ -228,6 +230,10 @@
       <img class="mr-mascote" src="img/mascote.webp" alt="Mascote do VAIDEBALSA comemorando" width="120" height="131">
       <h3 id="tit-medido">Você esperou <span class="mr-min">0</span> min</h3>
       <p>na fila de <strong class="mr-lado"></strong>. Sua medição já está ajudando o semáforo. Obrigado! 🙌</p>
+      <div class="mr-chegada" hidden>
+        <h4 class="mr-tit-chegada"></h4>
+        <ul class="mr-ofertas"></ul>
+      </div>
       <button type="button" class="btn-agendar enviar" data-compartilhar>Compartilhar no WhatsApp</button>
     </div>
   </dialog>
@@ -237,6 +243,13 @@
     <button type="button" data-embarquei>Já embarquei</button>
     <button type="button" data-cancelar aria-label="Cancelar medição">✕</button>
   </div>
+  <dialog id="dlg-cupons" class="folha" aria-labelledby="tit-cupons">
+    <div class="folha-corpo">
+      <div class="folha-cab"><h3 id="tit-cupons">🎁 Meus cupons</h3><button type="button" class="fechar" data-fechar aria-label="Fechar">✕</button></div>
+      <p>Mostre o código no estabelecimento. Cada cupom vale por 24 horas e pode ser usado uma vez.</p>
+      <ul class="lista-cupons"></ul>
+    </div>
+  </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <div class="wrap"><div class="anuncio" data-anuncio="meio" hidden></div></div>
@@ -419,6 +432,7 @@
           <li><a href="balsa-ilhabela-feriados.html">Feriados 2026–2027</a></li>
           <li><a href="como-agendar-balsa-ilhabela.html">Como agendar</a></li>
           <li><a href="social.html">VAIDEBALSA Social</a></li>
+          <li><a href="amigo-da-inclusao.html">Selo Amigo da Inclusão</a></li>
           <li><a href="anuncie.html">Anuncie</a></li>
           <li><a href="politica-de-privacidade.html">Privacidade</a></li>
         </ul>
@@ -452,7 +466,7 @@
 <script src="js/portal.js?v=9"></script>
 <script src="js/consentimento.js?v=1"></script>
 <script src="js/mural.js?v=4"></script>
-<script src="js/modo-fila.js?v=1"></script>
+<script src="js/modo-fila.js?v=2"></script>
 <script src="js/grafico.js?v=5"></script>
 </body>
 </html>
