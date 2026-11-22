@@ -41,7 +41,7 @@ window.VAIDEBALSA = {
   // Medição de audiência (Google Analytics 4): ex. "G-XXXXXXXXXX". Vazio = desligado.
   analytics: { ga4: "G-WJ56XKYKMT" },
   // Google AdSense: client "ca-pub-XXXXXXXXXXXXXXXX" e o ID de cada bloco. Vazio = desligado.
-  anuncios: { client: "", slots: { meio: "", conteudo: "" } },
+  anuncios: { client: "ca-pub-1329569080847479", slots: { meio: "", conteudo: "" } },
 
   // Contato para quem quer anunciar (WhatsApp com DDI, ex.: "5512999999999"). Vazio = sem botão.
   contatoAnuncie: "",
