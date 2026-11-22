@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150">
+  <title>Fita do autismo (quebra-cabeça)</title>
+  <defs>
+    <pattern id="pecas" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
+      <rect width="10" height="10" fill="#1f5fbf"/>
+      <rect x="10" width="10" height="10" fill="#d62828"/>
+      <rect y="10" width="10" height="10" fill="#ffc107"/>
+      <rect x="10" y="10" width="10" height="10" fill="#4fb3ea"/>
+      <circle cx="10" cy="5" r="2.6" fill="#1f5fbf"/>
+      <circle cx="5" cy="10" r="2.6" fill="#ffc107"/>
+      <circle cx="15" cy="10" r="2.6" fill="#d62828"/>
+      <circle cx="10" cy="15" r="2.6" fill="#4fb3ea"/>
+    </pattern>
+  </defs>
+  <!-- perna de baixo (atrás) -->
+  <path d="M72 146 C62 116 44 86 36 58" fill="none" stroke="#0A2C52" stroke-width="22" stroke-linecap="butt"/>
+  <path d="M72 146 C62 116 44 86 36 58" fill="none" stroke="url(#pecas)" stroke-width="17" stroke-linecap="butt"/>
+  <!-- laço e perna da frente -->
+  <path d="M36 58 C30 30 38 10 50 10 C62 10 70 30 64 58 C56 88 40 116 28 146" fill="none" stroke="#0A2C52" stroke-width="22" stroke-linecap="butt" stroke-linejoin="round"/>
+  <path d="M36 58 C30 30 38 10 50 10 C62 10 70 30 64 58 C56 88 40 116 28 146" fill="none" stroke="url(#pecas)" stroke-width="17" stroke-linecap="butt" stroke-linejoin="round"/>
+</svg>

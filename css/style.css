@@ -654,3 +654,20 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
 @keyframes ab-balanca{0%,100%{transform:rotate(0)}50%{transform:rotate(-14deg)}}
 @keyframes ab-texto{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.abertura{display:none}}
+
+
+/* ===== Fita do autismo (quebra-cabeça), canto direito ===== */
+.fita-autismo{position:fixed;right:14px;top:118px;z-index:45;display:flex;align-items:center;flex-direction:row-reverse;gap:8px;text-decoration:none}
+.fita-autismo img{width:44px;height:auto;filter:drop-shadow(0 6px 12px rgba(10,44,82,.35));transition:transform .25s;transform-origin:50% 10%}
+.fita-autismo:hover img,.fita-autismo:focus-visible img{transform:rotate(-8deg) scale(1.08)}
+.fita-autismo span{background:#fff;color:var(--oceano);font:800 .8rem var(--titulo);padding:8px 12px;border-radius:999px;box-shadow:0 8px 22px rgba(10,44,82,.25);white-space:nowrap;opacity:0;transform:translateX(8px);pointer-events:none;transition:.25s}
+.fita-autismo:hover span,.fita-autismo:focus-visible span{opacity:1;transform:none}
+@media (max-width:760px){
+  .fita-autismo{right:8px;top:104px}
+  .fita-autismo img{width:30px}
+}
+/* fita: só a fita é clicável; o rótulo flutua sem ocupar espaço */
+.fita-autismo{display:block}
+.fita-autismo img{display:block;width:54px}
+.fita-autismo span{position:absolute;right:calc(100% + 8px);top:14px}
+@media (max-width:760px){.fita-autismo img{width:36px}.fita-autismo span{display:none}}
