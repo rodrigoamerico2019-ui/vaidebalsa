@@ -1,5 +1,2 @@
-# Arquivos internos: ficam só no computador (o Render publica tudo que está no repositório)
-docs/
-supabase/
-CAMERAS.md
-README.md
+# Arquivos internos ficam só no computador, em _interno/ (o Render publica tudo que está no repositório)
+_interno/
