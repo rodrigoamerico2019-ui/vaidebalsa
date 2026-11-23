@@ -161,7 +161,7 @@
     S.flags.chuvaNova = !c.chuva && Math.random() < 0.3 ? rnd(0.25, 0.7) : null;
     aviso("Bora! Destino: " + nomeLado(destino()) + ". Acelere com calma.", "bom");
   }
-  function slotT(j) { return 0.86 - j * 0.16; }
+  function slotT(j) { return 0.88 - j * 0.18; }
   function atracou(qualidade) {
     S.qual = qualidade; S.fase = "desembarque"; S.tDes = 0;
     S.v = 0; S.acel = 0; S.leme = 0; $("c-acel").value = 0; $("c-leme").value = 0;
@@ -699,7 +699,8 @@
   function carregarImg(nome, src) { var i = new Image(); i.onload = function () { IMG[nome] = i; }; i.src = src; }
   carregarImg("cabine", "img/jogo-cabine.webp?v=1");
   carregarImg("horizonte", "img/jogo-horizonte.webp?v=1");
-  carregarImg("balsa", "img/jogo-balsa.webp?v=1");
+  carregarImg("cena", "img/jogo-cena.webp?v=1");
+  carregarImg("topo", "img/jogo-balsa-topo.webp?v=1");
   function erroRumo() { return ang(Math.atan2(0 - S.w, uDestino() - S.u) - S.th); }
   // faixa de foto do horizonte (montanhas e cidade); base = linha d'água
   function horizonte(xc, base, larg, tipoFallback) {
@@ -744,12 +745,13 @@
   // ---------- visão 1: de fora (câmera atrás da balsa, como nas fotos) ----------
   function desenharFora() {
     var hz = H * 0.34, p = progresso(), erro = erroRumo();
+    if (IMG.cena) { ceu(hz); cenaFoto(); efeitosTempo(false); return; }   // a foto da balsa VAIDEBALSA
     cx.save();
     ceu(hz);
     var xh = W / 2 + erro * W * 0.55, larg = Math.max(W, H) * 1.7 * (1 + 1.1 * p * p);
     horizonte(xh, hz, larg, destino());
     marPerspectiva(hz, H, 1);
-    if (!IMG.balsa) pierHorizonte(xh, hz, p);
+    if (!IMG.cena) pierHorizonte(xh, hz, p);
     var n = S.navio;
     if (n && n.ativo) {
       var nm = ang(Math.atan2(n.w - S.w, n.u - S.u) - S.th), d = Math.hypot(n.w - S.w, n.u - S.u);
@@ -767,7 +769,7 @@
       cx.fillStyle = "#8a8378"; cx.fillRect(0, H * 0.93, W, H * 0.07);
       cx.fillStyle = "#FFC107"; cx.fillRect(0, H * 0.93, W, 4);
     }
-    if (IMG.balsa) balsaFoto(); else balsaTraseira();
+    balsaTraseira();
     cx.restore();
     efeitosTempo(false);
   }
@@ -926,7 +928,7 @@
 
   // ---------- balsa da foto (recorte real) com os carros do jogo no convés ----------
   // convés no recorte (510x508): popa-esq, popa-dir, proa-dir, proa-esq
-  var DECK = { SL: [119, 408], SR: [387, 408], BR: [220, 148], BL: [73, 152] }, ANCORA = [281, 500];
+  var DECK = { SL: [597, 693], SR: [1070, 693], BR: [863, 360], BL: [727, 360] }, HZ_FOTO = 192, CAM = { x0: 0, y0: 0, s: 1 };
   function PD(t, f) {   // t: 0 popa → 1 proa (pode passar de 0..1); f: -1 esquerda → +1 direita
     var lx = DECK.SL[0] + (DECK.BL[0] - DECK.SL[0]) * t, ly = DECK.SL[1] + (DECK.BL[1] - DECK.SL[1]) * t;
     var rx = DECK.SR[0] + (DECK.BR[0] - DECK.SR[0]) * t, ry = DECK.SR[1] + (DECK.BR[1] - DECK.SR[1]) * t;
@@ -941,59 +943,85 @@
     var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
     return "rgb(" + Math.round(r + (255 - r) * q) + "," + Math.round(g + (255 - g) * q) + "," + Math.round(b + (255 - b) * q) + ")";
   }
-  function balsaFoto() {
-    var im = IMG.balsa;
-    var noCais = S.fase === "embarque", chegou = S.fase === "desembarque" || S.fase === "fim";
-    var k = Math.min(W * 0.84 / 510, H * 0.62 / 508);
-    var roll = rolagem() * (noCais || chegou ? 0.25 : 1), bob = ondaY(W / 2, 0) * (noCais || chegou ? 0.1 : 0.3);
-    // chegada: a costa do destino se aproxima; o cais é curto e o terminal fica em terra
+  function cenaFoto() {
+    var im = IMG.cena, noCais = S.fase === "embarque", chegou = S.fase === "desembarque" || S.fase === "fim";
+    var s = Math.max(W / 700, H * 0.7 / 941), x0 = W / 2 - 843 * s, y0 = H - 941 * s;   // a balsa inteira cabe na largura
+    CAM = { x0: x0, y0: y0, s: s };
     var tPier = chegou ? 1 : (S.fase === "viagem" && restante() < 160 ? 1 + 0.75 * (1 - Math.exp(-restante() / 45)) : null);
-    var tTerra = tPier !== null ? tPier + 0.02 : null;   // a margem encosta direto na proa (atracação em terra)
-    S.tFimPier = tTerra !== null ? tTerra + 0.55 : 1.6;
-    if (tTerra !== null) costa(tTerra, k);
-    // esteira de espuma (tela)
-    if (!noCais && !chegou && Math.abs(S.v) > 0.8) {
-      cx.fillStyle = "rgba(255,255,255,.6)";
-      var base = H * 0.9 + 6;
-      for (var e = 0; e < 34; e++) {
-        var ex = W / 2 + ((e * 53) % 100 / 100 - 0.5) * 300 * k * (0.8 + (e % 5) * 0.15), ey = base + (e % 9) * 9 * k + Math.sin(S.t * 4 + e) * 3;
-        cx.beginPath(); cx.ellipse(ex, ey, (6 + (e % 4) * 5) * k * 1.6, (3 + (e % 3) * 2) * k * 1.6, 0, 0, 7); cx.fill();
+    var tTerra = tPier !== null ? tPier + 0.02 : null;
+    S.tFimPier = tTerra !== null ? tTerra + 0.42 : 1.45;
+    var mostraCosta = tTerra !== null && DECK.SL[1] + (DECK.BL[1] - DECK.SL[1]) * tTerra > HZ_FOTO + 4;
+    // balanço suave da câmera (drone)
+    var c = S.clima || { s: 0.2 }, calmo = noCais || chegou;
+    cx.save();
+    cx.translate(W / 2, H / 2);
+    cx.rotate(Math.sin(S.t * 0.8) * 0.006 * (calmo ? 0.3 : 1 + c.s));
+    cx.translate(-W / 2, -H / 2 + Math.sin(S.t * 1.2) * (calmo ? 0.5 : 2 + c.s * 4));
+    cx.drawImage(im, x0, y0, 1672 * s, 941 * s);
+    if (y0 > 0) {   // emenda suave com o céu se a tela for mais alta que a foto
+      var cc = corCeu(), g = cx.createLinearGradient(0, y0, 0, y0 + 50 * s);
+      g.addColorStop(0, cc[1]); g.addColorStop(1, "rgba(255,255,255,0)");
+      cx.fillStyle = g; cx.fillRect(0, y0, W, 50 * s);
+    }
+    // navio e golfinhos no mar da foto
+    var hzT = y0 + HZ_FOTO * s, n = S.navio;
+    if (n && n.ativo && !mostraCosta) {
+      var nm = ang(Math.atan2(n.w - S.w, n.u - S.u) - S.th), d = Math.hypot(n.w - S.w, n.u - S.u);
+      if (Math.abs(nm) < 1.3) navioLado(W / 2 + nm * W * 0.6, hzT + 6 + clamp(160 / d, 0, 1) * 26, clamp(80 / d, 0.15, 1.1) * s * 1.4);
+    }
+    var gf = S.golf;
+    if (gf && gf.ativo) {
+      for (var i = 0; i < 3; i++) {
+        var fs = (S.t * 1.5 + i * 0.6) % 2;
+        if (fs < 1) { cx.fillStyle = "#3d5f7c"; cx.beginPath(); cx.ellipse(x0 + (330 + i * 50) * s, y0 + 560 * s - Math.sin(fs * Math.PI) * 50 * s, 22 * s, 8 * s, -0.6 + fs * 1.2, 0, 7); cx.fill(); }
       }
     }
-    cx.save();
-    cx.translate(W / 2, H * 0.9 + bob); cx.rotate(roll * 0.8); cx.scale(k, k); cx.translate(-ANCORA[0], -ANCORA[1]);
-    // carros com posição animada
+    // espuma viva na esteira
+    if (!calmo && Math.abs(S.v) > 0.8) {
+      cx.fillStyle = "rgba(255,255,255,.35)";
+      for (var e = 0; e < 18; e++) {
+        var ex = x0 + (520 + ((e * 137) % 650)) * s, ey = y0 + (860 + (e % 5) * 16) * s + Math.sin(S.t * 5 + e) * 4 * s;
+        cx.beginPath(); cx.ellipse(ex, ey, (14 + (e % 4) * 8) * s, (5 + (e % 3) * 3) * s, 0, 0, 7); cx.fill();
+      }
+    }
+    if (mostraCosta) costa(tTerra);
+    cx.save(); cx.translate(x0, y0); cx.scale(s, s);
     var carros = [];
     ["e", "d"].forEach(function (lado, li) {
       S.deck[lado].forEach(function (v, j) { carros.push({ v: v, t: v.t != null ? v.t : slotT(j), f0: li === 0 ? -0.5 : 0.5 }); });
     });
     carros.sort(function (x, y) { return y.t - x.t; });
-    if (tPier !== null) pierFoto(tPier, chegou, tTerra);
-    carros.filter(function (c) { return c.t >= 0.9; }).forEach(carroFoto);   // na proa/píer (a ponte encobre)
-    cx.drawImage(im, 0, 0);
-    carros.filter(function (c) { return c.t >= 0 && c.t < 0.9; }).forEach(carroFoto);
-    if (noCais) {   // rampa da popa baixada no cais
-      cx.fillStyle = "#4b5058";
-      cx.beginPath(); cx.moveTo(122, 470); cx.lineTo(408, 470); cx.lineTo(440, 560); cx.lineTo(95, 560); cx.closePath(); cx.fill();
-      for (var z = 0; z < 16; z++) { cx.fillStyle = z % 2 ? "#111" : "#FFC107"; cx.fillRect(95 + z * 345 / 16, 552, 345 / 16, 9); }
+    if (mostraCosta) {
+      pierFoto(tPier, chegou, tTerra);
+      carros.filter(function (q) { return q.t >= 0.97; }).forEach(carroFoto);
+      if (IMG.topo) cx.drawImage(IMG.topo, 540, 170);   // ponte, mastros e torres na frente da costa
     }
-    carros.filter(function (c) { return c.t < 0; }).forEach(carroFoto);
-    if (S.clima && S.clima.noite) {
-      cx.fillStyle = "#ff5252"; cx.beginPath(); cx.arc(70, 150, 5, 0, 7); cx.fill();
-      cx.fillStyle = "#69f0ae"; cx.beginPath(); cx.arc(228, 145, 5, 0, 7); cx.fill();
-      cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(164, 12, 5, 0, 7); cx.fill();
+    carros.filter(function (q) { return q.t >= 0 && (q.t < 0.97 || !mostraCosta); }).forEach(carroFoto);
+    if (noCais) {   // rampa da popa baixada sobre o cais
+      cx.fillStyle = "#8a8378"; cx.fillRect(-400, 880, 2600, 200);
+      cx.fillStyle = "#FFC107"; cx.fillRect(-400, 880, 2600, 6);
+      cx.fillStyle = "#4b5058";
+      cx.beginPath(); cx.moveTo(590, 695); cx.lineTo(1078, 695); cx.lineTo(1120, 900); cx.lineTo(548, 900); cx.closePath(); cx.fill();
+      for (var z = 0; z < 18; z++) { cx.fillStyle = z % 2 ? "#111" : "#FFC107"; cx.fillRect(548 + z * 572 / 18, 888, 572 / 18, 12); }
+      cx.strokeStyle = "rgba(255,255,255,.2)"; cx.lineWidth = 2;
+      for (var gg = 1; gg < 8; gg++) { var yy = 695 + gg * 25; cx.beginPath(); cx.moveTo(590 - gg * 5, yy); cx.lineTo(1078 + gg * 5, yy); cx.stroke(); }
+    }
+    carros.filter(function (q) { return q.t < 0; }).forEach(carroFoto);
+    if (c.noite) {
+      cx.fillStyle = "#ff5252"; cx.beginPath(); cx.arc(546, 372, 7, 0, 7); cx.fill();
+      cx.fillStyle = "#69f0ae"; cx.beginPath(); cx.arc(1097, 372, 7, 0, 7); cx.fill();
+      cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(898, 185, 6, 0, 7); cx.fill(); cx.beginPath(); cx.arc(1064, 182, 6, 0, 7); cx.fill();
     }
     cx.restore();
-    // tom de noite/chuva por cima de tudo
-    var c = S.clima || {};
-    if (c.noite) { cx.fillStyle = "rgba(6,20,43,.38)"; cx.fillRect(0, 0, W, H); }
-    else if (c.chuva) { cx.fillStyle = "rgba(90,100,112,.18)"; cx.fillRect(0, 0, W, H); }
+    cx.restore();
+    if (c.noite) { cx.fillStyle = "rgba(6,20,43,.5)"; cx.fillRect(0, 0, W, H); }
+    else if (c.chuva) { cx.fillStyle = "rgba(90,100,112,.25)"; cx.fillRect(0, 0, W, H); }
   }
   function quadTF(t1, t2, f1, f2) {
     var a = PD(t1, f1), b = PD(t1, f2), c = PD(t2, f2), d = PD(t2, f1);
     cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(b[0], b[1]); cx.lineTo(c[0], c[1]); cx.lineTo(d[0], d[1]); cx.closePath();
   }
-  var DIM = { moto: [0.08, 0.2], carro: [0.145, 0.6], SUV: [0.15, 0.64], van: [0.155, 0.64], "caminhão": [0.24, 0.72] };
+  var DIM = { moto: [0.09, 0.2], carro: [0.16, 0.6], SUV: [0.165, 0.64], van: [0.17, 0.64], "caminhão": [0.27, 0.72] };
   function carroFoto(c) {
     var t = c.t, f = c.f0;
     if (t > 0.97) f = c.f0 * clamp(1 - (t - 0.97) / 0.4, 0, 1);
@@ -1038,9 +1066,9 @@
     cx.fillRect(l1[0], l1[1] - h * 0.75, lw, h * 0.28); cx.fillRect(l2[0] - lw, l2[1] - h * 0.75, lw, h * 0.28);
     cx.restore();
   }
-  function costa(tT, k) {
-    var p = PD(tT, 0), sx = W / 2 + (p[0] - ANCORA[0]) * k, sy = H * 0.9 + (p[1] - ANCORA[1]) * k;
-    var hzF = H * 0.34; if (sy <= hzF + 2) return;
+  function costa(tT) {
+    var p = PD(tT, 0), sx = CAM.x0 + p[0] * CAM.s, sy = CAM.y0 + p[1] * CAM.s;
+    var hzF = CAM.y0 + HZ_FOTO * CAM.s; if (sy <= hzF + 2) return;
     var im = IMG.horizonte, alt = Math.max(sy - hzF + H * 0.14, sy * 1.02), larg = alt * (im ? im.width / im.height : 8);
     if (im) {
       var x0 = sx - larg * 0.5;
@@ -1048,11 +1076,10 @@
       if (x0 > 0) cx.drawImage(im, x0 - larg, sy - alt + alt * 0.06, larg, alt);
       if (x0 + larg < W) cx.drawImage(im, x0 + larg, sy - alt + alt * 0.06, larg, alt);
     } else ilha(sx, sy, W * 2, alt, destino());
-    // orla: calçadão e muro do cais de pedra
     var q = Math.max(3, (sy - hzF) * 0.06);
     cx.fillStyle = "#d9cfb6"; cx.fillRect(0, sy - q * 1.2, W, q * 1.4);
     cx.fillStyle = "#6b6760"; cx.fillRect(0, sy + q * 0.2, W, q * 0.8);
-    cx.fillStyle = "rgba(255,255,255,.5)"; cx.fillRect(0, sy + q, W, Math.max(1, q * 0.2));   // espuma batendo no muro
+    cx.fillStyle = "rgba(255,255,255,.5)"; cx.fillRect(0, sy + q, W, Math.max(1, q * 0.2));
   }
   function pierFoto(t0, chegou, tTerra) {
     var tFim = S.tFimPier, w = 1.35;
@@ -1067,23 +1094,23 @@
     cx.beginPath(); cx.moveTo(m1[0], m1[1]); cx.lineTo(m2[0], m2[1]); cx.stroke(); cx.setLineDash([]);
     // terminal
     // terminal: a rua entra pelo lado esquerdo do prédio (o prédio fica à direita da rua)
-    var tp = PD(tTerra + 0.22, 0), larg = 210, alt = 66, x0 = tp[0] - 40;
+    var tp = PD(tTerra + 0.2, 0), larg = 320, alt = 96, x0 = tp[0] - 60;
     cx.fillStyle = "#f4f6f8"; cx.fillRect(x0, tp[1] - alt, larg, alt);
     cx.fillStyle = "#0A2C52"; cx.fillRect(x0 - 6, tp[1] - alt - 10, larg + 12, 12);
     cx.fillStyle = "#1d4fc4"; cx.fillRect(x0 + larg * 0.08, tp[1] - alt * 0.85, larg * 0.84, alt * 0.3);
-    var nomeT = "TERMINAL " + nomeLado(destino()).toUpperCase(), fs = 15;
+    var nomeT = "TERMINAL " + nomeLado(destino()).toUpperCase(), fs = 22;
     cx.font = "800 " + fs + "px Montserrat, sans-serif";
     while (fs > 8 && cx.measureText(nomeT).width > larg * 0.8) { fs--; cx.font = "800 " + fs + "px Montserrat, sans-serif"; }
     cx.fillStyle = "#fff"; cx.textAlign = "center";
     cx.fillText(nomeT, x0 + larg / 2, tp[1] - alt * 0.63);
-    cx.fillStyle = "#2b3a4a"; cx.fillRect(x0 + 6, tp[1] - alt * 0.45, 70, alt * 0.45);   // portão por onde os carros entram
-    for (var j = 0; j < 3; j++) cx.fillRect(x0 + 92 + j * 38, tp[1] - alt * 0.42, 24, alt * 0.3);
+    cx.fillStyle = "#2b3a4a"; cx.fillRect(x0 + 8, tp[1] - alt * 0.45, 104, alt * 0.45);   // portão por onde os carros entram
+    for (var j = 0; j < 3; j++) cx.fillRect(x0 + 140 + j * 58, tp[1] - alt * 0.42, 36, alt * 0.3);
     // semáforo e funcionário
     var sp = PD(t0 + 0.16, 1.25), verde = S.fase === "desembarque" && S.tDes > 1.6;
-    cx.fillStyle = "#333"; cx.fillRect(sp[0] - 3, sp[1] - 70, 6, 70); ret(sp[0] - 10, sp[1] - 100, 20, 32, 4); cx.fill();
-    cx.fillStyle = verde ? "#333" : "#ff3b3b"; cx.beginPath(); cx.arc(sp[0], sp[1] - 92, 6, 0, 7); cx.fill();
-    cx.fillStyle = verde ? "#4ade80" : "#333"; cx.beginPath(); cx.arc(sp[0], sp[1] - 77, 6, 0, 7); cx.fill();
-    var fp = PD(t0 + 0.1, -1.2), fx = fp[0], fy = fp[1], fe = 16;
+    cx.fillStyle = "#333"; cx.fillRect(sp[0] - 4, sp[1] - 105, 8, 105); ret(sp[0] - 15, sp[1] - 150, 30, 48, 6); cx.fill();
+    cx.fillStyle = verde ? "#333" : "#ff3b3b"; cx.beginPath(); cx.arc(sp[0], sp[1] - 138, 9, 0, 7); cx.fill();
+    cx.fillStyle = verde ? "#4ade80" : "#333"; cx.beginPath(); cx.arc(sp[0], sp[1] - 115, 9, 0, 7); cx.fill();
+    var fp = PD(t0 + 0.1, -1.2), fx = fp[0], fy = fp[1], fe = 24;
     cx.fillStyle = "#263238"; cx.fillRect(fx - fe * 0.25, fy - fe * 1.2, fe * 0.18, fe * 1.2); cx.fillRect(fx + fe * 0.07, fy - fe * 1.2, fe * 0.18, fe * 1.2);
     cx.fillStyle = "#ff7a1a"; ret(fx - fe * 0.4, fy - fe * 2.3, fe * 0.8, fe * 1.2, 3); cx.fill();
     cx.fillStyle = "#e3a57e"; cx.beginPath(); cx.arc(fx, fy - fe * 2.6, fe * 0.3, 0, 7); cx.fill();
