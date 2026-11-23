@@ -44,7 +44,7 @@ window.VAIDEBALSA = {
   anuncios: { client: "ca-pub-1329569080847479", slots: { meio: "", conteudo: "" } },
 
   // Contato para quem quer anunciar (WhatsApp com DDI, ex.: "5512999999999"). Vazio = sem botão.
-  contatoAnuncie: "",
+  contatoAnuncie: "5512988133448",
 
   // Hora Marcada: sistema oficial de agendamento (conferido em 20/11/2026)
   linkEsperaOficial: "https://acquavias.com.br/",   // espera oficial publicada pela operadora

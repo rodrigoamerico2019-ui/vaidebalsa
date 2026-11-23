@@ -777,3 +777,26 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
 .cam-play-ic{width:56px;height:56px;border-radius:50%;background:var(--sol);color:var(--oceano);display:grid;place-items:center;font-size:1.3rem;padding-left:4px;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:transform .2s}
 .cam-play:hover .cam-play-ic,.cam-play:focus-visible .cam-play-ic{transform:scale(1.08)}
 .cam-play .ondinha{position:absolute;left:0;right:0;bottom:0;width:100%;height:40px}
+
+/* Seja parceiro */
+.sp-planos{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:8px 0 14px}
+.sp-plano{position:relative;border:2px solid var(--borda);border-radius:20px;padding:22px 18px;background:#fff;display:flex;flex-direction:column}
+.sp-plano h3{font:900 italic 1.25rem var(--titulo);color:var(--oceano);margin-bottom:4px}
+.sp-para{font-size:.86rem;color:var(--suave);margin:0 0 12px;min-height:2.6em}
+.sp-preco{font:900 2rem var(--titulo);color:var(--oceano);margin:0;line-height:1}
+.sp-preco small{font:600 .85rem var(--corpo);color:var(--suave)}
+.sp-promo{font-size:.82rem;font-weight:700;color:#0F766E;margin:6px 0 0}
+.sp-plano ul{list-style:none;padding:0;margin:14px 0 0;font-size:.9rem}
+.sp-plano li{padding:7px 0 7px 22px;border-top:1px solid var(--borda);position:relative}
+.sp-plano li::before{content:"✓";position:absolute;left:2px;color:var(--turquesa);font-weight:800}
+.sp-destaque{background:var(--oceano);border-color:var(--oceano);color:#fff;box-shadow:var(--sombra)}
+.sp-destaque h3,.sp-destaque .sp-preco{color:#fff}
+.sp-destaque .sp-para,.sp-destaque .sp-preco small{color:#b9cde6}
+.sp-destaque .sp-promo{color:var(--sol)}
+.sp-destaque li,.conteudo .sp-destaque li{color:#E6EEF8;border-top-color:rgba(255,255,255,.15)}
+.sp-destaque li::before{color:var(--sol)}
+.sp-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--sol);color:var(--oceano);font:800 .7rem var(--titulo);letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:999px;white-space:nowrap}
+.sp-extra{font-size:.9rem;color:var(--suave)}
+.sp-acoes{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0 8px}
+.sp-contato{font-size:.92rem;color:var(--suave);margin:0}
+@media (max-width:860px){.sp-planos{grid-template-columns:1fr}.sp-destaque{margin-top:8px}}
