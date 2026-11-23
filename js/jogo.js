@@ -169,10 +169,10 @@
     trocarVista("fora");
     var ordem = [];
     for (var j = 0; j < 5; j++) { if (S.deck.e[j]) ordem.push(S.deck.e[j]); if (S.deck.d[j]) ordem.push(S.deck.d[j]); }
-    ordem.forEach(function (v, k) { v.saida = 1.8 + k * 0.85; v.vel = 0.12; });
-    S.desTotal = ordem.length; S.desFim = 1.8 + ordem.length * 0.85 + 2.4; S.flags.desN = -1;
+    ordem.forEach(function (v, k) { v.saida = 2.2 + k * 0.85; v.vel = 0.12; });
+    S.desTotal = ordem.length; S.desFim = 2.2 + ordem.length * 0.85 + 2.4; S.flags.desN = -1;
     mostrar("btn-pular", true);
-    aviso("⚓ Atracado em " + nomeLado(destino()) + "! Baixando a rampa…", "bom", 2000);
+    aviso("⚓ Atracou de leve em " + nomeLado(destino()) + "!", "bom", 1500);
   }
   function animarCarros(dt) {
     ["e", "d"].forEach(function (lado) {
@@ -218,7 +218,8 @@
       S.tDes += dt;
       var fora = 0;
       S.deck.e.concat(S.deck.d).forEach(function (v) { if (v.t > 1.05) fora++; });
-      if (fora !== S.flags.desN && S.tDes > 1.8) { S.flags.desN = fora; if (fora > 0 && fora <= S.desTotal) aviso("🚗 Desembarcando: " + fora + " de " + S.desTotal, "bom", 1500); }
+      if (S.tDes > 0.3 && !S.flags.rampaAviso) { S.flags.rampaAviso = 1; aviso("⚙️ Baixando a rampa da balsa…", "bom", 1800); }
+      if (fora !== S.flags.desN && S.tDes > 2.2) { S.flags.desN = fora; if (fora > 0 && fora <= S.desTotal) aviso("🚗 Desembarcando: " + fora + " de " + S.desTotal, "bom", 1500); }
       if (S.tDes >= S.desFim) finalizarViagem();
       return;
     }
@@ -314,7 +315,12 @@
       S.w *= Math.pow(0.5, dt);
       var alvo = paraIb ? 0 : Math.PI;
       S.th = ang(S.th + ang(alvo - S.th) * Math.min(1, dt * 1.2));
-      if (!S.flags.cabos) { S.flags.cabos = 1; aviso("🪢 Lançando os cabos… devagar até encostar!", "bom"); }
+      if (!S.flags.cabos) { S.flags.cabos = 1; aviso("🪢 Lançando os cabos… a balsa vai encostar de leve.", "bom"); }
+    }
+    // atracação leve: alinhada com a margem, a balsa reduz sozinha e encosta devagar
+    if (falta < 75 && Math.abs(S.w) < 40 && S.v > 0) {
+      var vSuave = 0.35 + falta * 0.03;
+      if (S.v > vSuave) S.v += (vSuave - S.v) * Math.min(1, dt * 2.2);
     }
     if (falta < 90 && Math.abs(S.v) > 4 && !S.flags.devagar) { S.flags.devagar = 1; aviso("⚠️ Píer perto! Reduza a velocidade.", "ruim"); }
     if (!passou) return;
@@ -911,7 +917,7 @@
       // semáforo do píer (verde no desembarque)
       var sx = hw(1.45, a, b) * 0.85, sy = Y(1.45), sh = Wb * 0.2;
       cx.fillStyle = "#333"; cx.fillRect(sx - 2, sy - sh, 4, sh); ret(sx - 7, sy - sh - 18, 14, 22, 3); cx.fill();
-      var verde = S.fase === "desembarque" && S.tDes > 1.6;
+      var verde = S.fase === "desembarque" && S.tDes > 1.9;
       cx.fillStyle = verde ? "#333" : "#ff3b3b"; cx.beginPath(); cx.arc(sx, sy - sh - 12, 4, 0, 7); cx.fill();
       cx.fillStyle = verde ? "#4ade80" : "#333"; cx.beginPath(); cx.arc(sx, sy - sh - 3, 4, 0, 7); cx.fill();
       // funcionário de colete laranja acenando
@@ -1006,6 +1012,7 @@
       carros.filter(function (q) { return q.t >= 0.97; }).forEach(carroFoto);
     }
     cx.drawImage(IMG.balsa, 485, 170);
+    if (chegou) rampaProa(S.fase === "fim" ? 1 : clamp((S.tDes - 0.3) / 1.4, 0, 1));
     carros.filter(function (q) { return q.t >= 0 && (q.t < 0.97 || !mostraCosta); }).forEach(carroFoto);
     if (noCais) {   // rampa da popa baixada sobre o cais
       cx.fillStyle = "#4b5058";
@@ -1088,15 +1095,40 @@
     cx.fillStyle = "#6b6760"; cx.fillRect(0, sy + q * 0.2, W, q * 0.8);
     cx.fillStyle = "rgba(255,255,255,.5)"; cx.fillRect(0, sy + q, W, Math.max(1, q * 0.2));
   }
+  // rampa da proa: r = 0 levantada (em pé), r = 1 baixada sobre a margem
+  function rampaProa(r) {
+    var e = r * r * (3 - 2 * r);                     // suaviza o movimento
+    var L = 0.11, altura = 58;                       // comprimento (em t) e altura quando em pé (px da foto)
+    var a = PD(1, -0.96), b = PD(1, 0.96);
+    var tPonta = 1 + L * e, c2 = PD(tPonta, 0.96), d2 = PD(tPonta, -0.96);
+    var sobe = altura * (1 - e);                      // a ponta sobe enquanto a rampa ainda não deitou
+    cx.fillStyle = "#3f454d";
+    cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(b[0], b[1]); cx.lineTo(c2[0], c2[1] - sobe); cx.lineTo(d2[0], d2[1] - sobe); cx.closePath(); cx.fill();
+    // nervuras e faixa amarela/preta na ponta
+    cx.strokeStyle = "rgba(255,255,255,.18)"; cx.lineWidth = 2;
+    for (var k = 1; k < 5; k++) {
+      var q = k / 5, p1 = PD(1 + L * e * q, -0.96), p2 = PD(1 + L * e * q, 0.96), dy = sobe * q;
+      cx.beginPath(); cx.moveTo(p1[0], p1[1] - dy); cx.lineTo(p2[0], p2[1] - dy); cx.stroke();
+    }
+    for (var z = 0; z < 12; z++) {
+      var f1 = -0.96 + z * 1.92 / 12, f2 = f1 + 1.92 / 12, u1 = PD(tPonta, f1), u2 = PD(tPonta, f2);
+      cx.strokeStyle = z % 2 ? "#111" : "#FFC107"; cx.lineWidth = 6;
+      cx.beginPath(); cx.moveTo(u1[0], u1[1] - sobe); cx.lineTo(u2[0], u2[1] - sobe); cx.stroke();
+    }
+    // pistões hidráulicos nas laterais enquanto a rampa se move
+    if (e < 1) {
+      cx.strokeStyle = "#cfd8dc"; cx.lineWidth = 4;
+      [[-0.96, a], [0.96, b]].forEach(function (ps) {
+        var topo = PD(tPonta, ps[0]);
+        cx.beginPath(); cx.moveTo(ps[1][0], ps[1][1] - 30); cx.lineTo(topo[0], topo[1] - sobe); cx.stroke();
+      });
+    }
+  }
   function pierFoto(t0, chegou, tTerra) {
     var tFim = S.tFimPier, w = 1.35;
     function quadT(a, b, fw, cor) { var p1 = PD(a, -fw), p2 = PD(a, fw), p3 = PD(b, fw), p4 = PD(b, -fw); cx.fillStyle = cor; cx.beginPath(); cx.moveTo(p1[0], p1[1]); cx.lineTo(p2[0], p2[1]); cx.lineTo(p3[0], p3[1]); cx.lineTo(p4[0], p4[1]); cx.closePath(); cx.fill(); }
-    if (chegou) quadT(0.96, 1.08, 1, "#4b5058");   // rampa da proa baixada
-    quadT(t0, tTerra + 0.12, w, (S.clima && S.clima.noite) ? "#4a4842" : "#9a958c");   // rampa de concreto da margem
-    quadT(tTerra + 0.12, tFim + 0.1, 0.95, (S.clima && S.clima.noite) ? "#2f3236" : "#55585d");  // rua em terra até o terminal
-    var a = PD(t0, -w), b = PD(t0, w);
-    cx.strokeStyle = "#FFC107"; cx.lineWidth = 5; cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(b[0], b[1]); cx.stroke();
-    var m1 = PD(t0, 0), m2 = PD(tFim, 0);
+    quadT(tTerra, tFim + 0.1, 0.95, (S.clima && S.clima.noite) ? "#2f3236" : "#55585d");  // rua em terra até o terminal
+    var m1 = PD(tTerra + 0.04, 0), m2 = PD(tFim, 0);
     cx.strokeStyle = "rgba(255,255,255,.75)"; cx.lineWidth = 3; cx.setLineDash([14, 16]);
     cx.beginPath(); cx.moveTo(m1[0], m1[1]); cx.lineTo(m2[0], m2[1]); cx.stroke(); cx.setLineDash([]);
     // terminal
@@ -1113,7 +1145,7 @@
     cx.fillStyle = "#2b3a4a"; cx.fillRect(x0 + 8, tp[1] - alt * 0.45, 104, alt * 0.45);   // portão por onde os carros entram
     for (var j = 0; j < 3; j++) cx.fillRect(x0 + 140 + j * 58, tp[1] - alt * 0.42, 36, alt * 0.3);
     // semáforo e funcionário
-    var sp = PD(t0 + 0.16, 1.25), verde = S.fase === "desembarque" && S.tDes > 1.6;
+    var sp = PD(t0 + 0.16, 1.25), verde = S.fase === "desembarque" && S.tDes > 1.9;
     cx.fillStyle = "#333"; cx.fillRect(sp[0] - 4, sp[1] - 105, 8, 105); ret(sp[0] - 15, sp[1] - 150, 30, 48, 6); cx.fill();
     cx.fillStyle = verde ? "#333" : "#ff3b3b"; cx.beginPath(); cx.arc(sp[0], sp[1] - 138, 9, 0, 7); cx.fill();
     cx.fillStyle = verde ? "#4ade80" : "#333"; cx.beginPath(); cx.arc(sp[0], sp[1] - 115, 9, 0, 7); cx.fill();
