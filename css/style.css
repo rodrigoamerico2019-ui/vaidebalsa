@@ -769,3 +769,11 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
   .pl-dia em{font-size:.62rem}
   .pl-melhor span{font-size:.8rem}
 }
+
+/* câmeras: tocar para assistir */
+.cam-play{position:absolute;inset:0;width:100%;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:linear-gradient(160deg,var(--oceano),var(--oceano-2));color:#fff;font-family:var(--corpo);overflow:hidden}
+.cam-play strong{font:900 italic 1.15rem var(--titulo)}
+.cam-play small{color:#b9cde6;font-size:.8rem}
+.cam-play-ic{width:56px;height:56px;border-radius:50%;background:var(--sol);color:var(--oceano);display:grid;place-items:center;font-size:1.3rem;padding-left:4px;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:transform .2s}
+.cam-play:hover .cam-play-ic,.cam-play:focus-visible .cam-play-ic{transform:scale(1.08)}
+.cam-play .ondinha{position:absolute;left:0;right:0;bottom:0;width:100%;height:40px}

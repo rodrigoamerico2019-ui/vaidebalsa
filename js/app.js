@@ -86,7 +86,10 @@
         encodeURIComponent(c.url) + '?autoplay=1&mute=1&playsinline=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
     }
     if (c.tipo === "iframe") {
-      return selo + '<iframe loading="lazy" title="' + esc(c.nome) + ' ao vivo" src="' + esc(c.url) + '" allowfullscreen></iframe>';
+      // não carrega o vídeo sozinho: economiza dados do celular na fila e a banda da operadora
+      return '<button type="button" class="cam-play" data-src="' + esc(c.url) + '" data-titulo="' + esc(c.nome) + '">' +
+        '<span class="cam-play-ic" aria-hidden="true">▶</span><strong>Ver ao vivo</strong><small>' + esc(c.nome) + '</small>' +
+        '<svg class="ondinha" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 20 Q50 5 100 20 T200 20 T300 20 T400 20 V40 H0Z" fill="#00B8A9" opacity=".35"/><path d="M0 28 Q50 15 100 28 T200 28 T300 28 T400 28 V40 H0Z" fill="#0D6EFD" opacity=".5"/></svg></button>';
     }
     if (c.tipo === "imagem") {
       return selo + '<img loading="lazy" alt="' + esc(c.nome) + ' — imagem ao vivo" data-snap="' + esc(c.url) + '" src="' + esc(c.url) + '">';
@@ -108,7 +111,14 @@
       }).join("");
   }
 
-  var botoes = document.querySelectorAll(".chips button");
+  grade.addEventListener("click", function (ev) {
+    var b = ev.target.closest(".cam-play");
+    if (!b) return;
+    var tela = b.parentNode;
+    tela.innerHTML = '<span class="selo"><span class="ponto"></span>Ao vivo</span><iframe title="' + esc(b.dataset.titulo) + ' ao vivo" src="' + esc(b.dataset.src) + '" scrolling="no" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+  });
+
+  var botoes = document.querySelectorAll("#cameras .chips button");
   botoes.forEach(function (b) {
     b.addEventListener("click", function () {
       botoes.forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
