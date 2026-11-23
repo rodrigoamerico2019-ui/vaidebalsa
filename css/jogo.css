@@ -80,3 +80,5 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .j-redondo.foto{background:#22c55e;animation:pulsar 1s infinite}
 @keyframes pulsar{50%{transform:scale(1.1)}}
 @media (min-width:700px){.chip{font-size:.85rem}.ctl.acel input{height:120px}.marcas{height:120px}}
+
+.j-pular{position:absolute;right:10px;bottom:10px;border:0;background:rgba(10,44,82,.85);color:#fff;font:800 .85rem Inter;padding:9px 14px;border-radius:999px;cursor:pointer}
