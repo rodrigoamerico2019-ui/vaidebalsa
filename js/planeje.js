@@ -20,14 +20,8 @@
   function hhmm(m) { if (m < 60) return m + " min"; var h = Math.floor(m / 60), r = m % 60; return h + "h" + (r ? String(r).padStart(2, "0") : ""); }
   function arred(v) { return Math.max(5, Math.round(v / 5) * 5); }
 
-  // estimativa (ponto médio da faixa), suavizada com as horas vizinhas para não ficar "em degraus"
-  function meio(l, d, h) { var x = new Date(d); x.setHours(h, 30, 0, 0); var e = window.VDB_ESTIMATIVA(l, x); return (e.min + e.max) / 2; }
-  function previsto(l, d, h) {
-    // não mistura a madrugada (saídas de hora em hora) com o resto do dia
-    var lo = h < 6 ? 0 : 6, hi = h < 6 ? 5 : 23;
-    var a = meio(l, d, Math.max(lo, h - 1)), b = meio(l, d, h), c = meio(l, d, Math.min(hi, h + 1));
-    return arred((a + 2 * b + c) / 4);
-  }
+  // mesmo número usado no topo e na barra ao vivo (js/estimativa.js)
+  function previsto(l, d, h) { var x = new Date(d); x.setHours(h, 30, 0, 0); return window.VDB_ESTIMATIVA(l, x).valor; }
   // série de 24 horas do dia n: registrado (hoje, horas que já passaram, com medição) ou previsão
   function serie(n) {
     var d = dia(n), agora = agoraSP(), hAgora = agora.getHours(), out = [];
@@ -75,7 +69,7 @@
       '<div class="pl-barras">' + prox.map(function (p, k) {
         return '<div class="pl-col' + (k === 0 ? " agora" : "") + '"><b>' + p.v + '</b><div class="pl-trilho"><span style="height:' + Math.max(8, p.v / maxP * 100) + '%"></span></div><small>' + p.rot + "</small></div>";
       }).join("") + "</div>" +
-      '<p class="pl-nota">' + (prox[0].reg ? "Agora: média de quem mediu a espera na última hora." : "Agora: estimativa de referência (ainda sem medições nesta hora).") + " Próximas horas: estimativa, em minutos.</p></div>";
+      '<p class="pl-nota">' + (prox[0].reg ? "Agora: média de quem mediu a espera na última hora." : "Agora: estimativa de referência (ainda sem medições nesta hora).") + " Próximas horas: estimativa de tendência, em minutos.</p></div>";
 
     // 2) 7 dias
     var dias = [];

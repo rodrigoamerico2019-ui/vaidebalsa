@@ -46,7 +46,7 @@
       var h = +p.find(function (x) { return x.type === "hour"; }).value;
       var m = +p.find(function (x) { return x.type === "minute"; }).value;
       var t = h * 60 + m;
-      saidas.textContent = (t >= 330 && t < 1410) ? "~30 min" : "~1 hora";
+      saidas.textContent = (t >= 330 && t < 1410) ? "Conforme a fila" : "Menos saídas";
     }
   }
   tick(); setInterval(tick, 30000);

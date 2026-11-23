@@ -25,8 +25,9 @@
   function frequencia() {
     var p = new Intl.DateTimeFormat("pt-BR", { hour: "numeric", minute: "numeric", hour12: false, timeZone: "America/Sao_Paulo" }).formatToParts(new Date());
     var t = +p.find(function (x) { return x.type === "hour"; }).value * 60 + +p.find(function (x) { return x.type === "minute"; }).value;
-    return (t >= 330 && t < 1410) ? "a cada ~30 min" : "a cada ~1 hora";
+    return (t >= 330 && t < 1410) ? "⛴️ Saídas conforme o movimento: mais balsas nos horários de pico" : "⛴️ Madrugada: menos saídas, confira antes de sair";
   }
+  var OFICIAL = cfg.linkEsperaOficial || "https://acquavias.com.br/";
   function carregarAlertasTempo() {
     if (alertasTempo) return Promise.resolve(alertasTempo);
     return Promise.all([
@@ -72,7 +73,7 @@
                    nivel: h.mediana < 20 ? "verde" : h.mediana <= 60 ? "amarelo" : "vermelho" };
         }
         var e = window.VDB_ESTIMATIVA ? window.VDB_ESTIMATIVA(l) : null;
-        return e ? { texto: e.texto, nota: "estimativa de referência (" + e.contexto + ")", nivel: e.nivel } : null;
+        return e ? { texto: e.texto, nota: "estimativa VAIDEBALSA (" + e.contexto + ", faixa " + e.faixa + ")", nivel: e.nivel } : null;
       }
       var porLado = {}; sem.forEach(function (d) { porLado[d.lado] = d; });
       var algum = sem.some(function (d) { return d.relatos > 0 || d.medidas > 0; });
@@ -85,10 +86,11 @@
         var extra = d.espera_mediana != null ? " · ≈" + d.espera_mediana + " min" : (FAIXA[d.nivel] ? " · " + FAIXA[d.nivel] : "");
         var quando = d.ultimo ? " (há " + minAtras(d.ultimo) + " min)" : "";
         var t = d.nivel === "sem-dados" ? tipica(l) : null;
-        if (t) itens.push(item("⏱ <b>" + NOMES[l] + ":</b> embarque aprox. " + esc(t.texto) + " <i>(sem relatos agora)</i>", base + "#fila"));
+        if (t) itens.push(item("⏱ <b>" + NOMES[l] + ":</b> embarque " + esc(t.texto) + " <i>(sem relatos agora)</i>", base + "#fila"));
         else itens.push(item(n[0] + " <b>" + NOMES[l] + ":</b> " + n[1] + extra + quando, base + "#fila"));
       });
-      itens.push(item("⛴️ Saídas agora " + frequencia()));
+      itens.push(item(frequencia()));
+      itens.push(item("📢 Espera oficial agora: veja no site da AcquaVias →", OFICIAL, true));
       tempo.forEach(function (t) { itens.push(item(esc(t), base + "#tempo-7-dias")); });
       if (!algum) itens.push(item("📸 Está na fila? Poste uma foto ou meça sua espera", base + "#fila"));
 
@@ -119,7 +121,7 @@
           if (d.relatos) partes.push(d.relatos + (d.relatos === 1 ? " foto" : " fotos"));
           var tt = partes.length ? null : tipica(l);
           sub = partes.length ? partes.join(" · ") + (d.ultimo ? " · há " + minAtras(d.ultimo) + " min" : "")
-            : (tt ? esc(tt.nota) + " · " : "") + '<a href="' + WAZE[l] + '" target="_blank" rel="noopener">ver trânsito no Waze →</a>';
+            : (tt ? esc(tt.nota) + "<br>" : "") + '<a href="' + esc(OFICIAL) + '" target="_blank" rel="noopener">espera oficial →</a> · <a href="' + WAZE[l] + '" target="_blank" rel="noopener">trânsito no Waze →</a>';
           el.className = "emb-lado " + nivel;
           el.querySelector("strong").textContent = valor;
           el.querySelector("span").innerHTML = sub;
@@ -144,14 +146,14 @@
             if (ss.nivel === "verde" && ib.nivel !== "amarelo") frase = "Fila tranquila agora! Bora pra Ilhabela! 👍";
             else frase = "Movimento moderado: São Sebastião " + tempoTxt("sao-sebastiao") + " e Ilhabela " + tempoTxt("ilhabela") + ".";
           } else {
-            frase = "Ninguém contou da fila agora. Pela experiência: São Sebastião " + tempoTxt("sao-sebastiao") + " e Ilhabela " + tempoTxt("ilhabela") + ". Tá na fila? Me ajuda! 📸";
+            frase = "Ninguém mediu a fila agora. Pela nossa estimativa: São Sebastião " + tempoTxt("sao-sebastiao") + " e Ilhabela " + tempoTxt("ilhabela") + ". Confira também a espera oficial. Tá na fila? Me ajuda! 📸";
           }
           var nome = cfg.mascote && cfg.mascote.nome;
           fala.textContent = (nome ? nome + ": " : "") + frase;
         }
         emb.querySelector(".emb-fonte").textContent = base2.length
           ? "Estimativa de quem está na fila agora (esperas medidas e fotos)."
-          : "Sem relatos nos últimos 30 min — mostrando o tempo aproximado típico.";
+          : "Sem relatos nos últimos 30 min: mostrando a estimativa do VAIDEBALSA. Na dúvida, vale a espera oficial da AcquaVias.";
       }
     });
   }

@@ -47,6 +47,7 @@ window.VAIDEBALSA = {
   contatoAnuncie: "",
 
   // Hora Marcada: sistema oficial de agendamento (conferido em 20/11/2026)
+  linkEsperaOficial: "https://acquavias.com.br/",   // espera oficial publicada pela operadora
   linkOficial: "https://horamarcada.dh.sp.gov.br/ViaDigital/",
 
   cameras: [
