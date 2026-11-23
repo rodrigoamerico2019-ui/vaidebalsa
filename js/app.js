@@ -110,7 +110,7 @@
           ? '<span class="credito">Imagem: ' + (c.creditoUrl ? '<a href="' + esc(c.creditoUrl) + '" target="_blank" rel="noopener">' + esc(c.credito) + "</a>" : esc(c.credito)) + "</span>"
           : "";
         return '<article class="cam" id="' + esc(c.id) + '">' +
-          '<div class="tela">' + telaDe(c, i === 0) + "</div>" +
+          '<div class="tela">' + telaDe(c, true) + "</div>" +
           '<div class="info"><div><h3>' + esc(c.nome) + "</h3>" + credito + "</div>" +
           '<span class="tag ' + esc(c.lado) + '">' + (NOMES_LADO[c.lado] || "") + "</span></div></article>";
       }).join("");
