@@ -802,3 +802,9 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
 @media (max-width:860px){.sp-planos{grid-template-columns:1fr}.sp-destaque{margin-top:8px}}
 
 .btn-medir[hidden]{display:none}
+
+/* câmeras dentro da seção da fila, logo abaixo do semáforo */
+.cams-fila{margin:22px 0 26px}
+.cams-cab{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.cams-cab h3{font:900 italic 1.3rem var(--titulo);color:var(--oceano)}
+.cams-cab small{display:block;color:var(--suave);font-size:.85rem;margin-top:2px}

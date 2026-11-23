@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
 <link rel="preload" as="image" href="img/embaixador.webp">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=30">
+<link rel="stylesheet" href="css/style.css?v=31">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -140,6 +140,21 @@
         </div>
       </div>
 
+      <div class="cams-fila" id="cameras" aria-labelledby="tit-cams">
+        <div class="cams-cab">
+          <div>
+            <h3 id="tit-cams">🎥 Câmeras da travessia</h3>
+            <small>Câmeras oficiais da AcquaVias nos dois embarques, ao vivo</small>
+          </div>
+          <div class="chips" role="group" aria-label="Filtrar câmeras">
+            <button data-lado="todas" aria-pressed="true">Todas</button>
+            <button data-lado="sao-sebastiao" aria-pressed="false">São Sebastião</button>
+            <button data-lado="ilhabela" aria-pressed="false">Ilhabela</button>
+          </div>
+        </div>
+        <div id="grade" class="grade" aria-live="polite"></div>
+      </div>
+
       <div class="mapas-waze">
         <figure class="mapa-waze">
           <figcaption><b>São Sebastião</b><span>Trânsito ao vivo · Waze</span></figcaption>
@@ -172,24 +187,6 @@
         <span class="aviso-volante">📵 Motorista: nunca poste dirigindo</span>
       </div>
       <div id="mural" class="mural" aria-live="polite"></div>
-    </div>
-  </section>
-
-  <section class="secao" id="cameras" aria-labelledby="tit-cams">
-    <div class="wrap">
-      <div class="secao-cab revela">
-        <div>
-          <span class="rotulo">Câmeras</span>
-          <h2 id="tit-cams">Câmeras da <em>travessia</em></h2>
-          <p class="lead">Câmeras oficiais da AcquaVias nos dois embarques. Veja ao vivo antes de pegar a estrada.</p>
-        </div>
-        <div class="chips" role="group" aria-label="Filtrar câmeras">
-          <button data-lado="todas" aria-pressed="true">Todas</button>
-          <button data-lado="sao-sebastiao" aria-pressed="false">São Sebastião</button>
-          <button data-lado="ilhabela" aria-pressed="false">Ilhabela</button>
-        </div>
-      </div>
-      <div id="grade" class="grade" aria-live="polite"></div>
     </div>
   </section>
 
