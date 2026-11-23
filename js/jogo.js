@@ -946,7 +946,11 @@
     var noCais = S.fase === "embarque", chegou = S.fase === "desembarque" || S.fase === "fim";
     var k = Math.min(W * 0.84 / 510, H * 0.62 / 508);
     var roll = rolagem() * (noCais || chegou ? 0.25 : 1), bob = ondaY(W / 2, 0) * (noCais || chegou ? 0.1 : 0.3);
-    S.tFimPier = 1.85;
+    // chegada: a costa do destino se aproxima; o cais é curto e o terminal fica em terra
+    var tPier = chegou ? 1 : (S.fase === "viagem" && restante() < 160 ? 1 + 0.75 * (1 - Math.exp(-restante() / 45)) : null);
+    var tTerra = tPier !== null ? tPier + 0.28 : null;
+    S.tFimPier = tTerra !== null ? tTerra + 0.42 : 1.7;
+    if (tTerra !== null) costa(tTerra, k);
     // esteira de espuma (tela)
     if (!noCais && !chegou && Math.abs(S.v) > 0.8) {
       cx.fillStyle = "rgba(255,255,255,.6)";
@@ -964,8 +968,7 @@
       S.deck[lado].forEach(function (v, j) { carros.push({ v: v, t: v.t != null ? v.t : slotT(j), f0: li === 0 ? -0.5 : 0.5 }); });
     });
     carros.sort(function (x, y) { return y.t - x.t; });
-    var tPier = chegou ? 1 : (S.fase === "viagem" && restante() < 90 ? 1 + restante() / 45 : null);
-    if (tPier !== null) pierFoto(tPier, chegou);
+    if (tPier !== null) pierFoto(tPier, chegou, tTerra);
     carros.filter(function (c) { return c.t >= 0.9; }).forEach(carroFoto);   // na proa/píer (a ponte encobre)
     cx.drawImage(im, 0, 0);
     carros.filter(function (c) { return c.t >= 0 && c.t < 0.9; }).forEach(carroFoto);
@@ -1035,11 +1038,28 @@
     cx.fillRect(l1[0], l1[1] - h * 0.75, lw, h * 0.28); cx.fillRect(l2[0] - lw, l2[1] - h * 0.75, lw, h * 0.28);
     cx.restore();
   }
-  function pierFoto(t0, chegou) {
+  function costa(tT, k) {
+    var p = PD(tT, 0), sx = W / 2 + (p[0] - ANCORA[0]) * k, sy = H * 0.9 + (p[1] - ANCORA[1]) * k;
+    var hzF = H * 0.34; if (sy <= hzF + 2) return;
+    var im = IMG.horizonte, alt = Math.max(sy - hzF + H * 0.14, sy * 1.02), larg = alt * (im ? im.width / im.height : 8);
+    if (im) {
+      var x0 = sx - larg * 0.5;
+      cx.drawImage(im, x0, sy - alt + alt * 0.06, larg, alt);
+      if (x0 > 0) cx.drawImage(im, x0 - larg, sy - alt + alt * 0.06, larg, alt);
+      if (x0 + larg < W) cx.drawImage(im, x0 + larg, sy - alt + alt * 0.06, larg, alt);
+    } else ilha(sx, sy, W * 2, alt, destino());
+    // orla: calçadão e muro do cais de pedra
+    var q = Math.max(3, (sy - hzF) * 0.06);
+    cx.fillStyle = "#d9cfb6"; cx.fillRect(0, sy - q * 1.2, W, q * 1.4);
+    cx.fillStyle = "#6b6760"; cx.fillRect(0, sy + q * 0.2, W, q * 0.8);
+    cx.fillStyle = "rgba(255,255,255,.5)"; cx.fillRect(0, sy + q, W, Math.max(1, q * 0.2));   // espuma batendo no muro
+  }
+  function pierFoto(t0, chegou, tTerra) {
     var tFim = S.tFimPier, w = 1.35;
     function quadT(a, b, fw, cor) { var p1 = PD(a, -fw), p2 = PD(a, fw), p3 = PD(b, fw), p4 = PD(b, -fw); cx.fillStyle = cor; cx.beginPath(); cx.moveTo(p1[0], p1[1]); cx.lineTo(p2[0], p2[1]); cx.lineTo(p3[0], p3[1]); cx.lineTo(p4[0], p4[1]); cx.closePath(); cx.fill(); }
     if (chegou) quadT(0.96, 1.08, 1, "#4b5058");   // rampa da proa baixada
-    quadT(t0, tFim, w, (S.clima && S.clima.noite) ? "#4a4842" : "#9a958c");
+    quadT(t0, tTerra, w, (S.clima && S.clima.noite) ? "#4a4842" : "#9a958c");          // cais (sobre a água)
+    quadT(tTerra, tFim + 0.1, 0.95, (S.clima && S.clima.noite) ? "#2f3236" : "#55585d");  // rua em terra até o terminal
     var a = PD(t0, -w), b = PD(t0, w);
     cx.strokeStyle = "#FFC107"; cx.lineWidth = 5; cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(b[0], b[1]); cx.stroke();
     var m1 = PD(t0, 0), m2 = PD(tFim, 0);
@@ -1047,7 +1067,7 @@
     cx.beginPath(); cx.moveTo(m1[0], m1[1]); cx.lineTo(m2[0], m2[1]); cx.stroke(); cx.setLineDash([]);
     // terminal
     // terminal: a rua entra pelo lado esquerdo do prédio (o prédio fica à direita da rua)
-    var tp = PD(tFim - 0.05, 0), larg = 210, alt = 66, x0 = tp[0] - 40;
+    var tp = PD(tTerra + 0.1, 0), larg = 210, alt = 66, x0 = tp[0] - 40;
     cx.fillStyle = "#f4f6f8"; cx.fillRect(x0, tp[1] - alt, larg, alt);
     cx.fillStyle = "#0A2C52"; cx.fillRect(x0 - 6, tp[1] - alt - 10, larg + 12, 12);
     cx.fillStyle = "#1d4fc4"; cx.fillRect(x0 + larg * 0.08, tp[1] - alt * 0.85, larg * 0.84, alt * 0.3);
@@ -1059,11 +1079,11 @@
     cx.fillStyle = "#2b3a4a"; cx.fillRect(x0 + 6, tp[1] - alt * 0.45, 70, alt * 0.45);   // portão por onde os carros entram
     for (var j = 0; j < 3; j++) cx.fillRect(x0 + 92 + j * 38, tp[1] - alt * 0.42, 24, alt * 0.3);
     // semáforo e funcionário
-    var sp = PD(1.35, 1.25), verde = S.fase === "desembarque" && S.tDes > 1.6;
+    var sp = PD(t0 + 0.16, 1.25), verde = S.fase === "desembarque" && S.tDes > 1.6;
     cx.fillStyle = "#333"; cx.fillRect(sp[0] - 3, sp[1] - 70, 6, 70); ret(sp[0] - 10, sp[1] - 100, 20, 32, 4); cx.fill();
     cx.fillStyle = verde ? "#333" : "#ff3b3b"; cx.beginPath(); cx.arc(sp[0], sp[1] - 92, 6, 0, 7); cx.fill();
     cx.fillStyle = verde ? "#4ade80" : "#333"; cx.beginPath(); cx.arc(sp[0], sp[1] - 77, 6, 0, 7); cx.fill();
-    var fp = PD(1.15, -1.2), fx = fp[0], fy = fp[1], fe = 16;
+    var fp = PD(t0 + 0.1, -1.2), fx = fp[0], fy = fp[1], fe = 16;
     cx.fillStyle = "#263238"; cx.fillRect(fx - fe * 0.25, fy - fe * 1.2, fe * 0.18, fe * 1.2); cx.fillRect(fx + fe * 0.07, fy - fe * 1.2, fe * 0.18, fe * 1.2);
     cx.fillStyle = "#ff7a1a"; ret(fx - fe * 0.4, fy - fe * 2.3, fe * 0.8, fe * 1.2, 3); cx.fill();
     cx.fillStyle = "#e3a57e"; cx.beginPath(); cx.arc(fx, fy - fe * 2.6, fe * 0.3, 0, 7); cx.fill();
