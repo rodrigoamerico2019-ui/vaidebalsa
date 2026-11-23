@@ -73,7 +73,12 @@
 
   function esc(s) { return String(s || "").replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
 
-  function telaDe(c) {
+  function iframeCam(src, titulo, lazy) {
+    return '<span class="selo"><span class="ponto"></span>Ao vivo</span><iframe' + (lazy ? ' loading="lazy"' : '') + ' title="' + esc(titulo) + ' ao vivo" src="' + esc(src) + '" scrolling="no" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+  }
+
+  function telaDe(c, aberta) {
+    if (aberta && c.tipo === "iframe" && c.url) return iframeCam(c.url, c.nome, true);
     if (!c.url) {
       return '<span class="selo breve">Em breve</span>' +
         '<div class="vazio"><svg class="cam-ic" aria-hidden="true"><use href="' + ICONES + '#i-camera"/></svg>' +
@@ -100,12 +105,12 @@
   function render(filtro) {
     grade.innerHTML = cfg.cameras
       .filter(function (c) { return filtro === "todas" || c.lado === filtro; })
-      .map(function (c) {
+      .map(function (c, i) {
         var credito = c.credito
           ? '<span class="credito">Imagem: ' + (c.creditoUrl ? '<a href="' + esc(c.creditoUrl) + '" target="_blank" rel="noopener">' + esc(c.credito) + "</a>" : esc(c.credito)) + "</span>"
           : "";
         return '<article class="cam" id="' + esc(c.id) + '">' +
-          '<div class="tela">' + telaDe(c) + "</div>" +
+          '<div class="tela">' + telaDe(c, i === 0) + "</div>" +
           '<div class="info"><div><h3>' + esc(c.nome) + "</h3>" + credito + "</div>" +
           '<span class="tag ' + esc(c.lado) + '">' + (NOMES_LADO[c.lado] || "") + "</span></div></article>";
       }).join("");
@@ -115,7 +120,7 @@
     var b = ev.target.closest(".cam-play");
     if (!b) return;
     var tela = b.parentNode;
-    tela.innerHTML = '<span class="selo"><span class="ponto"></span>Ao vivo</span><iframe title="' + esc(b.dataset.titulo) + ' ao vivo" src="' + esc(b.dataset.src) + '" scrolling="no" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+    tela.innerHTML = iframeCam(b.dataset.src, b.dataset.titulo, false);
   });
 
   var botoes = document.querySelectorAll("#cameras .chips button");
