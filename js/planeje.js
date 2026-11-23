@@ -9,7 +9,7 @@
   var SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
   var ALERTA_VENTO = 40;               // km/h — rajadas a partir daqui merecem atenção
   var lado = "sao-sebastiao", diaSel = 0;
-  var vento = {}, clima = {}, registrado = {}, aoVivo = {}, GW = 720, GL = 30, GR = 6;
+  var oficialAgora = false, vento = {}, clima = {}, registrado = {}, aoVivo = {}, GW = 720, GL = 30, GR = 6;
   try { lado = localStorage.getItem("vdb-planeje-lado") || lado; } catch (e) {}
   if (!NOMES[lado]) lado = "sao-sebastiao";
 
@@ -69,7 +69,7 @@
       '<div class="pl-barras">' + prox.map(function (p, k) {
         return '<div class="pl-col' + (k === 0 ? " agora" : "") + '"><b>' + p.v + '</b><div class="pl-trilho"><span style="height:' + Math.max(8, p.v / maxP * 100) + '%"></span></div><small>' + p.rot + "</small></div>";
       }).join("") + "</div>" +
-      '<p class="pl-nota">' + (prox[0].reg ? "Agora: média de quem mediu a espera na última hora." : "Agora: estimativa de referência (ainda sem medições nesta hora).") + " Próximas horas: estimativa de tendência, em minutos.</p></div>";
+      '<p class="pl-nota">' + (prox[0].reg ? (oficialAgora ? "Agora: espera oficial da AcquaVias." : "Agora: média de quem mediu a espera na última hora.") : "Agora: estimativa (ainda sem dado nesta hora).") + " Próximas horas: estimativa de tendência, em minutos.</p></div>";
 
     // 2) 7 dias
     var dias = [];
@@ -119,7 +119,7 @@
       '<p class="pl-pico"><b>' + hhmm(pkSel.v) + "</b> no pico · previsto às " + pkSel.h + "h" + (diaSel === 0 ? " · hoje" : "") + "</p>" +
       '<div class="pl-area">' + svg + "</div>" +
       '<p class="pl-dica" aria-live="polite">Toque numa hora para ver a espera e o vento</p>' +
-      '<div class="pl-leg">' + (temReg ? '<span><i class="reg"></i>medido por quem estava na fila</span>' : "") + '<span><i class="prev"></i>previsão</span><span><i class="jan"></i>melhor janela</span><span>💨 rajadas km/h</span></div>' +
+      '<div class="pl-leg">' + (temReg ? '<span><i class="reg"></i>registrado (AcquaVias e medições)</span>' : "") + '<span><i class="prev"></i>previsão</span><span><i class="jan"></i>melhor janela</span><span>💨 rajadas km/h</span></div>' +
       (jan ? '<div class="pl-melhor"><img src="img/mascote.webp" alt="" width="44" height="44" loading="lazy"><div><small>Melhor janela ' + (diaSel === 0 ? "hoje" : "no dia") + "</small><b>" + jan.h + "h – " + ((jan.h + 3) % 24) + "h</b></div><span>👍 espera de ~" + hhmm(arred(jan.soma / 3)) + "</span></div>" : "") +
       "</div>";
 
@@ -172,14 +172,22 @@
   function diaSP(ms) { return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date(ms)); }
   function carregarProprios() {
     if (!cfg.supabaseUrl) return Promise.resolve();
-    return Promise.all([api("espera_12h"), api("semaforo_atual")]).then(function (r) {
-      registrado = {}; aoVivo = {};
+    return Promise.all([api("espera_12h"), api("semaforo_atual"), api("espera_oficial_12h"), api("espera_oficial_atual")]).then(function (r) {
+      registrado = {}; aoVivo = {}; oficialAgora = false;
       var hoje = iso(agoraSP());
       (Array.isArray(r[0]) ? r[0] : []).forEach(function (d) {
         var t = new Date(d.hora).getTime();
         if (diaSP(t) === hoje && d.minutos != null) registrado[d.lado + "|" + horaSP(t)] = d.minutos;
       });
       (Array.isArray(r[1]) ? r[1] : []).forEach(function (d) { if (d.espera_mediana != null) aoVivo[d.lado] = d.espera_mediana; });
+      // espera oficial (AcquaVias) tem prioridade: horas de hoje e "agora"
+      (Array.isArray(r[2]) ? r[2] : []).forEach(function (d) {
+        var tt = new Date(d.hora).getTime(); if (diaSP(tt) !== hoje) return;
+        if (d.ss != null) registrado["sao-sebastiao|" + horaSP(tt)] = d.ss;
+        if (d.ib != null) registrado["ilhabela|" + horaSP(tt)] = d.ib;
+      });
+      var o = Array.isArray(r[3]) && r[3][0] ? r[3][0] : null;
+      if (o) { if (o.ss != null) aoVivo["sao-sebastiao"] = o.ss; if (o.ib != null) aoVivo.ilhabela = o.ib; oficialAgora = true; }
     });
   }
   function carregarVento() {

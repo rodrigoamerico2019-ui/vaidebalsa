@@ -55,25 +55,33 @@
       : '<span class="bf-item">' + txt + "</span>";
   }
 
+  function fmtMin(m) { if (m < 60) return m + " min"; var h = Math.floor(m / 60), r = m % 60; return h + "h" + (r ? String(r).padStart(2, "0") : ""); }
+  function nivelMin(m) { return m < 20 ? "verde" : m <= 60 ? "amarelo" : "vermelho"; }
+
   function atualizarAoVivo() {
     if (!cfg.supabaseUrl) return;
     Promise.all([
       api("/rest/v1/rpc/semaforo_atual", { method: "POST", body: "{}" }),
       api("/rest/v1/avisos?select=texto,emoji,link&order=ordem.asc,inicio.desc&limit=6"),
       carregarAlertasTempo(),
-      api("/rest/v1/rpc/espera_tipica", { method: "POST", body: "{}" })
+      api("/rest/v1/rpc/espera_tipica", { method: "POST", body: "{}" }),
+      api("/rest/v1/rpc/espera_oficial_atual", { method: "POST", body: "{}" })
     ]).then(function (r) {
       var sem = Array.isArray(r[0]) ? r[0] : [], avisos = Array.isArray(r[1]) ? r[1] : [], tempo = r[2] || [];
       var tipicaDB = {}; (Array.isArray(r[3]) ? r[3] : []).forEach(function (t) { tipicaDB[t.lado] = t; });
-      // sem dados ao vivo: histórico próprio (5+ medições no mesmo dia/horário) ou estimativa de referência
+      // espera oficial publicada pela AcquaVias (lida pelo banco a cada 10 min)
+      var of = Array.isArray(r[4]) && r[4][0] ? r[4][0] : null;
+      var OF = of ? { "sao-sebastiao": of.ss, ilhabela: of.ib } : {};
+      window.VDB_OFICIAL = of;
+      function oficial(l) { return OF[l] != null ? OF[l] : null; }
+      // sem dado oficial: histórico próprio (5+ medições no mesmo dia/horário) ou estimativa de referência
       function tipica(l) {
         var h = tipicaDB[l];
         if (h && h.medicoes >= 5 && h.mediana != null) {
-          return { texto: h.mediana + " min", nota: "típico neste horário (" + h.medicoes + " medições)",
-                   nivel: h.mediana < 20 ? "verde" : h.mediana <= 60 ? "amarelo" : "vermelho" };
+          return { texto: h.mediana + " min", nota: "típico neste horário (" + h.medicoes + " medições)", nivel: nivelMin(h.mediana) };
         }
         var e = window.VDB_ESTIMATIVA ? window.VDB_ESTIMATIVA(l) : null;
-        return e ? { texto: e.texto, nota: e.faixa, nivel: e.nivel } : null;
+        return e ? { texto: e.texto, nota: "estimativa · " + e.faixa, nivel: e.nivel } : null;
       }
       var porLado = {}; sem.forEach(function (d) { porLado[d.lado] = d; });
       var algum = sem.some(function (d) { return d.relatos > 0 || d.medidas > 0; });
@@ -82,6 +90,8 @@
       var itens = [];
       avisos.forEach(function (a) { itens.push(item(esc((a.emoji ? a.emoji + " " : "📢 ") + a.texto), a.link, true)); });
       ["sao-sebastiao", "ilhabela"].forEach(function (l) {
+        var o = oficial(l);
+        if (o != null) { itens.push(item("⏱ <b>" + NOMES[l] + ":</b> " + fmtMin(o) + " de espera <i>(AcquaVias)</i>", OFICIAL, true)); return; }
         var d = porLado[l] || { nivel: "sem-dados" }, n = NIVEL[d.nivel] || NIVEL["sem-dados"];
         var extra = d.espera_mediana != null ? " · ~" + d.espera_mediana + " min" : (FAIXA[d.nivel] ? " · " + FAIXA[d.nivel] : "");
         var quando = d.ultimo ? " (há " + minAtras(d.ultimo) + " min)" : "";
@@ -89,8 +99,8 @@
         if (t) itens.push(item("⏱ <b>" + NOMES[l] + ":</b> ~" + esc(t.texto) + " de espera <i>(estimativa)</i>", base + "#fila"));
         else itens.push(item(n[0] + " <b>" + NOMES[l] + ":</b> " + n[1] + extra + quando, base + "#fila"));
       });
-      itens.push(item(frequencia()));
-      itens.push(item("📢 Espera oficial: site da AcquaVias →", OFICIAL, true));
+      if (of && of.balsas != null) itens.push(item("⛴️ " + of.balsas + (of.balsas === 1 ? " balsa" : " balsas") + " em operação <i>(AcquaVias)</i>", OFICIAL, true));
+      else { itens.push(item(frequencia())); itens.push(item("📢 Espera oficial: site da AcquaVias →", OFICIAL, true)); }
       tempo.forEach(function (t) { itens.push(item(esc(t), base + "#tempo-7-dias")); });
       if (!algum) itens.push(item("📸 Está na fila? Poste uma foto ou meça sua espera", base + "#fila"));
 
@@ -109,50 +119,49 @@
       var emb = document.getElementById("embarque");
       if (emb) {
         var base2 = [];
+        var niveis = {};
         ["sao-sebastiao", "ilhabela"].forEach(function (l) {
           var d = porLado[l] || { nivel: "sem-dados", relatos: 0, medidas: 0 };
           var el = emb.querySelector('[data-lado="' + l + '"]');
-          var valor, sub, nivel = d.nivel;
-          if (d.espera_mediana != null) { valor = d.espera_mediana + " min"; }
-          else if (FAIXA[d.nivel]) { valor = FAIXA[d.nivel]; }
-          else { var t = tipica(l); valor = t ? t.texto : "Sem dados"; nivel = t ? "tipico " + t.nivel : "sem-dados"; }
+          var o = oficial(l), valor, sub, nivel = d.nivel;
           var partes = [];
           if (d.medidas) partes.push(d.medidas + (d.medidas === 1 ? " medição" : " medições"));
           if (d.relatos) partes.push(d.relatos + (d.relatos === 1 ? " foto" : " fotos"));
-          var tt = partes.length ? null : tipica(l);
-          sub = partes.length ? partes.join(" · ") + (d.ultimo ? " · há " + minAtras(d.ultimo) + " min" : "")
-            : (tt ? esc(tt.nota) : "");
+          if (o != null) {
+            valor = fmtMin(o); nivel = nivelMin(o);
+            sub = "AcquaVias · há " + minAtras(of.lido_em) + " min" + (d.espera_mediana != null ? " · na fila: " + d.espera_mediana + " min" : "");
+          } else if (d.espera_mediana != null || FAIXA[d.nivel]) {
+            valor = d.espera_mediana != null ? d.espera_mediana + " min" : FAIXA[d.nivel];
+            sub = partes.join(" · ") + (d.ultimo ? " · há " + minAtras(d.ultimo) + " min" : "");
+            base2.push(1);
+          } else {
+            var t = tipica(l); valor = t ? t.texto : "Sem dados"; nivel = t ? "tipico " + t.nivel : "sem-dados";
+            sub = t ? esc(t.nota) : "";
+          }
+          niveis[l] = { nivel: nivel.replace("tipico ", ""), valor: valor };
           el.className = "emb-lado " + nivel;
           el.querySelector("strong").textContent = valor;
           el.querySelector("span").innerHTML = sub;
-          if (partes.length) base2.push(1);
         });
         // fala do apresentador
         var fala = document.getElementById("fala-mascote");
         if (fala) {
-          var ss = porLado["sao-sebastiao"] || {}, ib = porLado["ilhabela"] || {};
-          var vivo = function (d) { return d.relatos > 0 || d.medidas > 0; };
-          var tempoTxt = function (l) {
-            var d = porLado[l] || {};
-            if (d.espera_mediana != null) return d.espera_mediana + " min";
-            if (FAIXA[d.nivel]) return FAIXA[d.nivel];
-            var t = tipica(l); return t ? t.texto : "";
-          };
-          var frase;
+          var ss = niveis["sao-sebastiao"], ib = niveis.ilhabela, frase;
           if (ss.nivel === "vermelho" || ib.nivel === "vermelho") {
-            var l = ss.nivel === "vermelho" ? "sao-sebastiao" : "ilhabela";
-            frase = "Eita! A fila em " + NOMES[l] + " está cheia (" + tempoTxt(l) + "). Se der, espere um pouco ou agende no Hora Marcada.";
-          } else if (vivo(ss) || vivo(ib)) {
-            if (ss.nivel === "verde" && ib.nivel !== "amarelo") frase = "Fila tranquila agora! Bora pra Ilhabela! 👍";
-            else frase = "Movimento moderado: São Sebastião " + tempoTxt("sao-sebastiao") + " e Ilhabela " + tempoTxt("ilhabela") + ".";
+            var lc = ss.nivel === "vermelho" ? "sao-sebastiao" : "ilhabela";
+            frase = "Eita! A fila em " + NOMES[lc] + " está longa (" + niveis[lc].valor + "). Se der, espere um pouco ou agende no Hora Marcada.";
+          } else if (ss.nivel === "verde" && ib.nivel === "verde") {
+            frase = "Fila tranquila agora! Bora atravessar! 👍";
           } else {
-            frase = "Sem medições agora. Estimo " + tempoTxt("sao-sebastiao") + " em São Sebastião e " + tempoTxt("ilhabela") + " em Ilhabela. Tá na fila? Me ajuda! 📸";
+            frase = "Agora: " + ss.valor + " em São Sebastião e " + ib.valor + " em Ilhabela." + (of ? "" : " Tá na fila? Me ajuda! 📸");
           }
           var nome = cfg.mascote && cfg.mascote.nome;
           fala.textContent = (nome ? nome + ": " : "") + frase;
         }
-        emb.querySelector(".emb-fonte").innerHTML = (base2.length ? "Medido por quem está na fila" : "Estimativa para agora") +
-          ' · <a href="' + esc(OFICIAL) + '" target="_blank" rel="noopener">espera oficial →</a>';
+        emb.querySelector(".emb-fonte").innerHTML = of
+          ? 'Espera oficial · <a href="' + esc(OFICIAL) + '" target="_blank" rel="noopener">AcquaVias →</a>'
+          : (base2.length ? "Medido por quem está na fila" : "Estimativa para agora") +
+            ' · <a href="' + esc(OFICIAL) + '" target="_blank" rel="noopener">espera oficial →</a>';
       }
     });
   }
