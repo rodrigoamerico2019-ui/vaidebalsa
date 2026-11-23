@@ -943,9 +943,20 @@
     var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
     return "rgb(" + Math.round(r + (255 - r) * q) + "," + Math.round(g + (255 - g) * q) + "," + Math.round(b + (255 - b) * q) + ")";
   }
+  var _corTopo = null;
+  function corTopoFoto(im) {   // cor média da faixa de cima da foto (céu)
+    if (_corTopo) return _corTopo;
+    try {
+      var c2 = document.createElement("canvas"); c2.width = 1; c2.height = 1;
+      var x2 = c2.getContext("2d"); x2.drawImage(im, 0, 0, im.width, Math.max(2, im.height * 0.012), 0, 0, 1, 1);
+      var d = x2.getImageData(0, 0, 1, 1).data; _corTopo = "rgb(" + d[0] + "," + d[1] + "," + d[2] + ")";
+    } catch (e) { _corTopo = "#4f9be6"; }
+    return _corTopo;
+  }
   function cenaFoto() {
     var im = IMG.cena, noCais = S.fase === "embarque", chegou = S.fase === "desembarque" || S.fase === "fim";
-    var s = Math.max(W / 700, H * 0.7 / 941), x0 = W / 2 - 843 * s, y0 = H - 941 * s;   // a balsa inteira cabe na largura
+    // a foto inteira aparece: cabe na largura (balsa toda) e na altura (horizonte); sobra = extensão da própria foto
+    var s = Math.min(W / 700, H / 941), x0 = W / 2 - 843 * s, y0 = H - 941 * s;
     CAM = { x0: x0, y0: y0, s: s };
     var tPier = chegou ? 1 : (S.fase === "viagem" && restante() < 160 ? 1 + 0.75 * (1 - Math.exp(-restante() / 45)) : null);
     var tTerra = tPier !== null ? tPier + 0.02 : null;
@@ -957,11 +968,31 @@
     cx.translate(W / 2, H / 2);
     cx.rotate(Math.sin(S.t * 0.8) * 0.006 * (calmo ? 0.3 : 1 + c.s));
     cx.translate(-W / 2, -H / 2 + Math.sin(S.t * 1.2) * (calmo ? 0.5 : 2 + c.s * 4));
+    var s2 = Math.max(W / 1672, H / 941) * 1.04;
+    if (x0 > 0 || x0 + 1672 * s < W) {   // fundo: a mesma foto ampliada e esmaecida preenche as laterais
+      cx.drawImage(im, W / 2 - 843 * s2, H - 941 * s2, 1672 * s2, 941 * s2);
+      cx.fillStyle = "rgba(10,44,82,.18)"; cx.fillRect(0, 0, W, H);
+    }
     cx.drawImage(im, x0, y0, 1672 * s, 941 * s);
-    if (y0 > 0) {   // emenda suave com o céu se a tela for mais alta que a foto
-      var cc = corCeu(), g = cx.createLinearGradient(0, y0, 0, y0 + 50 * s);
-      g.addColorStop(0, cc[1]); g.addColorStop(1, "rgba(255,255,255,0)");
-      cx.fillStyle = g; cx.fillRect(0, y0, W, 50 * s);
+    if (y0 > 0) {   // acima da foto: céu com nuvens que termina na cor do topo da foto (sem emenda)
+      var topo = corTopoFoto(im), noite = c.noite;
+      var gs = cx.createLinearGradient(0, 0, 0, y0 + 2);
+      gs.addColorStop(0, noite ? "#06142b" : "#2f7fd6"); gs.addColorStop(1, noite ? "#0b2346" : topo);
+      cx.fillStyle = gs; cx.fillRect(0, 0, W, y0 + 2);
+      if (!noite) {
+        cx.fillStyle = "rgba(255,255,255,.8)";
+        for (var nv = 0; nv < 3; nv++) {
+          var nx = ((nv * 0.37 + S.t * 0.004) % 1.2 - 0.1) * W, ny = y0 * (0.3 + nv * 0.2);
+          cx.beginPath(); cx.ellipse(nx, ny, 30, 9, 0, 0, 7); cx.ellipse(nx + 20, ny - 5, 20, 9, 0, 0, 7); cx.ellipse(nx - 18, ny + 2, 18, 7, 0, 0, 7); cx.fill();
+        }
+      }
+    }
+    if (x0 > 0 || x0 + 1672 * s < W) {   // emenda suave nas laterais
+      [[x0, 1], [x0 + 1672 * s, -1]].forEach(function (b) {
+        var gx = cx.createLinearGradient(b[0], 0, b[0] + b[1] * 40, 0);
+        gx.addColorStop(0, "rgba(10,44,82,.35)"); gx.addColorStop(1, "rgba(10,44,82,0)");
+        cx.fillStyle = gx; cx.fillRect(Math.min(b[0], b[0] + b[1] * 40), y0, 40, 941 * s);
+      });
     }
     // navio e golfinhos no mar da foto
     var hzT = y0 + HZ_FOTO * s, n = S.navio;
