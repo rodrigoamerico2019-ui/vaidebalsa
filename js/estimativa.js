@@ -89,8 +89,8 @@
     var alta = altaTemporada(d);
     return {
       min: faixa[0], max: faixa[1], valor: valor,
-      texto: "≈ " + texto(valor),
-      faixa: faixa[1] < 60 ? faixa[0] + "–" + faixa[1] + " min" : texto(faixa[0]) + "–" + texto(faixa[1]),
+      texto: texto(valor),
+      faixa: faixa[1] < 60 ? "entre " + faixa[0] + " e " + faixa[1] + " min" : "entre " + texto(faixa[0]) + " e " + texto(faixa[1]),
       madrugada: per === "madrugada",
       contexto: NOMES_TIPO[tipo] + (alta ? ", alta temporada" : ""),
       nivel: valor < 20 ? "verde" : valor > 60 ? "vermelho" : "amarelo"

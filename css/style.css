@@ -488,6 +488,7 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
 .emb-cab{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .emb-tit{font:900 italic 1.05rem var(--titulo);color:var(--sol)}
 .emb-fonte{color:#b9cde6;font-size:.78rem}
+.emb-fonte a{color:var(--sol);font-weight:700;text-decoration:none}
 .emb-lados{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .emb-lado{display:block;text-decoration:none;color:#fff;background:rgba(255,255,255,.07);border-radius:14px;padding:10px 12px;border-left:5px solid rgba(255,255,255,.25)}
 .emb-lado small{display:block;font-size:.72rem;color:#b9cde6;font-weight:600}
