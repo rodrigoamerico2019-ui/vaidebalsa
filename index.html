@@ -175,6 +175,24 @@
     </div>
   </section>
 
+  <section class="secao" id="cameras" aria-labelledby="tit-cams">
+    <div class="wrap">
+      <div class="secao-cab revela">
+        <div>
+          <span class="rotulo">Câmeras</span>
+          <h2 id="tit-cams">Câmeras da <em>travessia</em></h2>
+          <p class="lead">Câmeras oficiais da AcquaVias nos dois embarques. Toque para ver ao vivo antes de pegar a estrada.</p>
+        </div>
+        <div class="chips" role="group" aria-label="Filtrar câmeras">
+          <button data-lado="todas" aria-pressed="true">Todas</button>
+          <button data-lado="sao-sebastiao" aria-pressed="false">São Sebastião</button>
+          <button data-lado="ilhabela" aria-pressed="false">Ilhabela</button>
+        </div>
+      </div>
+      <div id="grade" class="grade" aria-live="polite"></div>
+    </div>
+  </section>
+
   <dialog id="postar" class="folha" aria-labelledby="tit-postar">
     <form id="form-postar" method="dialog">
       <div class="folha-cab">
@@ -298,23 +316,6 @@
     </div>
   </section>
 
-  <section class="secao" id="cameras" aria-labelledby="tit-cams">
-    <div class="wrap">
-      <div class="secao-cab revela">
-        <div>
-          <span class="rotulo">Câmeras</span>
-          <h2 id="tit-cams">Câmeras da <em>travessia</em></h2>
-          <p class="lead">Câmeras oficiais da AcquaVias nos dois embarques. Toque para ver ao vivo antes de pegar a estrada.</p>
-        </div>
-        <div class="chips" role="group" aria-label="Filtrar câmeras">
-          <button data-lado="todas" aria-pressed="true">Todas</button>
-          <button data-lado="sao-sebastiao" aria-pressed="false">São Sebastião</button>
-          <button data-lado="ilhabela" aria-pressed="false">Ilhabela</button>
-        </div>
-      </div>
-      <div id="grade" class="grade" aria-live="polite"></div>
-    </div>
-  </section>
 
   <div class="faixa-azul">
     <section class="secao" aria-labelledby="tit-precos">
