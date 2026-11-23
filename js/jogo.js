@@ -948,8 +948,8 @@
     var roll = rolagem() * (noCais || chegou ? 0.25 : 1), bob = ondaY(W / 2, 0) * (noCais || chegou ? 0.1 : 0.3);
     // chegada: a costa do destino se aproxima; o cais é curto e o terminal fica em terra
     var tPier = chegou ? 1 : (S.fase === "viagem" && restante() < 160 ? 1 + 0.75 * (1 - Math.exp(-restante() / 45)) : null);
-    var tTerra = tPier !== null ? tPier + 0.28 : null;
-    S.tFimPier = tTerra !== null ? tTerra + 0.42 : 1.7;
+    var tTerra = tPier !== null ? tPier + 0.02 : null;   // a margem encosta direto na proa (atracação em terra)
+    S.tFimPier = tTerra !== null ? tTerra + 0.55 : 1.6;
     if (tTerra !== null) costa(tTerra, k);
     // esteira de espuma (tela)
     if (!noCais && !chegou && Math.abs(S.v) > 0.8) {
@@ -1058,8 +1058,8 @@
     var tFim = S.tFimPier, w = 1.35;
     function quadT(a, b, fw, cor) { var p1 = PD(a, -fw), p2 = PD(a, fw), p3 = PD(b, fw), p4 = PD(b, -fw); cx.fillStyle = cor; cx.beginPath(); cx.moveTo(p1[0], p1[1]); cx.lineTo(p2[0], p2[1]); cx.lineTo(p3[0], p3[1]); cx.lineTo(p4[0], p4[1]); cx.closePath(); cx.fill(); }
     if (chegou) quadT(0.96, 1.08, 1, "#4b5058");   // rampa da proa baixada
-    quadT(t0, tTerra, w, (S.clima && S.clima.noite) ? "#4a4842" : "#9a958c");          // cais (sobre a água)
-    quadT(tTerra, tFim + 0.1, 0.95, (S.clima && S.clima.noite) ? "#2f3236" : "#55585d");  // rua em terra até o terminal
+    quadT(t0, tTerra + 0.12, w, (S.clima && S.clima.noite) ? "#4a4842" : "#9a958c");   // rampa de concreto da margem
+    quadT(tTerra + 0.12, tFim + 0.1, 0.95, (S.clima && S.clima.noite) ? "#2f3236" : "#55585d");  // rua em terra até o terminal
     var a = PD(t0, -w), b = PD(t0, w);
     cx.strokeStyle = "#FFC107"; cx.lineWidth = 5; cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(b[0], b[1]); cx.stroke();
     var m1 = PD(t0, 0), m2 = PD(tFim, 0);
@@ -1067,7 +1067,7 @@
     cx.beginPath(); cx.moveTo(m1[0], m1[1]); cx.lineTo(m2[0], m2[1]); cx.stroke(); cx.setLineDash([]);
     // terminal
     // terminal: a rua entra pelo lado esquerdo do prédio (o prédio fica à direita da rua)
-    var tp = PD(tTerra + 0.1, 0), larg = 210, alt = 66, x0 = tp[0] - 40;
+    var tp = PD(tTerra + 0.22, 0), larg = 210, alt = 66, x0 = tp[0] - 40;
     cx.fillStyle = "#f4f6f8"; cx.fillRect(x0, tp[1] - alt, larg, alt);
     cx.fillStyle = "#0A2C52"; cx.fillRect(x0 - 6, tp[1] - alt - 10, larg + 12, 12);
     cx.fillStyle = "#1d4fc4"; cx.fillRect(x0 + larg * 0.08, tp[1] - alt * 0.85, larg * 0.84, alt * 0.3);
