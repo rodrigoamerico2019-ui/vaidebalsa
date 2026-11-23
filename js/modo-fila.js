@@ -186,6 +186,7 @@
     var bloco = res.querySelector(".mr-chegada");
     bloco.hidden = true;
     res.showModal();
+    if (!cfg.cupons) return;   // cupons desligados no config
     fetch(cfg.supabaseUrl + "/rest/v1/parceiros?select=id,nome,oferta,categoria,plano&ativo=eq.true&plano=in.(apoiador,embaixador)&oferta=not.is.null&lado=in.(" + destino + ",ambos)&order=ordem.asc", { headers: { apikey: cfg.supabaseAnonKey } })
       .then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; })
       .then(function (lista) {
@@ -214,7 +215,7 @@
 
   // "Meus cupons" (guardados só neste celular)
   var btnCupons = document.getElementById("meus-cupons"), dlgCupons = document.getElementById("dlg-cupons");
-  function botaoCupons() { if (btnCupons) btnCupons.hidden = !cuponsSalvos().length; }
+  function botaoCupons() { if (btnCupons) btnCupons.hidden = !cfg.cupons || !cuponsSalvos().length; }
   if (btnCupons && dlgCupons) {
     btnCupons.addEventListener("click", function () {
       dlgCupons.querySelector(".lista-cupons").innerHTML = cuponsSalvos().map(function (c) {

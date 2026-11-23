@@ -800,3 +800,5 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
 .sp-acoes{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0 8px}
 .sp-contato{font-size:.92rem;color:var(--suave);margin:0}
 @media (max-width:860px){.sp-planos{grid-template-columns:1fr}.sp-destaque{margin-top:8px}}
+
+.btn-medir[hidden]{display:none}
