@@ -699,6 +699,7 @@
   function carregarImg(nome, src) { var i = new Image(); i.onload = function () { IMG[nome] = i; }; i.src = src; }
   carregarImg("cabine", "img/jogo-cabine.webp?v=1");
   carregarImg("horizonte", "img/jogo-horizonte.webp?v=1");
+  carregarImg("balsa", "img/jogo-balsa.webp?v=1");
   function erroRumo() { return ang(Math.atan2(0 - S.w, uDestino() - S.u) - S.th); }
   // faixa de foto do horizonte (montanhas e cidade); base = linha d'água
   function horizonte(xc, base, larg, tipoFallback) {
@@ -748,7 +749,7 @@
     var xh = W / 2 + erro * W * 0.55, larg = Math.max(W, H) * 1.7 * (1 + 1.1 * p * p);
     horizonte(xh, hz, larg, destino());
     marPerspectiva(hz, H, 1);
-    pierHorizonte(xh, hz, p);
+    if (!IMG.balsa) pierHorizonte(xh, hz, p);
     var n = S.navio;
     if (n && n.ativo) {
       var nm = ang(Math.atan2(n.w - S.w, n.u - S.u) - S.th), d = Math.hypot(n.w - S.w, n.u - S.u);
@@ -763,10 +764,10 @@
     }
     // cais atrás da balsa durante o embarque
     if (S.fase === "embarque") {
-      cx.fillStyle = "#8a8378"; cx.fillRect(0, H * 0.9, W, H * 0.1);
-      cx.fillStyle = "#FFC107"; cx.fillRect(0, H * 0.9, W, 4);
+      cx.fillStyle = "#8a8378"; cx.fillRect(0, H * 0.93, W, H * 0.07);
+      cx.fillStyle = "#FFC107"; cx.fillRect(0, H * 0.93, W, 4);
     }
-    balsaTraseira();
+    if (IMG.balsa) balsaFoto(); else balsaTraseira();
     cx.restore();
     efeitosTempo(false);
   }
@@ -921,6 +922,154 @@
       cx.strokeStyle = "#ff7a1a"; cx.lineWidth = fe * 0.22; cx.lineCap = "round";
       cx.beginPath(); cx.moveTo(fx + fe * 0.35, fy - fe * 2.1); cx.lineTo(fx + fe * 0.35 + Math.cos(-1.2 + aceno) * fe, fy - fe * 2.1 + Math.sin(-1.2 + aceno) * fe); cx.stroke();
     }
+  }
+
+  // ---------- balsa da foto (recorte real) com os carros do jogo no convés ----------
+  // convés no recorte (510x508): popa-esq, popa-dir, proa-dir, proa-esq
+  var DECK = { SL: [119, 408], SR: [387, 408], BR: [220, 148], BL: [73, 152] }, ANCORA = [281, 500];
+  function PD(t, f) {   // t: 0 popa → 1 proa (pode passar de 0..1); f: -1 esquerda → +1 direita
+    var lx = DECK.SL[0] + (DECK.BL[0] - DECK.SL[0]) * t, ly = DECK.SL[1] + (DECK.BL[1] - DECK.SL[1]) * t;
+    var rx = DECK.SR[0] + (DECK.BR[0] - DECK.SR[0]) * t, ry = DECK.SR[1] + (DECK.BR[1] - DECK.SR[1]) * t;
+    var u = (f + 1) / 2; return [lx + (rx - lx) * u, ly + (ry - ly) * u];
+  }
+  function larguraDeck(t) { var a = PD(t, -1), b = PD(t, 1); return Math.max(0, Math.hypot(b[0] - a[0], b[1] - a[1])); }
+  function escurecer(hex, q) {
+    var n = parseInt(hex.slice(1), 16);
+    return "rgb(" + Math.round((n >> 16) * (1 - q)) + "," + Math.round(((n >> 8) & 255) * (1 - q)) + "," + Math.round((n & 255) * (1 - q)) + ")";
+  }
+  function clarear(hex, q) {
+    var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    return "rgb(" + Math.round(r + (255 - r) * q) + "," + Math.round(g + (255 - g) * q) + "," + Math.round(b + (255 - b) * q) + ")";
+  }
+  function balsaFoto() {
+    var im = IMG.balsa;
+    var noCais = S.fase === "embarque", chegou = S.fase === "desembarque" || S.fase === "fim";
+    var k = Math.min(W * 0.84 / 510, H * 0.62 / 508);
+    var roll = rolagem() * (noCais || chegou ? 0.25 : 1), bob = ondaY(W / 2, 0) * (noCais || chegou ? 0.1 : 0.3);
+    S.tFimPier = 1.85;
+    // esteira de espuma (tela)
+    if (!noCais && !chegou && Math.abs(S.v) > 0.8) {
+      cx.fillStyle = "rgba(255,255,255,.6)";
+      var base = H * 0.9 + 6;
+      for (var e = 0; e < 34; e++) {
+        var ex = W / 2 + ((e * 53) % 100 / 100 - 0.5) * 300 * k * (0.8 + (e % 5) * 0.15), ey = base + (e % 9) * 9 * k + Math.sin(S.t * 4 + e) * 3;
+        cx.beginPath(); cx.ellipse(ex, ey, (6 + (e % 4) * 5) * k * 1.6, (3 + (e % 3) * 2) * k * 1.6, 0, 0, 7); cx.fill();
+      }
+    }
+    cx.save();
+    cx.translate(W / 2, H * 0.9 + bob); cx.rotate(roll * 0.8); cx.scale(k, k); cx.translate(-ANCORA[0], -ANCORA[1]);
+    // carros com posição animada
+    var carros = [];
+    ["e", "d"].forEach(function (lado, li) {
+      S.deck[lado].forEach(function (v, j) { carros.push({ v: v, t: v.t != null ? v.t : slotT(j), f0: li === 0 ? -0.5 : 0.5 }); });
+    });
+    carros.sort(function (x, y) { return y.t - x.t; });
+    var tPier = chegou ? 1 : (S.fase === "viagem" && restante() < 90 ? 1 + restante() / 45 : null);
+    if (tPier !== null) pierFoto(tPier, chegou);
+    carros.filter(function (c) { return c.t >= 0.9; }).forEach(carroFoto);   // na proa/píer (a ponte encobre)
+    cx.drawImage(im, 0, 0);
+    carros.filter(function (c) { return c.t >= 0 && c.t < 0.9; }).forEach(carroFoto);
+    if (noCais) {   // rampa da popa baixada no cais
+      cx.fillStyle = "#4b5058";
+      cx.beginPath(); cx.moveTo(122, 470); cx.lineTo(408, 470); cx.lineTo(440, 560); cx.lineTo(95, 560); cx.closePath(); cx.fill();
+      for (var z = 0; z < 16; z++) { cx.fillStyle = z % 2 ? "#111" : "#FFC107"; cx.fillRect(95 + z * 345 / 16, 552, 345 / 16, 9); }
+    }
+    carros.filter(function (c) { return c.t < 0; }).forEach(carroFoto);
+    if (S.clima && S.clima.noite) {
+      cx.fillStyle = "#ff5252"; cx.beginPath(); cx.arc(70, 150, 5, 0, 7); cx.fill();
+      cx.fillStyle = "#69f0ae"; cx.beginPath(); cx.arc(228, 145, 5, 0, 7); cx.fill();
+      cx.fillStyle = "#fff"; cx.beginPath(); cx.arc(164, 12, 5, 0, 7); cx.fill();
+    }
+    cx.restore();
+    // tom de noite/chuva por cima de tudo
+    var c = S.clima || {};
+    if (c.noite) { cx.fillStyle = "rgba(6,20,43,.38)"; cx.fillRect(0, 0, W, H); }
+    else if (c.chuva) { cx.fillStyle = "rgba(90,100,112,.18)"; cx.fillRect(0, 0, W, H); }
+  }
+  function quadTF(t1, t2, f1, f2) {
+    var a = PD(t1, f1), b = PD(t1, f2), c = PD(t2, f2), d = PD(t2, f1);
+    cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(b[0], b[1]); cx.lineTo(c[0], c[1]); cx.lineTo(d[0], d[1]); cx.closePath();
+  }
+  var DIM = { moto: [0.08, 0.2], carro: [0.145, 0.6], SUV: [0.15, 0.64], van: [0.155, 0.64], "caminhão": [0.24, 0.72] };
+  function carroFoto(c) {
+    var t = c.t, f = c.f0;
+    if (t > 0.97) f = c.f0 * clamp(1 - (t - 0.97) / 0.4, 0, 1);
+    if (t < 0) f = c.f0 * clamp(1 + t / 0.5, 0, 1);
+    var lim = S.tFimPier || 2, alfa = t > lim - 0.3 ? clamp((lim - t) / 0.3, 0, 1) : 1;
+    if (alfa <= 0) return;
+    var n = c.v.n, d = DIM[n] || DIM.carro, Lt = d[0], Wf = d[1];
+    var t0 = t - Lt / 2, t1 = t + Lt / 2, f0 = f - Wf / 2, f1 = f + Wf / 2;   // t1 = frente (proa)
+    cx.save(); cx.globalAlpha = alfa;
+    var h = larguraDeck(t) * (n === "caminhão" ? 0.12 : n === "moto" ? 0.05 : 0.075);   // altura do veículo
+    // sombra no chão
+    cx.save(); cx.translate(4, 3); cx.fillStyle = "rgba(0,0,0,.3)"; quadTF(t0, t1, f0, f1); cx.fill(); cx.restore();
+    // traseira (face vertical voltada para a câmera)
+    var a = PD(t0, f0), b = PD(t0, f1);
+    cx.fillStyle = escurecer(n === "caminhão" ? "#eceff1" : c.v.cor, 0.3);
+    cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(b[0], b[1]); cx.lineTo(b[0], b[1] - h); cx.lineTo(a[0], a[1] - h); cx.closePath(); cx.fill();
+    // lateral esquerda (vista de leve, a câmera está à esquerda)
+    var a2 = PD(t1, f0);
+    cx.fillStyle = escurecer(n === "caminhão" ? "#eceff1" : c.v.cor, 0.5);
+    cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(a2[0], a2[1]); cx.lineTo(a2[0], a2[1] - h); cx.lineTo(a[0], a[1] - h); cx.closePath(); cx.fill();
+    cx.translate(0, -h);   // o resto do carro fica no alto (teto)
+    cx.fillStyle = c.v.cor; quadTF(t0, t1, f0, f1); cx.fill();
+    if (n === "moto") {
+      cx.fillStyle = "#222"; quadTF(t - Lt * 0.15, t + Lt * 0.15, f - Wf * 0.3, f + Wf * 0.3); cx.fill();
+    } else {
+      var ins = Wf * 0.14;
+      if (n === "caminhão") {   // baú branco atrás, cabine na frente
+        cx.fillStyle = "#eceff1"; quadTF(t0, t1 - Lt * 0.3, f0 + Wf * 0.04, f1 - Wf * 0.04); cx.fill();
+        cx.fillStyle = "rgba(20,30,42,.85)"; quadTF(t1 - Lt * 0.2, t1 - Lt * 0.08, f0 + ins, f1 - ins); cx.fill();
+      } else {
+        cx.fillStyle = clarear(c.v.cor, 0.25); quadTF(t0 + Lt * 0.3, t1 - Lt * 0.25, f0 + ins, f1 - ins); cx.fill();      // teto
+        cx.fillStyle = "rgba(20,30,42,.85)";
+        quadTF(t1 - Lt * 0.25, t1 - Lt * 0.1, f0 + ins, f1 - ins); cx.fill();                                            // para-brisa
+        quadTF(t0 + Lt * 0.14, t0 + Lt * 0.3, f0 + ins, f1 - ins); cx.fill();                                            // vidro traseiro
+      }
+    }
+    cx.translate(0, h);
+    // lanternas na traseira
+    var acesas = S.fase === "desembarque" || S.fase === "embarque" || (S.clima && S.clima.noite);
+    cx.fillStyle = acesas ? "#ff4d4d" : "#b71c1c";
+    var l1 = PD(t0, f0 + Wf * 0.06), l2 = PD(t0, f1 - Wf * 0.06), lw = Math.max(2, Math.hypot(b[0] - a[0], b[1] - a[1]) * 0.18);
+    cx.fillRect(l1[0], l1[1] - h * 0.75, lw, h * 0.28); cx.fillRect(l2[0] - lw, l2[1] - h * 0.75, lw, h * 0.28);
+    cx.restore();
+  }
+  function pierFoto(t0, chegou) {
+    var tFim = S.tFimPier, w = 1.35;
+    function quadT(a, b, fw, cor) { var p1 = PD(a, -fw), p2 = PD(a, fw), p3 = PD(b, fw), p4 = PD(b, -fw); cx.fillStyle = cor; cx.beginPath(); cx.moveTo(p1[0], p1[1]); cx.lineTo(p2[0], p2[1]); cx.lineTo(p3[0], p3[1]); cx.lineTo(p4[0], p4[1]); cx.closePath(); cx.fill(); }
+    if (chegou) quadT(0.96, 1.08, 1, "#4b5058");   // rampa da proa baixada
+    quadT(t0, tFim, w, (S.clima && S.clima.noite) ? "#4a4842" : "#9a958c");
+    var a = PD(t0, -w), b = PD(t0, w);
+    cx.strokeStyle = "#FFC107"; cx.lineWidth = 5; cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(b[0], b[1]); cx.stroke();
+    var m1 = PD(t0, 0), m2 = PD(tFim, 0);
+    cx.strokeStyle = "rgba(255,255,255,.75)"; cx.lineWidth = 3; cx.setLineDash([14, 16]);
+    cx.beginPath(); cx.moveTo(m1[0], m1[1]); cx.lineTo(m2[0], m2[1]); cx.stroke(); cx.setLineDash([]);
+    // terminal
+    // terminal: a rua entra pelo lado esquerdo do prédio (o prédio fica à direita da rua)
+    var tp = PD(tFim - 0.05, 0), larg = 210, alt = 66, x0 = tp[0] - 40;
+    cx.fillStyle = "#f4f6f8"; cx.fillRect(x0, tp[1] - alt, larg, alt);
+    cx.fillStyle = "#0A2C52"; cx.fillRect(x0 - 6, tp[1] - alt - 10, larg + 12, 12);
+    cx.fillStyle = "#1d4fc4"; cx.fillRect(x0 + larg * 0.08, tp[1] - alt * 0.85, larg * 0.84, alt * 0.3);
+    var nomeT = "TERMINAL " + nomeLado(destino()).toUpperCase(), fs = 15;
+    cx.font = "800 " + fs + "px Montserrat, sans-serif";
+    while (fs > 8 && cx.measureText(nomeT).width > larg * 0.8) { fs--; cx.font = "800 " + fs + "px Montserrat, sans-serif"; }
+    cx.fillStyle = "#fff"; cx.textAlign = "center";
+    cx.fillText(nomeT, x0 + larg / 2, tp[1] - alt * 0.63);
+    cx.fillStyle = "#2b3a4a"; cx.fillRect(x0 + 6, tp[1] - alt * 0.45, 70, alt * 0.45);   // portão por onde os carros entram
+    for (var j = 0; j < 3; j++) cx.fillRect(x0 + 92 + j * 38, tp[1] - alt * 0.42, 24, alt * 0.3);
+    // semáforo e funcionário
+    var sp = PD(1.35, 1.25), verde = S.fase === "desembarque" && S.tDes > 1.6;
+    cx.fillStyle = "#333"; cx.fillRect(sp[0] - 3, sp[1] - 70, 6, 70); ret(sp[0] - 10, sp[1] - 100, 20, 32, 4); cx.fill();
+    cx.fillStyle = verde ? "#333" : "#ff3b3b"; cx.beginPath(); cx.arc(sp[0], sp[1] - 92, 6, 0, 7); cx.fill();
+    cx.fillStyle = verde ? "#4ade80" : "#333"; cx.beginPath(); cx.arc(sp[0], sp[1] - 77, 6, 0, 7); cx.fill();
+    var fp = PD(1.15, -1.2), fx = fp[0], fy = fp[1], fe = 16;
+    cx.fillStyle = "#263238"; cx.fillRect(fx - fe * 0.25, fy - fe * 1.2, fe * 0.18, fe * 1.2); cx.fillRect(fx + fe * 0.07, fy - fe * 1.2, fe * 0.18, fe * 1.2);
+    cx.fillStyle = "#ff7a1a"; ret(fx - fe * 0.4, fy - fe * 2.3, fe * 0.8, fe * 1.2, 3); cx.fill();
+    cx.fillStyle = "#e3a57e"; cx.beginPath(); cx.arc(fx, fy - fe * 2.6, fe * 0.3, 0, 7); cx.fill();
+    var aceno = chegou ? Math.sin(S.t * 6) * 0.6 : 0.2;
+    cx.strokeStyle = "#ff7a1a"; cx.lineWidth = fe * 0.22; cx.lineCap = "round";
+    cx.beginPath(); cx.moveTo(fx + fe * 0.35, fy - fe * 2.1); cx.lineTo(fx + fe * 0.35 + Math.cos(-1.2 + aceno) * fe, fy - fe * 2.1 + Math.sin(-1.2 + aceno) * fe); cx.stroke();
   }
 
   // ---------- visão 2: cabine (foto real com as janelas vazadas) ----------
