@@ -808,3 +808,5 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
 .cams-cab{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .cams-cab h3{font:900 italic 1.3rem var(--titulo);color:var(--oceano)}
 .cams-cab small{display:block;color:var(--suave);font-size:.85rem;margin-top:2px}
+
+.btn-jogo{text-decoration:none;display:inline-flex;align-items:center;gap:6px}

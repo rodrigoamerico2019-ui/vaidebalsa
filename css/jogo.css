@@ -1,0 +1,82 @@
+/* Capitão da Balsa — VAIDEBALSA */
+:root{--oceano:#0A2C52;--oceano2:#0F3B6B;--mar:#0D6EFD;--turquesa:#00B8A9;--sol:#FFC107;--branco:#fff;--suave:#b9cde6}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:var(--oceano);color:#fff;font-family:Inter,system-ui,sans-serif;overscroll-behavior:none}
+body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.app{height:100vh;height:100dvh;display:flex;flex-direction:column;max-width:900px;margin:0 auto}
+.jtopo{flex:none;height:46px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 12px;background:var(--oceano)}
+.jvoltar{color:#fff;text-decoration:none;font:900 italic .95rem Montserrat,sans-serif}
+.jvoltar i{color:var(--sol)}
+.jtitulo{font:900 italic 1rem Montserrat,sans-serif;color:var(--sol)}
+.jbtn-mini{background:rgba(255,255,255,.12);border:0;color:#fff;font-size:1.1rem;width:38px;height:34px;border-radius:10px;cursor:pointer}
+.palco{position:relative;flex:1;min-height:0;overflow:hidden;background:#0b3a66}
+#tela{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+.hud{position:absolute;top:8px;left:8px;right:8px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none}
+.chip{background:rgba(10,44,82,.78);backdrop-filter:blur(4px);border-radius:999px;padding:4px 10px;font-size:.78rem;font-weight:700;white-space:nowrap}
+.chip.conforto{display:inline-flex;align-items:center;gap:6px}
+.chip.conforto i{display:block;width:54px;height:7px;border-radius:9px;background:rgba(255,255,255,.2);overflow:hidden}
+.chip.conforto b{display:block;height:100%;width:100%;background:#4ade80;transition:width .3s}
+.vistas{position:absolute;right:8px;bottom:8px;display:flex;gap:4px;background:rgba(10,44,82,.8);padding:4px;border-radius:14px}
+.vistas button{border:0;background:transparent;color:#fff;font:700 .76rem Inter;padding:7px 9px;border-radius:10px;cursor:pointer}
+.vistas button[aria-pressed="true"]{background:var(--sol);color:var(--oceano)}
+.aviso{position:absolute;left:50%;top:54px;transform:translateX(-50%);max-width:92%;text-align:center;background:var(--sol);color:var(--oceano);font:800 .9rem Montserrat,sans-serif;padding:8px 14px;border-radius:14px;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.aviso.ver{opacity:1}
+.aviso.ruim{background:#ef4444;color:#fff}
+.aviso.bom{background:#22c55e;color:#fff}
+
+.painel-jogo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,94%);max-height:94%;overflow:auto;background:rgba(10,44,82,.94);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.15);border-radius:22px;padding:20px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.painel-jogo h1{font:900 italic 2rem Montserrat,sans-serif;margin:6px 0 8px;line-height:1.05}
+.painel-jogo h1 em,.painel-jogo h2 em{color:var(--sol)}
+.painel-jogo h2{font:900 italic 1.4rem Montserrat,sans-serif;margin:0 0 8px}
+.painel-jogo p{margin:0 0 12px;color:#dbe7f5;font-size:.92rem;line-height:1.45}
+.j-mascote{width:84px;height:84px;border-radius:50%;border:3px solid var(--sol);object-fit:cover;background:#fff}
+.j-escolha{display:grid;gap:8px;margin:12px 0}
+.j-btn{display:block;width:100%;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;font:700 .98rem Inter;padding:12px;border-radius:999px;cursor:pointer;margin-top:8px}
+.j-btn b{color:var(--sol)}
+.j-btn.sol{background:var(--sol);border-color:var(--sol);color:var(--oceano);font-weight:800}
+.j-btn:disabled{opacity:.4;cursor:default}
+.j-op{display:flex;gap:8px;align-items:flex-start;text-align:left;font-size:.86rem;color:#dbe7f5;margin:8px 0;cursor:pointer}
+.j-op input{margin-top:3px;accent-color:var(--sol)}
+.j-recorde{font-weight:800;color:var(--sol)!important}
+.j-alerta{font-size:.8rem!important;color:#fca5a5!important;margin:6px 0 0!important}
+
+.embarque{top:auto;bottom:8px;transform:translateX(-50%);padding:14px 16px}
+.emb-topo{display:flex;justify-content:space-between;align-items:center}
+.emb-tempo{font:900 1.3rem Montserrat;color:var(--sol)}
+.emb-dica{font-size:.82rem!important;margin-bottom:8px!important}
+.emb-proximo{display:flex;align-items:center;justify-content:center;gap:8px;font-size:.9rem;margin-bottom:8px}
+.emb-proximo b{font-size:1.6rem}
+.emb-proximo small{color:var(--suave)}
+.emb-deck{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:rgba(255,255,255,.06);border-radius:14px;padding:8px}
+.emb-faixa{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;min-height:38px}
+.emb-faixa span{display:grid;place-items:center;font-size:1.25rem;background:rgba(255,255,255,.08);border-radius:8px;height:36px}
+.emb-faixa span.vazio{opacity:.25}
+.emb-equilibrio{display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--suave);margin:10px 0 2px}
+.emb-barra{flex:1;height:10px;border-radius:9px;background:rgba(255,255,255,.15);position:relative}
+.emb-barra::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:#fff}
+.emb-barra i{position:absolute;top:0;bottom:0;left:50%;width:0;border-radius:9px;background:#4ade80;transition:all .25s}
+.emb-botoes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+.fim-lista{list-style:none;padding:0;margin:6px 0 10px;text-align:left;font-size:.9rem}
+.fim-lista li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.fim-lista li b{color:var(--sol)}
+.fim-lista li.neg b{color:#fca5a5}
+.fim-total{font-size:1rem!important;color:#fff!important}
+.fim-total b{color:var(--sol);font:900 1.3rem Montserrat}
+
+.controles{flex:none;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#0F3B6B,#0A2C52);border-top:1px solid rgba(255,255,255,.1)}
+.ctl label{display:block;font:800 .7rem Montserrat;letter-spacing:.08em;text-transform:uppercase;color:var(--suave);margin-bottom:4px;text-align:center}
+.ctl.acel{display:grid;grid-template-columns:auto auto;grid-template-rows:auto 1fr;column-gap:4px}
+.ctl.acel label{grid-column:1/-1}
+.ctl.acel input{writing-mode:vertical-lr;direction:rtl;width:44px;height:104px;accent-color:var(--sol);cursor:pointer}
+.marcas{display:flex;flex-direction:column;justify-content:space-between;font-size:.62rem;color:var(--suave);height:104px}
+.ctl.leme input{width:100%;height:44px;accent-color:var(--turquesa);cursor:pointer}
+.leme-botoes{display:flex;justify-content:center}
+.leme-botoes button{border:0;background:rgba(255,255,255,.12);color:#fff;font:700 .75rem Inter;padding:6px 12px;border-radius:999px;cursor:pointer}
+.ctl.acoes{display:flex;flex-direction:column;gap:8px}
+.j-redondo{width:54px;height:54px;border-radius:50%;border:0;background:var(--sol);font-size:1.5rem;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.j-redondo.foto{background:#22c55e;animation:pulsar 1s infinite}
+@keyframes pulsar{50%{transform:scale(1.1)}}
+@media (min-width:700px){.chip{font-size:.85rem}.ctl.acel input{height:120px}.marcas{height:120px}}
