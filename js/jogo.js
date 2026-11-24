@@ -61,27 +61,37 @@
   //  FASES 1 e 2 — EM TERRA: fila, cobrança (só em São Sebastião) e embarque
   // ======================================================================
   var LINHA_COBRANCA = 660, RAMPA = 840, DECK0 = 880, VAGA = 84, CARRO = 66;
+  // frota: FB-25 e FB-30 são maiores (mais vagas); VALDA II e FB-17 menores
+  var FROTA = [
+    { nome: "FB-25", vagas: 7, L: 1.18, vel: 0.95, acel: 0.85 },
+    { nome: "FB-30", vagas: 7, L: 1.18, vel: 0.95, acel: 0.85 },
+    { nome: "VALDA II", vagas: 5, L: 1, vel: 1, acel: 1 },
+    { nome: "FB-17", vagas: 5, L: 0.96, vel: 1.03, acel: 1.08 }
+  ];
   var T = null;
   function iniciarTerra() {
     S.fase = "terra"; S.itens = []; S.pontos = 0; S.flags = {}; S.popups = []; S.pausa = false;
     S.clima = sortearClima();
-    var cobra = S.origem === "ss", fila = [], n = 4;
-    for (var i = 0; i < n; i++) fila.push({ x: 470 - i * (CARRO + 26), v: 0, cor: CORES[Math.floor(Math.random() * CORES.length)], tipo: Math.random() < 0.18 ? "van" : "carro", pago: !cobra, espera: 0, vaga: i });
+    S.balsa = FROTA[Math.floor(Math.random() * FROTA.length)];
+    var cobra = S.origem === "ss", fila = [], n = S.balsa.vagas - 1, frente0 = Math.min(600, 470 + Math.max(0, n - 4) * 70);
+    for (var i = 0; i < n; i++) fila.push({ x: frente0 - i * (CARRO + 26), v: 0, cor: CORES[Math.floor(Math.random() * CORES.length)], tipo: Math.random() < 0.18 ? "van" : "carro", pago: !cobra, espera: 0, vaga: i });
     T = {
       cobra: cobra, pago: !cobra, cancela: cobra ? 0 : 1, fila: fila,
-      jog: { x: 470 - n * (CARRO + 26), v: 0 }, vaga: n, cam: 0,
+      jog: { x: frente0 - n * (CARRO + 26), v: 0 }, vaga: n, cam: 0,
       estacionado: false, motor: true, partindo: 0, tPagando: 0, encostou: -9, parado: 0,
       pedestres: [{ x: 120, v: 26 }, { x: 420, v: 22 }], ciclista: { x: -200, v: 60 }
     };
     mostrar("tela-menu", false); mostrar("tela-fim", false); mostrar("hud", true); mostrar("controles", true);
     $("btn-acao").hidden = true; $("seg-txt").textContent = "SEGURE PARA ANDAR";
     fase("🚗 Fila · " + nome(S.origem));
+    $("desvio").hidden = true;
+    setTimeout(function () { if (S.fase === "terra") aviso("⛴️ Hoje você embarca na " + S.balsa.nome + (S.balsa.vagas > 5 ? " (balsa grande: " + S.balsa.vagas + " vagas)" : ""), "bom", 2600); }, 3900);
     if (cobra) dica("Segure o botão para andar na fila e solte para frear. Pare na faixa verde da cabine para pagar: a tarifa já vale a volta!", 5600);
     else dica("Em Ilhabela não se paga: a tarifa da ida, em São Sebastião, já incluiu a volta. Siga a fila até a balsa!", 5600);
     var c = S.clima;
     setTimeout(function () { aviso((c.real ? "Clima de agora: " : "") + "mar " + c.mar + ", vento " + c.vento + " km/h" + (c.chuva ? ", chuva" : "") + (c.noite ? ", noite" : ""), null, 3000); }, 700);
   }
-  function deckX(i) { return DECK0 + 60 + (4 - i) * VAGA + VAGA; }   // frente do carro na vaga i (0 = mais à frente)
+  function deckX(i) { return DECK0 + 60 + (S.balsa.vagas - 1 - i) * VAGA + VAGA; }   // frente do carro na vaga i (0 = mais à frente)
   function passoTerra(dt) {
     var P = T.jog;
     // carros automáticos: vão até a cobrança, pagam e seguem para a vaga
@@ -153,94 +163,128 @@
   }
 
   // ======================================================================
-  //  FASE 3 — TRAVESSIA (balsa vista de lado, o mundo rola)
+  //  FASE 3 — TRAVESSIA (balsa vista de lado, 3 faixas no canal para desviar)
   // ======================================================================
   var D = 2400, VMAX = 62;
   var M = null;
+  function faixaY(f) { return (46 - 43 * f) * K; }      // 0 = perto (embaixo), 1 = meio, 2 = longe (em cima)
+  function faixaS(f) { return 1.08 - 0.09 * f; }
+  var NOMES_OBST = { lancha: "lancha", veleiro: "veleiro", caiaque: "caiaque", boia: "boia", tronco: "tronco", cargueiro: "cargueiro" };
   function iniciarMar() {
-    S.fase = "mar"; $("btn-acao").hidden = true;
-    var deck = [];
-    for (var i = 0; i < 5; i++) {
+    S.fase = "mar"; $("btn-acao").hidden = true; $("desvio").hidden = false;
+    var B = S.balsa, deck = [];
+    for (var i = 0; i < B.vagas; i++) {
       if (i < T.fila.length) deck.push({ cor: T.fila[i].cor, tipo: T.fila[i].tipo, jog: false, sai: 0 });
       else if (i === T.vaga) deck.push({ cor: "#FFC107", tipo: "carro", jog: true, sai: 0, v: 0 });
     }
-    var obst = [], usados = [];
-    function novo(tipo, de, ate) {
-      var x, tent = 0; do { x = rnd(de, ate); tent++; } while (tent < 20 && usados.some(function (u) { return Math.abs(u - x) < 260; }));
-      usados.push(x);
-      var P = { lancha: [14, 3.2], veleiro: [12, 5.5], petroleiro: [120, 11] }[tipo];
-      obst.push({ tipo: tipo, x: x, comp: P[0], dur: P[1], lado: Math.random() < 0.5 ? 1 : -1, p: -1, feito: false });
+    var obst = [], x = 300, dens = 1 + Math.min(3, S.viagens) * 0.18;
+    function add(tipo, px, faixa, extra) { obst.push(Object.assign({ tipo: tipo, x: px, f: faixa, feito: false, bateu: false, vel: 0, comp: 8 }, extra || {})); }
+    while (x < 2080) {
+      var r = Math.random(), faixa = Math.floor(Math.random() * 3);
+      if (r < 0.26) add("lancha", x + 260, faixa, { vel: -rnd(12, 20), comp: 16 });   // vem de frente
+      else if (r < 0.44) add("veleiro", x, faixa, { vel: -rnd(1, 3), comp: 16 });
+      else if (r < 0.62) add("caiaque", x, faixa, { comp: 7 });
+      else if (r < 0.8) add("boia", x, faixa, { comp: 6 });
+      else add("tronco", x, faixa, { comp: 10 });
+      x += rnd(150, 240) / dens;
     }
-    novo("lancha", 350, 900); novo("veleiro", 1000, 1500); novo("lancha", 1500, 2050);
-    if (Math.random() < 0.75) novo("petroleiro", S.origem === "ss" ? 500 : 1300, S.origem === "ss" ? 1100 : 1900);
-    M = { d: 0, v: 0, deck: deck, obst: obst, golf: { x: rnd(600, 1800), ativo: false, feito: false, foto: false, t: 0 },
+    if (Math.random() < 0.85) add("cargueiro", rnd(850, 1600), 2.6, { comp: 140, cruza: true, p: -1, dur: 13 });
+    M = { d: 0, v: 0, faixa: 1, fy: 1, deck: deck, obst: obst, golf: { x: rnd(600, 1800), ativo: false, feito: false, foto: false, t: 0 },
           conforto: 100, rajada: 0, gaivotas: [{ x: 0.2, y: 0.18 }, { x: 0.6, y: 0.12 }, { x: 0.85, y: 0.22 }],
-          atracou: false, chuvaNova: !S.clima.chuva && Math.random() < 0.3 ? rnd(700, 1700) : null, dicas: {}, bate: -9, tAtr: 0, rampa: 0, fim: false };
-    fase("🌊 Travessia → " + nome(destino()));
-    aviso("⛴️ Segure para acelerar a balsa. Solte para frear!", "bom", 2600);
+          atracou: false, chuvaNova: !S.clima.chuva && Math.random() < 0.3 ? rnd(700, 1700) : null, dicas: {}, bate: -9, tAtr: 0, rampa: 0, fim: false, sacode: 0 };
+    fase("🌊 " + B.nome + " → " + nome(destino()));
+    aviso("⛴️ Segure para acelerar. Use ⬆ ⬇ para desviar!", "bom", 2800);
     $("seg-txt").textContent = "SEGURE PARA ACELERAR";
+    setTimeout(function () { if (S.fase === "mar") dica("Lanchas, caiaques, boias e troncos no caminho! Toque em ⬆ ou ⬇ para mudar de faixa e desviar.", 5200); }, 2600);
+  }
+  function mudarFaixa(dir) {
+    if (S.fase !== "mar" || !M || M.atracou) return;
+    M.faixa = clamp(M.faixa + dir, 0, 2);
   }
   var DICAS_MAR = [
-    [200, "A travessia de verdade tem uns 2,4 km e leva cerca de 20 minutos. 🌊"],
-    [700, "Vento forte pode parar a travessia de verdade: a segurança vem primeiro! 💨"],
-    [1200, "No canal de São Sebastião passam navios petroleiros do terminal da Petrobras. 🚢"],
-    [1700, "Pedestres e ciclistas atravessam sem pagar e embarcam pela lateral. 🚲"],
-    [2050, "Chegando! Solte o botão para a balsa ir freando e encostar de leve. ⚓"]
+    [500, "A travessia de verdade tem uns 2,4 km e leva cerca de 20 minutos. 🌊"],
+    [900, "Vento forte pode parar a travessia de verdade: a segurança vem primeiro! 💨"],
+    [1300, "No canal de São Sebastião passam navios cargueiros e petroleiros. 🚢"],
+    [1750, "Pedestres e ciclistas atravessam sem pagar e embarcam pela lateral. 🚲"],
+    [2080, "Chegando! Fique na faixa do meio e SOLTE na hora certa para parar na rampa. Bateu forte, os carros caem na água! ⚓"]
   ];
   function limiteConforto() { return VMAX * (1 - 0.45 * S.clima.s); }
   function passoMar(dt) {
     var c = S.clima;
+    // faixa: a balsa desliza para a faixa escolhida
+    M.fy += clamp(M.faixa - M.fy, -1.4 * dt, 1.4 * dt);
+    M.sacode = Math.max(0, M.sacode - dt * 2);
     if (!M.atracou) {
-      if (S.segura) M.v = Math.min(VMAX, M.v + 16 * dt); else M.v = Math.max(0, M.v - 13 * dt);
       var falta = D - M.d;
-      if (falta < 140 && M.v > 6 + falta * 0.18) M.v += ((6 + falta * 0.18) - M.v) * Math.min(1, dt * 1.6);   // encosta de leve
-      if (falta < 50) M.v = Math.min(M.v, 3 + falta * 0.2);                                                     // nos últimos metros, sempre devagar
+      if (S.segura) M.v = Math.min(VMAX * S.balsa.vel, M.v + 16 * S.balsa.acel * dt); else M.v = Math.max(0, M.v - 11 * dt);
       if (c.vento >= 25 && M.rajada <= 0.05 && Math.random() < dt * 0.06 && !S.calmo) { M.rajada = 1; M.v *= 0.6; aviso("💨 Rajada de vento! A balsa perdeu velocidade.", "ruim"); }
       M.rajada = Math.max(0, M.rajada - dt * 0.4);
+      // parou pertinho da rampa: os cabos puxam devagar até encostar
+      if (falta < 12 && falta > 0 && M.v < 0.8 && Math.abs(M.fy - 1) < 0.2) { M.d += 3 * dt; if (!M.dicas.cabos) { M.dicas.cabos = 1; aviso("🪢 Cabos lançados… encostando de leve.", "bom"); } }
       M.d += M.v * dt;
       var exc = M.v - limiteConforto();
       if (exc > 0) M.conforto -= exc * c.s * 0.35 * dt; else M.conforto += 2 * dt;
       M.conforto = clamp(M.conforto, 0, 100);
       if (exc > 6 && !M.dicas.mar) { M.dicas.mar = 1; aviso("🌊 Mar " + c.mar + ": vá mais devagar para ninguém enjoar!", "ruim"); }
       if (M.conforto < 35 && !M.dicas.enjoo) { M.dicas.enjoo = 1; ponto("🤢 Passageiros enjoados", -10); aviso("🤢 Gente enjoando! Diminua.", "ruim"); }
+      // obstáculos
       M.obst.forEach(function (o) {
         if (o.feito) return;
-        if (o.p < 0 && o.x - M.d < 330) { o.p = 0; aviso(o.tipo === "petroleiro" ? "🚢 Petroleiro cruzando! Solte e espere ele passar." : o.tipo === "veleiro" ? "⛵ Veleiro cruzando à frente!" : "🚤 Lancha cruzando à frente!", "ruim", 2400); }
-        if (o.p >= 0) {
-          o.p += dt / o.dur;
-          var naRota = o.p > 0.38 && o.p < 0.62;
-          var sobrepoe = M.d > o.x - o.comp / 2 && M.d - 60 < o.x + o.comp / 2;
-          if (naRota && sobrepoe && !o.bateu) {
-            o.bateu = true; M.v = 0; M.d = Math.min(M.d, o.x - o.comp / 2 - 1);
-            ponto(o.tipo === "petroleiro" ? "💥 Bateu no petroleiro" : o.tipo === "veleiro" ? "💥 Bateu no veleiro" : "💥 Bateu na lancha", o.tipo === "petroleiro" ? -40 : -20);
-            aviso("💥 Batida! Espere o barco passar.", "ruim");
-          }
-          if (o.p >= 1) { o.feito = true; if (!o.bateu) ponto(o.tipo === "petroleiro" ? "🚢 Esperou o petroleiro" : o.tipo === "veleiro" ? "⛵ Deu passagem ao veleiro" : "🚤 Deu passagem à lancha", o.tipo === "petroleiro" ? 20 : 10); }
+        if (o.vel && o.x - M.d < 650) o.x += o.vel * dt;
+        if (o.cruza) {
+          if (o.p < 0 && o.x - M.d < 420) { o.p = 0; aviso("🚢 Cargueiro cruzando o canal! Espere ele passar ou passe antes.", "ruim", 2800); }
+          if (o.p >= 0) { o.p += dt / o.dur; o.f = 2.6 - 3.2 * o.p; if (o.p >= 1) { o.feito = true; if (!o.bateu) ponto("🚢 Deu passagem ao cargueiro", 20); } }
         }
+        var sobre = M.d > o.x - o.comp / 2 && M.d - 60 < o.x + o.comp / 2;
+        var mesma = Math.abs(M.fy - o.f) < (o.cruza ? 0.75 : 0.55);
+        if (sobre && mesma && !o.bateu && (!o.cruza || o.p >= 0)) {
+          o.bateu = true; M.sacode = 1;
+          var pen = { lancha: -20, veleiro: -15, caiaque: -15, boia: -8, tronco: -10, cargueiro: -40 }[o.tipo];
+          ponto("💥 Bateu no " + (o.tipo === "lancha" || o.tipo === "boia" ? (o.tipo === "boia" ? "na boia" : "na lancha") : NOMES_OBST[o.tipo]).replace("no na", "na"), pen);
+          aviso(o.tipo === "caiaque" ? "😱 Cuidado com o caiaque! Desvie com ⬆ ⬇." : "💥 Batida! Use ⬆ ⬇ para desviar.", "ruim");
+          if (o.tipo === "cargueiro" || o.tipo === "lancha") { M.v = 0; M.d = Math.min(M.d, o.x - o.comp / 2 - 2); } else M.v *= 0.35;
+        }
+        if (!o.cruza && M.d - 60 > o.x + o.comp / 2) { o.feito = true; if (!o.bateu) { ponto("↕️ Desviou d" + (o.tipo === "lancha" || o.tipo === "boia" ? "a " : "o ") + NOMES_OBST[o.tipo], 5); } }
       });
       var g = M.golf;
       if (!g.feito && !g.ativo && M.d > g.x - 200) { g.ativo = true; g.t = 7; aviso("🐬 Golfinhos! Toque neles para tirar foto.", "bom", 2600); }
       if (g.ativo) { g.t -= dt; if (g.t <= 0) { g.ativo = false; g.feito = true; } }
       if (M.chuvaNova && M.d > M.chuvaNova) { M.chuvaNova = null; c.chuva = true; aviso("🌧️ Começou a chover!", null); fase($("h-fase").textContent); }
-      DICAS_MAR.forEach(function (dc) { if (M.d > dc[0] && !M.dicas[dc[0]]) { M.dicas[dc[0]] = 1; dica(dc[1], 4600); } });
-      if (M.d >= D) {
-        if (M.v > 14) {
-          if (S.t - M.bate > 2) { M.bate = S.t; ponto("💥 Chegou rápido demais na margem", -20); aviso("💥 Rápido demais! A balsa bateu na margem.", "ruim"); }
-          M.d = D - 4; M.v = 0;
-        } else {
-          var vChegada = M.v;
-          M.d = D; M.atracou = true; M.v = 0; M.tAtr = 0;
-          ponto("⚓ Atracou de leve", Math.round(25 - vChegada));
-          ponto("😊 Conforto dos passageiros (" + Math.round(M.conforto) + "%)", Math.round(M.conforto / 5));
-          aviso("⚓ Atracou em " + nome(destino()) + "! Baixando a rampa…", "bom");
-          fase("⚓ Desembarque");
-          $("seg-txt").textContent = "SEGURE PARA DESEMBARCAR";
-        }
-      }
+      DICAS_MAR.forEach(function (dc) { if (M.d > dc[0] && !M.dicas[dc[0]]) { M.dicas[dc[0]] = 1; dica(dc[1], dc[0] === 2080 ? 6500 : 4600); } });
+      // chegada: tem que estar na faixa do meio (alinhada com a rampa) e devagar
+      if (M.d >= D) chegar();
     } else passoDesembarque(dt);
+    // carros caindo na água
+    M.deck.forEach(function (car) { if (car.cai != null && car.cai < 1.4) car.cai += dt * 0.9; });
     M.gaivotas.forEach(function (gv, i) { gv.x -= dt * (0.03 + i * 0.01) + M.v * dt * 0.0006; if (gv.x < -0.1) gv.x = 1.1; });
     $("h-vel").textContent = "⛴️ " + Math.round(M.v * 0.3) + " nós";
     $("h-dist").textContent = "📍 " + nome(destino()) + ": " + Math.max(0, Math.round(D - M.d)) + " m";
+  }
+  function chegar() {
+    var v = M.v;
+    if (Math.abs(M.fy - 1) > 0.25) {   // fora da faixa do meio: bate no muro do cais
+      if (S.t - M.bate > 2) { M.bate = S.t; ponto("🧱 Chegou fora da rampa", -10); aviso("🧱 Fora da rampa! Volte para a faixa do meio.", "ruim"); M.sacode = 1; }
+      M.d = D - 10; M.v = 0; return;
+    }
+    M.d = D; M.v = 0; M.atracou = true; M.tAtr = 0; $("desvio").hidden = true;
+    if (v > 14) {
+      // batida forte: os carros da frente escorregam e caem na água
+      var auto = M.deck.filter(function (x) { return !x.jog; });
+      var n = Math.min(auto.length, 1 + Math.floor((v - 14) / 6));
+      for (var i = 0; i < n; i++) auto[i].cai = 0;
+      M.sacode = 1.5;
+      ponto("💥 Batida forte na margem", -20);
+      ponto("🌊 " + n + (n === 1 ? " carro caiu" : " carros caíram") + " na água", -25 * n);
+      aviso("💥 Batida forte! " + n + (n === 1 ? " carro caiu" : " carros caíram") + " na água! 🌊", "ruim", 3500);
+    } else if (v > 6) {
+      M.sacode = 1; ponto("😬 Encostou com tranco", -10); aviso("😬 Tranco na chegada! Solte um pouco antes.", "ruim");
+    } else {
+      ponto(v < 2.5 ? "⚓ Parou certinho na rampa" : "⚓ Atracou de leve", v < 2.5 ? 30 : 20);
+      aviso("⚓ Atracou em " + nome(destino()) + "! Baixando a rampa…", "bom");
+    }
+    ponto("😊 Conforto dos passageiros (" + Math.round(M.conforto) + "%)", Math.round(M.conforto / 5));
+    fase("⚓ Desembarque");
+    $("seg-txt").textContent = "SEGURE PARA DESEMBARCAR";
   }
 
   // ======================================================================
@@ -249,7 +293,7 @@
   function passoDesembarque(dt) {
     M.tAtr += dt;
     M.rampa = clamp((M.tAtr - 0.4) / 1.3, 0, 1);
-    var auto = M.deck.filter(function (x) { return !x.jog; });
+    var auto = M.deck.filter(function (x) { return !x.jog && x.cai == null; });
     auto.forEach(function (c, i) { if (M.tAtr > 2 + i * 0.7) c.sai += dt * (70 + c.sai * 1.4); });
     var jog = M.deck.filter(function (x) { return x.jog; })[0];
     if (jog && M.rampa >= 1) {
@@ -263,7 +307,8 @@
   }
   function finalizar() {
     S.fase = "fim";
-    ponto("🚗 Chegou em " + nome(destino()), 20);
+    var entregues = M.deck.filter(function (x) { return x.cai == null; }).length;
+    ponto("🚗 " + entregues + " carros entregues em " + nome(destino()), entregues * 4);
     var pts = Math.max(0, S.pontos);
     S.total += pts; S.viagens++;
     var rec = +(ls("vdb-jogo-recorde") || 0); if (S.total > rec) ls("vdb-jogo-recorde", String(S.total));
@@ -383,6 +428,7 @@
     cx.fillStyle = "#ffffff"; cx.fillRect(x0 + 6 * K, y + 3 * K, L - 12 * K, 6 * K);
     cx.fillStyle = "#FFC107"; cx.fillRect(x0 + 10 * K, y + 11 * K, L - 20 * K, 4 * K);
     if (L > 200 * K) texto("VAIDEBALSA", x0 + L / 2, y + 24 * K, 12, "#fff");
+    if (opts.nome && L > 160 * K) { cx.fillStyle = "#fff"; rr(x0 + L - 74 * K, y - 42 * K, 58 * K, 20 * K, 4 * K); cx.fill(); tracar(2); texto(opts.nome, x0 + L - 45 * K, y - 27 * K, 10, "#1d4fc4"); }
     cx.strokeStyle = "#FFC107"; cx.lineWidth = 3 * K;
     cx.beginPath(); cx.moveTo(x0 + 6 * K, y - 16 * K); cx.lineTo(x0 + L - 6 * K, y - 16 * K); cx.stroke();
     for (var i = 0; i <= 12; i++) { var px = x0 + 6 * K + i * (L - 12 * K) / 12; cx.beginPath(); cx.moveTo(px, y - 16 * K); cx.lineTo(px, y); cx.stroke(); }
@@ -478,10 +524,10 @@
     }
     if (T.cobra) cabine(LINHA_COBRANCA * K - cam, chao);
     // balsa atracada: popa encostada no cais, rampa da popa baixada
-    var bx = RAMPA * K - cam + 30 * K, L = 560 * K, yDeck = chao;
+    var bx = RAMPA * K - cam + 30 * K, L = (S.balsa.vagas * VAGA + 140) * K, yDeck = chao;
     var subir = T.partindo ? clamp(T.partindo * 1.3, 0, 1) : 0;
     balsa(bx, yDeck, L, {
-      rampaPopa: 1 - subir, rampaProa: 0,
+      nome: S.balsa.nome, rampaPopa: 1 - subir, rampaProa: 0,
       carros: function () {
         if (!T.estacionado) {
           var vx = deckX(T.vaga) * K - cam;
@@ -526,7 +572,7 @@
 
   // ---------- cena no mar ----------
   function desenharMar() {
-    var d = M.d, ss = S.origem === "ss", hz = H * 0.42, nv = H * (W < H * 0.8 ? 0.66 : 0.7);
+    var d = M.d, ss = S.origem === "ss", hz = H * 0.42, retrato = W < H * 0.8, nv = H * (retrato ? 0.66 : 0.7);
     ceu(hz);
     nuvens(d * 2 * K);
     montanhas(hz, d * 0.6 * K, ss ? "#2f9a5b" : "#3a8f63", 120, ss ? 1.1 : 3.3);
@@ -534,20 +580,64 @@
     var dSS = ss ? d : D - d;
     if (dSS < 900) navioFundeado(W * 0.3 + (ss ? -d : d - D) * 0.5 * K, hz + 8 * K, 0.6);
     marFaixa(hz, H, d * 3 * K);
-    var retrato = W < H * 0.8;
-    var escala = 2.6 * K, L = retrato ? W * 0.84 : Math.min(W * 0.64, 460 * K), popa = retrato ? W * 0.03 : Math.max(8 * K, W * 0.1);
+    var fator = S.balsa.L;
+    var escala = 2.6 * K, L = (retrato ? W * 0.8 : Math.min(W * 0.6, 440 * K)) * fator, popa = retrato ? W * 0.03 : Math.max(8 * K, W * 0.08);
+    L = Math.min(L, W * 0.94);
     var chegada = clamp(1 - (D - d) / 260, 0, 1), sh = chegada * chegada * (3 - 2 * chegada) * (retrato ? W * 0.36 : W * 0.22);
-    popa -= sh;                       // na chegada a câmera desliza para mostrar a margem e o terminal
+    popa -= sh;
     var proa = popa + L;
+    // faixas do canal (linhas suaves)
+    if (!M.atracou) {
+      cx.setLineDash([10 * K, 12 * K]); cx.strokeStyle = "rgba(255,255,255,.22)"; cx.lineWidth = 2 * K;
+      [0.5, 1.5].forEach(function (f) { var y = nv + faixaY(f) + 6 * K; cx.beginPath(); cx.moveTo(0, y); cx.lineTo(W, y); cx.stroke(); });
+      cx.setLineDash([]);
+    }
     var xOrigem = popa - d * escala - 30 * K;
     if (xOrigem > -60 * K) costa(xOrigem, nv, -1, S.origem);
     var xDestino = proa + 34 * K + (D - d) * escala;
     if (xDestino < W + 60 * K) costa(xDestino, nv, 1, destino());
-    M.obst.forEach(function (o) { if (o.p >= 0 && o.p < 0.5 && !o.feito) barco(o, proa, escala, hz, nv); });
+    // rampa de chegada destacada (alinha com a faixa do meio)
+    if (!M.atracou && D - d < 320) {
+      cx.fillStyle = "rgba(74,222,128," + (0.35 + 0.2 * Math.sin(S.t * 6)) + ")";
+      cx.fillRect(xDestino - 40 * K, nv - 6 * K, 40 * K, 14 * K);
+    }
+    // obstáculos atrás (mais longe que a balsa), a balsa, depois os da frente
+    var lista = M.obst.filter(function (o) { return !o.feito || (o.cruza && o.p >= 0 && o.p < 1); });
+    lista.forEach(function (o) { if (o.f > M.fy + 0.01) obstaculo(o, proa, escala, nv); });
     var g = M.golf;
+    var c = S.clima, yF = faixaY(M.fy), sF = faixaS(M.fy);
+    var bal = M.atracou ? 0 : Math.sin(S.t * 1.6) * (1.5 + c.s * 5) * K, inc = M.atracou ? 0 : Math.sin(S.t * 1.1) * (0.01 + c.s * 0.025) - M.rajada * 0.04;
+    var tremor = M.sacode > 0 ? Math.sin(S.t * 60) * M.sacode * 4 * K : 0;
+    if (M.v > 4 && !M.atracou) {
+      cx.fillStyle = "rgba(255,255,255,.85)";
+      for (var e = 0; e < 10; e++) { var f = (S.t * (1 + M.v / 30) + e * 0.1) % 1; cx.beginPath(); cx.ellipse(popa - f * 120 * K, nv + yF + 18 * K + (e % 3) * 5 * K, (10 + f * 18) * K, 5 * K, 0, 0, 7); cx.fill(); }
+    }
+    cx.save();
+    cx.translate(popa + L / 2 + tremor, nv + yF + bal); cx.rotate(inc); cx.scale(sF, sF); cx.translate(-(popa + L / 2), -nv);
+    balsa(popa, nv, L, {
+      nome: S.balsa.nome, rampaPopa: 0, rampaProa: M.atracou ? M.rampa : 0,
+      carros: function () {
+        var vagas = S.balsa.vagas, slot = (L - 60 * K) / vagas, esc = Math.min(1, slot / ((CARRO + 12) * K));
+        M.deck.forEach(function (car, i) {
+          var x = popa + 30 * K + (vagas - i) * slot + (car.sai || 0) * K, y = nv, rot = 0, a = 1;
+          if (car.cai != null) {   // escorrega pela proa e cai na água
+            var q = car.cai;
+            x = Math.min(x + q * (proa - x + 50 * K) * 1.2, proa + 70 * K);
+            y = nv + Math.max(0, q - 0.55) * Math.max(0, q - 0.55) * 260 * K; rot = Math.max(0, q - 0.45) * 1.4; a = clamp(1.4 - q, 0, 1);
+            if (q > 0.85 && q < 1.35) { cx.strokeStyle = "rgba(255,255,255," + (1.35 - q) * 2 + ")"; cx.lineWidth = 3 * K; cx.beginPath(); cx.ellipse(proa + 60 * K, nv + 40 * K, (q - 0.8) * 90 * K, (q - 0.8) * 20 * K, 0, 0, 7); cx.stroke(); }
+          } else if (car.sai > 380) a = clamp(1 - (car.sai - 380) / 60, 0, 1);
+          if (a <= 0) return;
+          cx.save(); cx.globalAlpha = a; cx.translate(x, y); cx.rotate(rot); cx.translate(-x, -y);
+          carroLado(x, y, car.cor, car.tipo, car.jog, esc);
+          cx.restore();
+        });
+      }
+    });
+    cx.restore();
+    lista.forEach(function (o) { if (o.f <= M.fy + 0.01) obstaculo(o, proa, escala, nv); });
     if (g.ativo) {
       for (var i = 0; i < 3; i++) {
-        var fs = (S.t * 1.4 + i * 0.5) % 2, gx = Math.min(W - 60 * K, proa - 20 * K) + i * 36 * K, gy = nv + 46 * K - Math.sin(Math.min(1, fs) * Math.PI) * 64 * K;
+        var fs = (S.t * 1.4 + i * 0.5) % 2, gx = Math.min(W - 60 * K, proa - 20 * K) + i * 36 * K, gy = nv + 70 * K - Math.sin(Math.min(1, fs) * Math.PI) * 64 * K;
         if (i === 1) { g.sx = gx; g.sy = gy; }
         if (fs < 1) {
           cx.save(); cx.translate(gx, gy); cx.rotate(-0.7 + fs * 1.4);
@@ -558,40 +648,73 @@
         }
       }
     }
-    var c = S.clima, bal = M.atracou ? 0 : Math.sin(S.t * 1.6) * (1.5 + c.s * 5) * K, inc = M.atracou ? 0 : Math.sin(S.t * 1.1) * (0.01 + c.s * 0.025) - M.rajada * 0.04;
-    if (M.v > 4 && !M.atracou) {
-      cx.fillStyle = "rgba(255,255,255,.85)";
-      for (var e = 0; e < 10; e++) { var f = (S.t * (1 + M.v / 30) + e * 0.1) % 1; cx.beginPath(); cx.ellipse(popa - f * 120 * K, nv + 18 * K + (e % 3) * 5 * K, (10 + f * 18) * K, 5 * K, 0, 0, 7); cx.fill(); }
+    // avisos: obstáculo à frente na mesma faixa (inclusive fora da tela)
+    if (!M.atracou) {
+      var prox = null;
+      M.obst.forEach(function (o) {
+        if (o.feito || o.bateu) return;
+        var dist = o.x - o.comp / 2 - d, mesma = Math.abs(o.f - M.fy) < (o.cruza ? 0.8 : 0.6);
+        if (mesma && dist > -10 && dist < (o.cruza ? 330 : 260) && (!prox || dist < prox.dist)) prox = { o: o, dist: dist };
+      });
+      if (prox) {
+        var piscar = Math.sin(S.t * 10) > -0.3;
+        if (prox.dist < (prox.o.cruza ? 220 : 120) && piscar) texto(prox.o.cruza ? "SOLTE E ESPERE! ✋" : "DESVIE! ⬆⬇", W / 2, nv - 165 * K, 24, "#ef4444");
+        var sx = proa + (prox.o.x - d) * escala;
+        if (sx > W - 10 * K) {
+          cx.fillStyle = "#ef4444"; rr(W - 78 * K, nv + faixaY(prox.o.f) - 70 * K, 70 * K, 28 * K, 8 * K); cx.fill(); tracar(2);
+          texto("⚠ " + Math.round(prox.dist) + "m", W - 43 * K, nv + faixaY(prox.o.f) - 50 * K, 12, "#fff");
+        }
+      }
+      if (D - d < 320) texto(Math.abs(M.fy - 1) > 0.25 ? "VÁ PARA A FAIXA DO MEIO" : "SOLTE NA HORA CERTA!", W / 2, nv - 130 * K, 15, Math.abs(M.fy - 1) > 0.25 ? "#FFC107" : "#4ade80");
+      // velocímetro de chegada
+      if (D - d < 320) {
+        var vv = M.v, cor = vv <= 6 ? "#4ade80" : vv <= 14 ? "#FFC107" : "#ef4444";
+        cx.fillStyle = "rgba(10,44,82,.85)"; rr(12 * K, nv - 120 * K, 92 * K, 40 * K, 10 * K); cx.fill(); tracar(2);
+        texto(vv <= 6 ? "DEVAGAR ✓" : vv <= 14 ? "RÁPIDO" : "MUITO RÁPIDO!", 58 * K, nv - 94 * K, 11, cor);
+      }
     }
-    cx.save(); cx.translate(popa + L / 2, nv + bal); cx.rotate(inc); cx.translate(-(popa + L / 2), -nv);
-    balsa(popa, nv, L, {
-      rampaPopa: 0, rampaProa: M.atracou ? M.rampa : 0,
-      carros: function () {
-        var slot = (L - 60 * K) / 5, esc = Math.min(1, slot / ((CARRO + 12) * K));
-        M.deck.forEach(function (car, i) {
-          var x = popa + 30 * K + (5 - i) * slot + (car.sai || 0) * K;
-          var a = car.sai > 380 ? clamp(1 - (car.sai - 380) / 60, 0, 1) : 1;
-          if (a <= 0) return;
-          cx.globalAlpha = a;
-          carroLado(x, nv, car.cor, car.tipo, car.jog, esc);
-          cx.globalAlpha = 1;
-        });
-      }
-    });
-    cx.restore();
-    M.obst.forEach(function (o) { if (o.p >= 0.5 && !o.feito) barco(o, proa, escala, hz, nv); });
-    M.obst.forEach(function (o) {
-      if (o.p >= 0 && !o.feito && proa + (o.x - d) * escala > W - 10 * K) {
-        cx.fillStyle = "#ef4444"; rr(W - 70 * K, nv - 120 * K, 62 * K, 28 * K, 8 * K); cx.fill(); tracar(2);
-        texto("⚠ " + Math.round(o.x - d) + "m", W - 39 * K, nv - 100 * K, 12, "#fff");
-      }
-    });
-    if (!M.atracou && D - d < 260) texto("SOLTE PARA ENCOSTAR", W / 2, nv - 130 * K, 15, "#4ade80");
-    var perigo = M.obst.some(function (o) { return o.p >= 0 && !o.feito && o.p < 0.64 && o.x - o.comp / 2 - d < 110 && o.x + o.comp / 2 > d - 60; });
-    if (perigo && M.v > 2 && Math.sin(S.t * 10) > -0.3) texto("SOLTE! ✋", W / 2, nv - 160 * K, 26, "#ef4444");
     cx.strokeStyle = CONTORNO; cx.lineWidth = 2.5 * K;
     M.gaivotas.forEach(function (gv) { var x = gv.x * W, y = gv.y * H + Math.sin(S.t * 3 + x) * 4 * K, a = Math.sin(S.t * 8 + x) * 4 * K; cx.beginPath(); cx.moveTo(x - 10 * K, y + a); cx.quadraticCurveTo(x - 5 * K, y - 5 * K, x, y); cx.quadraticCurveTo(x + 5 * K, y - 5 * K, x + 10 * K, y + a); cx.stroke(); });
     if (c.noite) { cx.fillStyle = "rgba(6,20,43,.22)"; cx.fillRect(0, 0, W, H); }
+  }
+  function obstaculo(o, proa, escala, nv) {
+    var sx = proa + (o.x - M.d) * escala;
+    if (sx < -340 * K || sx > W + 340 * K) return;
+    var y = nv + faixaY(o.f) + 4 * K, s = faixaS(o.f) * K, bob = Math.sin(S.t * 2 + o.x) * 2 * K;
+    cx.save(); cx.translate(sx, y + bob);
+    if (o.tipo === "lancha") {   // vem de frente (proa para a esquerda)
+      cx.scale(-1, 1);
+      cx.fillStyle = "#ffffff"; cx.beginPath(); cx.moveTo(-30 * s, 0); cx.lineTo(32 * s, 0); cx.lineTo(22 * s, 11 * s); cx.lineTo(-28 * s, 11 * s); cx.closePath(); cx.fill(); tracar(2);
+      cx.fillStyle = "#e53935"; cx.fillRect(-26 * s, 3 * s, 50 * s, 3 * s);
+      cx.fillStyle = "#bfe8ff"; rr(-10 * s, -11 * s, 20 * s, 11 * s, 3 * s); cx.fill(); tracar(1.5);
+      cx.fillStyle = "rgba(255,255,255,.8)"; cx.beginPath(); cx.ellipse(-38 * s, 9 * s, 14 * s, 4 * s, 0, 0, 7); cx.fill();
+    } else if (o.tipo === "veleiro") {
+      cx.fillStyle = "#ffffff"; cx.beginPath(); cx.moveTo(-24 * s, 0); cx.lineTo(24 * s, 0); cx.lineTo(18 * s, 9 * s); cx.lineTo(-20 * s, 9 * s); cx.closePath(); cx.fill(); tracar(2);
+      cx.fillStyle = "#fff8e1"; cx.beginPath(); cx.moveTo(0, -2 * s); cx.lineTo(0, -48 * s); cx.lineTo(20 * s, -4 * s); cx.closePath(); cx.fill(); tracar(2);
+      cx.fillStyle = "#4fc3f7"; cx.beginPath(); cx.moveTo(-2 * s, -4 * s); cx.lineTo(-2 * s, -38 * s); cx.lineTo(-18 * s, -4 * s); cx.closePath(); cx.fill(); tracar(2);
+    } else if (o.tipo === "caiaque") {
+      cx.fillStyle = "#FFC107"; cx.beginPath(); cx.ellipse(0, 2 * s, 22 * s, 5 * s, 0, 0, 7); cx.fill(); tracar(2);
+      cx.fillStyle = "#e53935"; rr(-4 * s, -12 * s, 8 * s, 12 * s, 2 * s); cx.fill(); tracar(1.5);
+      cx.fillStyle = "#e3a57e"; cx.beginPath(); cx.arc(0, -16 * s, 4.5 * s, 0, 7); cx.fill(); tracar(1.5);
+      var rem = Math.sin(S.t * 4) * 0.6;
+      cx.save(); cx.rotate(rem); cx.strokeStyle = CONTORNO; cx.lineWidth = 2.5 * s; cx.beginPath(); cx.moveTo(-16 * s, -6 * s); cx.lineTo(16 * s, -6 * s); cx.stroke(); cx.restore();
+    } else if (o.tipo === "boia") {
+      cx.fillStyle = "#ef4444"; cx.beginPath(); cx.moveTo(-9 * s, 4 * s); cx.lineTo(9 * s, 4 * s); cx.lineTo(4 * s, -22 * s); cx.lineTo(-4 * s, -22 * s); cx.closePath(); cx.fill(); tracar(2);
+      cx.fillStyle = "#fff"; cx.fillRect(-7 * s, -10 * s, 14 * s, 5 * s);
+      cx.fillStyle = "#FFC107"; cx.beginPath(); cx.arc(0, -25 * s, 3.5 * s, 0, 7); cx.fill(); tracar(1.5);
+    } else if (o.tipo === "tronco") {
+      cx.fillStyle = "#8d5a3b"; rr(-24 * s, -5 * s, 48 * s, 11 * s, 5 * s); cx.fill(); tracar(2);
+      cx.fillStyle = "#c48a5a"; cx.beginPath(); cx.ellipse(24 * s, 0.5 * s, 4 * s, 5.5 * s, 0, 0, 7); cx.fill(); tracar(1.5);
+    } else {   // cargueiro com contêineres
+      cx.fillStyle = "#c62828"; cx.beginPath(); cx.moveTo(-130 * s, 0); cx.lineTo(130 * s, 0); cx.lineTo(116 * s, 22 * s); cx.lineTo(-120 * s, 22 * s); cx.closePath(); cx.fill(); tracar(2.5);
+      cx.fillStyle = "#37474f"; cx.fillRect(-126 * s, -6 * s, 252 * s, 6 * s);
+      var cores = ["#1e88e5", "#43a047", "#fb8c00", "#8e24aa", "#e53935", "#00acc1"];
+      for (var i = 0; i < 9; i++) { cx.fillStyle = cores[i % 6]; rr(-90 * s + i * 22 * s, -26 * s - (i % 2) * 18 * s, 20 * s, 20 * s + (i % 2) * 18 * s, 2 * s); cx.fill(); tracar(1.5); }
+      cx.fillStyle = "#ffffff"; rr(-124 * s, -44 * s, 30 * s, 38 * s, 3 * s); cx.fill(); tracar(2);
+      cx.fillStyle = "#263238"; cx.fillRect(-114 * s, -58 * s, 10 * s, 14 * s);
+    }
+    cx.restore();
+    if (o.tipo !== "boia" && o.tipo !== "tronco") { cx.fillStyle = "rgba(255,255,255,.65)"; cx.beginPath(); cx.ellipse(sx, y + 10 * s, (o.tipo === "cargueiro" ? 120 : 26) * s, 4 * s, 0, 0, 7); cx.fill(); }
   }
   function costa(x, nv, lado, qual) {   // lado +1: terra à direita de x (destino); -1: à esquerda (origem)
     var ss = qual === "ss", larg = 900 * K, x0 = lado > 0 ? x : x - larg;
@@ -617,37 +740,13 @@
       funcionario(x + 46 * K, nv - 30 * K, 1, M && M.atracou && M.rampa >= 1);
     }
   }
-  function barco(o, proa, escala, hz, nv) {
-    var sx = proa + (o.x - M.d) * escala;
-    if (sx < -320 * K || sx > W + 320 * K) return;
-    var p = o.p, y = hz + 10 * K + (nv + 70 * K - hz) * p, s = (0.35 + p * 1.05) * K;
-    cx.save(); cx.translate(sx, y); cx.scale(o.lado, 1);
-    if (o.tipo === "lancha") {
-      cx.fillStyle = "#ffffff"; cx.beginPath(); cx.moveTo(-30 * s, 0); cx.lineTo(30 * s, 0); cx.lineTo(22 * s, 10 * s); cx.lineTo(-28 * s, 10 * s); cx.closePath(); cx.fill(); tracar(2);
-      cx.fillStyle = "#e53935"; cx.fillRect(-26 * s, 2 * s, 50 * s, 3 * s);
-      cx.fillStyle = "#bfe8ff"; rr(-8 * s, -10 * s, 18 * s, 10 * s, 3 * s); cx.fill(); tracar(1.5);
-    } else if (o.tipo === "veleiro") {
-      cx.fillStyle = "#ffffff"; cx.beginPath(); cx.moveTo(-24 * s, 0); cx.lineTo(24 * s, 0); cx.lineTo(18 * s, 9 * s); cx.lineTo(-20 * s, 9 * s); cx.closePath(); cx.fill(); tracar(2);
-      cx.fillStyle = "#fff8e1"; cx.beginPath(); cx.moveTo(0, -2 * s); cx.lineTo(0, -48 * s); cx.lineTo(20 * s, -4 * s); cx.closePath(); cx.fill(); tracar(2);
-      cx.fillStyle = "#4fc3f7"; cx.beginPath(); cx.moveTo(-2 * s, -4 * s); cx.lineTo(-2 * s, -38 * s); cx.lineTo(-18 * s, -4 * s); cx.closePath(); cx.fill(); tracar(2);
-    } else {
-      cx.fillStyle = "#c62828"; cx.beginPath(); cx.moveTo(-120 * s, 0); cx.lineTo(120 * s, 0); cx.lineTo(108 * s, 20 * s); cx.lineTo(-112 * s, 20 * s); cx.closePath(); cx.fill(); tracar(2.5);
-      cx.fillStyle = "#37474f"; cx.fillRect(-116 * s, -6 * s, 232 * s, 6 * s);
-      cx.fillStyle = "#ffffff"; rr(-112 * s, -40 * s, 40 * s, 34 * s, 3 * s); cx.fill(); tracar(2);
-      cx.fillStyle = "#263238"; cx.fillRect(-100 * s, -54 * s, 12 * s, 16 * s);
-    }
-    cx.restore();
-    cx.fillStyle = "rgba(255,255,255,.7)"; cx.beginPath(); cx.ellipse(sx, y + 9 * s, 40 * s, 4 * s, 0, 0, 7); cx.fill();
-    if (p > 0.38 && p < 0.62) texto("!", sx, y - 52 * s, 22, "#ef4444");
-  }
-
   // ---------- menu (cena decorativa) ----------
   function desenharMenu() {
     if (!S.clima) S.clima = { s: 0.3, mar: "calmo", vento: 10 };
     var hz = H * 0.45, nv = H * 0.74;
     ceu(hz); nuvens(S.t * 30 * K); montanhas(hz, S.t * 8 * K, "#2f9a5b", 120, 1.1); marFaixa(hz, H, S.t * 40 * K);
     var L = Math.min(W * 0.8, 440 * K), x = W * 0.5 - L / 2 + Math.sin(S.t * 0.4) * 16 * K, y = nv + Math.sin(S.t * 1.6) * 3 * K;
-    balsa(x, y, L, { carros: function () {
+    balsa(x, y, L, { nome: "FB-25", carros: function () {
       var slot = (L - 60 * K) / 4;
       for (var i = 0; i < 4; i++) carroLado(x + 30 * K + (i + 1) * slot, y, i === 2 ? "#FFC107" : CORES[i * 2], "carro", false, Math.min(1, slot / ((CARRO + 12) * K)));
     } });
@@ -695,11 +794,15 @@
   ["pointerup", "pointercancel", "lostpointercapture"].forEach(function (ev) { botao.addEventListener(ev, function () { segurar(false); }); });
   botao.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   document.addEventListener("keydown", function (e) {
-    if (e.code === "Space" || e.key === "ArrowRight" || e.key === "ArrowUp") { segurar(true); e.preventDefault(); }
+    if (e.code === "Space" || e.key === "ArrowRight") { segurar(true); e.preventDefault(); }
+    if (e.key === "ArrowUp" || e.key === "w") { mudarFaixa(1); e.preventDefault(); }
+    if (e.key === "ArrowDown" || e.key === "s") { mudarFaixa(-1); e.preventDefault(); }
     if (e.key === "Enter" || (e.key && e.key.toLowerCase() === "k")) desligarMotor();
   });
-  document.addEventListener("keyup", function (e) { if (e.code === "Space" || e.key === "ArrowRight" || e.key === "ArrowUp") segurar(false); });
+  document.addEventListener("keyup", function (e) { if (e.code === "Space" || e.key === "ArrowRight") segurar(false); });
   $("btn-acao").addEventListener("click", desligarMotor);
+  $("btn-cima").addEventListener("click", function () { mudarFaixa(1); });
+  $("btn-baixo").addEventListener("click", function () { mudarFaixa(-1); });
   cv.addEventListener("pointerdown", function (e) {   // toque nos golfinhos = foto
     if (S.fase !== "mar" || !M || !M.golf.ativo || M.golf.foto) return;
     var r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
@@ -733,7 +836,7 @@
   });
   function irMenu() {
     S.fase = "menu"; S.pausa = false;
-    mostrar("tela-menu", true); mostrar("tela-fim", false); mostrar("hud", false); mostrar("controles", false); $("dica").hidden = true;
+    mostrar("tela-menu", true); mostrar("tela-fim", false); mostrar("hud", false); mostrar("controles", false); $("dica").hidden = true; $("desvio").hidden = true;
     var rec = +(ls("vdb-jogo-recorde") || 0); $("recorde").textContent = rec ? "🏆 Seu recorde: " + rec + " pontos" : "";
   }
 

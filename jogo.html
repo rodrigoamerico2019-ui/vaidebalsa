@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Montserrat:ital,wght@0,800;0,900;1,900&display=swap">
-<link rel="stylesheet" href="css/jogo.css?v=4">
+<link rel="stylesheet" href="css/jogo.css?v=5">
 </head>
 <body>
 <div class="app">
@@ -64,11 +64,11 @@
   </div>
 
   <div class="controles2" id="controles" hidden>
-    <button type="button" class="j-redondo" id="btn-buzina" aria-label="Buzina">📣</button>
+    <div class="desvio" id="desvio" hidden><button type="button" id="btn-cima" aria-label="Desviar para cima (faixa mais longe)">⬆</button><button type="button" id="btn-baixo" aria-label="Desviar para baixo (faixa mais perto)">⬇</button></div>
     <button type="button" class="j-segurar" id="btn-segurar" aria-label="Segure para acelerar, solte para frear"><span id="seg-txt">SEGURE PARA ANDAR</span><small>solte para frear</small></button>
-    <button type="button" class="j-redondo acao" id="btn-acao" hidden>🔑</button>
+    <div class="lado-dir"><button type="button" class="j-redondo acao" id="btn-acao" hidden>🔑</button><button type="button" class="j-redondo" id="btn-buzina" aria-label="Buzina">📣</button></div>
   </div>
 </div>
-<script src="js/jogo.js?v=36"></script>
+<script src="js/jogo.js?v=41"></script>
 </body>
 </html>
