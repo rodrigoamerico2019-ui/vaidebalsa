@@ -82,3 +82,13 @@ body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 @media (min-width:700px){.chip{font-size:.85rem}.ctl.acel input{height:120px}.marcas{height:120px}}
 
 .j-pular{position:absolute;right:10px;bottom:10px;border:0;background:rgba(10,44,82,.85);color:#fff;font:800 .85rem Inter;padding:9px 14px;border-radius:999px;cursor:pointer}
+
+/* ---- jogo 2D ---- */
+.controles2{flex:none;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#0F3B6B,#0A2C52);border-top:1px solid rgba(255,255,255,.1)}
+.j-segurar{border:0;border-radius:22px;padding:14px 10px;background:linear-gradient(180deg,#ffd54a,#FFC107);color:#0A2C52;font:900 italic 1.15rem Montserrat,sans-serif;box-shadow:0 6px 0 #c79100,0 10px 20px rgba(0,0,0,.3);cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;align-items:center;gap:2px}
+.j-segurar small{font:700 .72rem Inter;opacity:.75}
+.j-segurar.ativo{transform:translateY(4px);box-shadow:0 2px 0 #c79100,0 6px 14px rgba(0,0,0,.3);background:linear-gradient(180deg,#ffe07a,#ffcd38)}
+.j-redondo.acao{background:#22c55e;color:#fff;animation:pulsar 1s infinite}
+.dica{position:absolute;left:10px;right:10px;bottom:10px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.96);color:#0A2C52;border-radius:16px;padding:8px 12px;box-shadow:0 8px 20px rgba(0,0,0,.25);font:600 .86rem Inter;pointer-events:none}
+.dica img{width:44px;height:44px;border-radius:50%;border:2px solid #FFC107;flex:none;object-fit:cover}
+.dica p{margin:0;line-height:1.3}

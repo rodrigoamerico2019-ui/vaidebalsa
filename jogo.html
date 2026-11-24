@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Capitão da Balsa: Jogo da Travessia de Ilhabela | VAIDEBALSA</title>
-<meta name="description" content="Capitão da Balsa: embarque os carros, pilote a balsa entre São Sebastião e Ilhabela com vento, chuva e mar agitado, e atraque no píer. Jogo grátis do VAIDEBALSA para passar o tempo na fila.">
+<meta name="description" content="Capitão da Balsa: pegue a fila, pague a tarifa, embarque e atravesse o canal entre São Sebastião e Ilhabela desviando de lanchas e petroleiros. Jogo grátis do VAIDEBALSA para passar o tempo na fila.">
 <link rel="canonical" href="https://vaidebalsa.com.br/jogo.html">
 <meta property="og:title" content="Capitão da Balsa — jogo da travessia de Ilhabela">
 <meta property="og:description" content="Embarque os carros, enfrente vento, chuva e mar agitado e atraque a balsa no píer. Grátis no VAIDEBALSA.">
@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Montserrat:ital,wght@0,800;0,900;1,900&display=swap">
-<link rel="stylesheet" href="css/jogo.css?v=3">
+<link rel="stylesheet" href="css/jogo.css?v=4">
 </head>
 <body>
 <div class="app">
@@ -28,25 +28,20 @@
     <canvas id="tela" aria-label="Jogo Capitão da Balsa"></canvas>
 
     <div class="hud" id="hud" hidden>
-      <span class="chip" id="h-vel">⛴️ 0 nós</span>
+      <span class="chip" id="h-fase">🚗 Fila</span>
+      <span class="chip" id="h-vel">0 km/h</span>
       <span class="chip" id="h-dist">📍 —</span>
-      <span class="chip" id="h-mar">🌊 —</span>
-      <span class="chip" id="h-vento">💨 —</span>
-      <span class="chip conforto"><span>😊</span><i><b id="h-conf"></b></i></span>
-    </div>
-    <div class="vistas" id="vistas" hidden role="group" aria-label="Escolher visão">
-      <button type="button" data-vista="cabine" aria-pressed="true">🧑‍✈️ Cabine</button>
-      <button type="button" data-vista="fora" aria-pressed="false">⛴️ De fora</button>
-      <button type="button" data-vista="mapa" aria-pressed="false">🗺️ Mapa</button>
+      <span class="chip" id="h-clima">🌊 —</span>
+      <span class="chip" id="h-pts">⭐ 0</span>
     </div>
     <div class="aviso" id="aviso" aria-live="polite"></div>
-    <button type="button" class="j-pular" id="btn-pular" hidden>⏭ Pular</button>
+    <div class="dica" id="dica" hidden><img src="img/mascote.webp" alt="" width="44" height="44"><p id="dica-txt"></p></div>
 
     <!-- MENU -->
     <section class="painel-jogo" id="tela-menu">
       <img src="img/mascote.webp" alt="" width="84" height="84" class="j-mascote">
       <h1>Capitão da <em>Balsa</em></h1>
-      <p>Embarque os carros, enfrente o vento, a chuva e o mar, e atraque com cuidado no píer do outro lado.</p>
+      <p>Pegue a fila, pague a tarifa, embarque o carro e atravesse o canal até o outro lado. É só <b>segurar para andar</b> e <b>soltar para frear</b>!</p>
       <div class="j-escolha">
         <button type="button" class="j-btn" data-origem="ss">Sair de <b>São Sebastião</b></button>
         <button type="button" class="j-btn" data-origem="ib">Sair de <b>Ilhabela</b></button>
@@ -57,26 +52,9 @@
       <p class="j-alerta">📵 Motorista: jogue só com o carro parado e desligado.</p>
     </section>
 
-    <!-- EMBARQUE -->
-    <section class="painel-jogo embarque" id="tela-embarque" hidden>
-      <div class="emb-topo"><h2>🚗 Embarque</h2><span class="emb-tempo" id="emb-tempo">35s</span></div>
-      <p class="emb-dica">Coloque cada veículo numa faixa. Deixe os dois lados com <b>peso parecido</b>: balsa torta balança mais no mar agitado.</p>
-      <div class="emb-proximo"><span>Próximo:</span><b id="emb-prox">—</b><small id="emb-fila"></small></div>
-      <div class="emb-deck">
-        <div class="emb-faixa" id="faixa-e"></div>
-        <div class="emb-faixa" id="faixa-d"></div>
-      </div>
-      <div class="emb-equilibrio"><span>Esquerda</span><div class="emb-barra"><i id="emb-peso"></i></div><span>Direita</span></div>
-      <div class="emb-botoes">
-        <button type="button" class="j-btn" id="btn-esq">⬅ Faixa esquerda</button>
-        <button type="button" class="j-btn" id="btn-dir">Faixa direita ➡</button>
-      </div>
-      <button type="button" class="j-btn sol" id="btn-zarpar">⛴️ Zarpar</button>
-    </section>
-
     <!-- RESULTADO -->
     <section class="painel-jogo" id="tela-fim" hidden>
-      <h2 id="fim-tit">Atracou!</h2>
+      <h2 id="fim-tit">Chegou!</h2>
       <ul class="fim-lista" id="fim-lista"></ul>
       <p class="fim-total">Pontos da viagem: <b id="fim-pts">0</b></p>
       <p class="fim-total">Total: <b id="fim-total">0</b> · Viagens: <b id="fim-viagens">0</b></p>
@@ -85,25 +63,12 @@
     </section>
   </div>
 
-  <div class="controles" id="controles" hidden>
-    <div class="ctl acel">
-      <label for="c-acel">Acelerador</label>
-      <input type="range" id="c-acel" min="-50" max="100" step="5" value="0" orient="vertical" aria-label="Acelerador da balsa">
-      <div class="marcas"><span>Toda</span><span>Meia</span><span>Parar</span><span>Ré</span></div>
-    </div>
-    <div class="ctl leme">
-      <label for="c-leme">Leme</label>
-      <input type="range" id="c-leme" min="-100" max="100" step="5" value="0" aria-label="Leme da balsa">
-      <div class="leme-botoes">
-        <button type="button" id="leme-centro">Centralizar</button>
-      </div>
-    </div>
-    <div class="ctl acoes">
-      <button type="button" class="j-redondo" id="btn-buzina" aria-label="Buzina">📣</button>
-      <button type="button" class="j-redondo foto" id="btn-foto" aria-label="Fotografar golfinhos" hidden>📸</button>
-    </div>
+  <div class="controles2" id="controles" hidden>
+    <button type="button" class="j-redondo" id="btn-buzina" aria-label="Buzina">📣</button>
+    <button type="button" class="j-segurar" id="btn-segurar" aria-label="Segure para acelerar, solte para frear"><span id="seg-txt">SEGURE PARA ANDAR</span><small>solte para frear</small></button>
+    <button type="button" class="j-redondo acao" id="btn-acao" hidden>🔑</button>
   </div>
 </div>
-<script src="js/jogo.js?v=28"></script>
+<script src="js/jogo.js?v=36"></script>
 </body>
 </html>
