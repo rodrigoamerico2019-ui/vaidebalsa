@@ -810,3 +810,4 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
 .cams-cab small{display:block;color:var(--suave);font-size:.85rem;margin-top:2px}
 
 .btn-jogo{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.sp-preco.consulta{font-size:1.45rem}
