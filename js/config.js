@@ -53,10 +53,10 @@ window.VAIDEBALSA = {
 
   // player público oficial da AcquaVias (o mesmo do site deles); carrega só quando a pessoa toca
   cameras: [
-    { id: "ss-1", lado: "sao-sebastiao", nome: "São Sebastião · Câmera 1", tipo: "iframe", url: "https://acquastream.i9ia.io/turismo/camera.html?f=saosebastiao5", credito: "AcquaVias", creditoUrl: "https://acquavias.com.br/sao-sebastiao-ilhabela/" },
+    { id: "ss-1", principal: true, lado: "sao-sebastiao", nome: "São Sebastião · Câmera 1", tipo: "iframe", url: "https://acquastream.i9ia.io/turismo/camera.html?f=saosebastiao5", credito: "AcquaVias", creditoUrl: "https://acquavias.com.br/sao-sebastiao-ilhabela/" },
     { id: "ss-2", lado: "sao-sebastiao", nome: "São Sebastião · Câmera 2", tipo: "iframe", url: "https://acquastream.i9ia.io/turismo/camera.html?f=saosebastiao2", credito: "AcquaVias", creditoUrl: "https://acquavias.com.br/sao-sebastiao-ilhabela/" },
     { id: "ss-3", lado: "sao-sebastiao", nome: "São Sebastião · Câmera 3", tipo: "iframe", url: "https://acquastream.i9ia.io/turismo/camera.html?f=saosebastiao", credito: "AcquaVias", creditoUrl: "https://acquavias.com.br/sao-sebastiao-ilhabela/" },
-    { id: "ib-1", lado: "ilhabela", nome: "Ilhabela · Câmera 1", tipo: "iframe", url: "https://acquastream.i9ia.io/turismo/camera.html?f=ilhabela", credito: "AcquaVias", creditoUrl: "https://acquavias.com.br/sao-sebastiao-ilhabela/" },
+    { id: "ib-1", principal: true, lado: "ilhabela", nome: "Ilhabela · Câmera 1", tipo: "iframe", url: "https://acquastream.i9ia.io/turismo/camera.html?f=ilhabela", credito: "AcquaVias", creditoUrl: "https://acquavias.com.br/sao-sebastiao-ilhabela/" },
     { id: "ib-2", lado: "ilhabela", nome: "Ilhabela · Câmera 2", tipo: "iframe", url: "https://acquastream.i9ia.io/turismo/camera.html?f=ilhabela2", credito: "AcquaVias", creditoUrl: "https://acquavias.com.br/sao-sebastiao-ilhabela/" },
     { id: "ib-3", lado: "ilhabela", nome: "Ilhabela · Câmera 3", tipo: "iframe", url: "https://acquastream.i9ia.io/turismo/camera.html?f=ilhabela3", credito: "AcquaVias", creditoUrl: "https://acquavias.com.br/sao-sebastiao-ilhabela/" },
     { id: "ib-4", lado: "ilhabela", nome: "Ilhabela · Câmera 4", tipo: "iframe", url: "https://acquastream.i9ia.io/turismo/camera.html?f=ilhabela4", credito: "AcquaVias", creditoUrl: "https://acquavias.com.br/sao-sebastiao-ilhabela/" }

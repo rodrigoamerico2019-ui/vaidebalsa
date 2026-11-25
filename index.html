@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
 <link rel="preload" as="image" href="img/embaixador.webp">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=40">
+<link rel="stylesheet" href="css/style.css?v=42">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -129,6 +129,11 @@
           </div>
         </div>
         <div id="grade" class="grade" aria-live="polite"></div>
+        <div class="cams-acoes">
+          <button type="button" class="cams-mais" id="cams-mais" aria-controls="grade" aria-expanded="false" hidden>🎥 Ver todas as câmeras</button>
+          <button type="button" class="cams-acao verde" data-abrir-postar>📸 Postar foto</button>
+          <button type="button" class="cams-acao" id="cams-medir">⏱ Medir espera</button>
+        </div>
       </div>
 
       <!-- BANNER 1 · abaixo das câmeras (anunciante: Emirados Pousada de Charme) -->
@@ -505,8 +510,8 @@
   <a href="perguntas-frequentes.html"><svg aria-hidden="true"><use href="img/icones.svg#i-duvida"/></svg>Dúvidas</a>
 </nav>
 
-<script src="js/config.js?v=14"></script>
-<script src="js/app.js?v=6"></script>
+<script src="js/config.js?v=15"></script>
+<script src="js/app.js?v=7"></script>
 <script src="js/estimativa.js?v=3"></script>
 <script src="js/portal.js?v=13"></script>
 <script src="js/consentimento.js?v=1"></script>

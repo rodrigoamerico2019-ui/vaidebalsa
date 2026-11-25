@@ -102,9 +102,18 @@
     return "";
   }
 
+  var expandido = false, filtroAtual = "todas", btnMais = document.getElementById("cams-mais");
+  var temPrincipal = cfg.cameras.some(function (c) { return c.principal; });
   function render(filtro) {
+    filtroAtual = filtro;
+    var soPrincipais = filtro === "todas" && !expandido && temPrincipal;
+    if (btnMais) {
+      btnMais.hidden = filtro !== "todas" || !temPrincipal;
+      btnMais.innerHTML = expandido ? "Mostrar só as principais" : "🎥 Ver todas as " + cfg.cameras.length + " câmeras";
+      btnMais.setAttribute("aria-expanded", String(expandido));
+    }
     grade.innerHTML = cfg.cameras
-      .filter(function (c) { return filtro === "todas" || c.lado === filtro; })
+      .filter(function (c) { return (filtro === "todas" || c.lado === filtro) && (!soPrincipais || c.principal); })
       .map(function (c, i) {
         var credito = c.credito
           ? '<span class="credito">Imagem: ' + (c.creditoUrl ? '<a href="' + esc(c.creditoUrl) + '" target="_blank" rel="noopener">' + esc(c.credito) + "</a>" : esc(c.credito)) + "</span>"
@@ -121,6 +130,16 @@
     if (!b) return;
     var tela = b.parentNode;
     tela.innerHTML = iframeCam(b.dataset.src, b.dataset.titulo, false);
+  });
+
+  if (btnMais) btnMais.addEventListener("click", function () {
+    expandido = !expandido; render(filtroAtual);
+    if (!expandido) document.getElementById("cameras").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  var medirAtalho = document.getElementById("cams-medir");
+  if (medirAtalho) medirAtalho.addEventListener("click", function () {
+    var m = document.querySelector("#fila [data-medir]");
+    if (m) { m.scrollIntoView({ behavior: "smooth", block: "center" }); m.click(); }
   });
 
   var botoes = document.querySelectorAll("#cameras .chips button");
