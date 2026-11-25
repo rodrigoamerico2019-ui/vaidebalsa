@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
 <link rel="preload" as="image" href="img/embaixador.webp">
 <link rel="preload" as="image" href="img/travessia.webp">
-<link rel="stylesheet" href="css/style.css?v=38">
+<link rel="stylesheet" href="css/style.css?v=39">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -114,33 +114,8 @@
 </section>
 
 <main>
-  <section class="secao fila" id="fila" aria-labelledby="tit-fila">
+  <section class="secao secao-cams" aria-labelledby="tit-cams">
     <div class="wrap">
-      <div class="secao-cab">
-        <div>
-          <span class="rotulo">Mural ao vivo</span>
-          <h2 id="tit-fila">A fila agora, <em>por quem está nela</em></h2>
-          <p class="lead">Motoristas e passageiros mostram em tempo real como está cada lado. O semáforo junta as fotos dos últimos 30 minutos e as esperas medidas pelo GPS de quem passou pela fila.</p>
-        </div>
-        <div class="fila-botoes">
-          <button class="btn-postar" type="button" data-abrir-postar><svg aria-hidden="true"><use href="img/icones.svg#i-camera"/></svg>Postar foto da fila</button>
-          <button class="btn-medir" type="button" data-medir><svg aria-hidden="true"><use href="img/icones.svg#i-relogio"/></svg>Medir minha espera</button>
-          <button class="btn-medir" type="button" id="meus-cupons" hidden>🎁 Meus cupons</button>
-          <a class="btn-medir btn-jogo" href="jogo.html">🎮 Jogar Capitão da Balsa</a>
-        </div>
-      </div>
-
-      <div class="sinais">
-        <div class="sinal breve" data-semaforo="sao-sebastiao">
-          <div class="luzes" aria-hidden="true"><i class="l-vermelho"></i><i class="l-amarelo"></i><i class="l-verde"></i></div>
-          <div><small>Lado São Sebastião</small><strong class="sinal-nivel">Em breve</strong><span class="sinal-faixa">o mural abre em breve</span><em class="sinal-base"></em><span class="sinal-transito">Trânsito agora: <a href="https://www.google.com/maps/@?api=1&amp;map_action=map&amp;center=-23.8075%2C-45.4005&amp;zoom=15&amp;layer=traffic" target="_blank" rel="noopener">Google Maps</a> · <a href="https://www.waze.com/live-map/directions?to=ll.-23.8075%2C-45.4005" target="_blank" rel="noopener">Waze</a></span></div>
-        </div>
-        <div class="sinal breve" data-semaforo="ilhabela">
-          <div class="luzes" aria-hidden="true"><i class="l-vermelho"></i><i class="l-amarelo"></i><i class="l-verde"></i></div>
-          <div><small>Lado Ilhabela</small><strong class="sinal-nivel">Em breve</strong><span class="sinal-faixa">o mural abre em breve</span><em class="sinal-base"></em><span class="sinal-transito">Trânsito agora: <a href="https://www.google.com/maps/@?api=1&amp;map_action=map&amp;center=-23.8202%2C-45.3762&amp;zoom=15&amp;layer=traffic" target="_blank" rel="noopener">Google Maps</a> · <a href="https://www.waze.com/live-map/directions?to=ll.-23.8202%2C-45.3762" target="_blank" rel="noopener">Waze</a></span></div>
-        </div>
-      </div>
-
       <div class="cams-fila" id="cameras" aria-labelledby="tit-cams">
         <div class="cams-cab">
           <div>
@@ -178,6 +153,35 @@
           <span class="adx-selo">Publicidade · apoia o Instituto Américo</span>
           <span class="adx-barra" aria-hidden="true"></span>
         </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao fila" id="fila" aria-labelledby="tit-fila">
+    <div class="wrap">
+      <div class="secao-cab">
+        <div>
+          <span class="rotulo">Mural ao vivo</span>
+          <h2 id="tit-fila">A fila agora, <em>por quem está nela</em></h2>
+          <p class="lead">Motoristas e passageiros mostram em tempo real como está cada lado. O semáforo junta as fotos dos últimos 30 minutos e as esperas medidas pelo GPS de quem passou pela fila.</p>
+        </div>
+        <div class="fila-botoes">
+          <button class="btn-postar" type="button" data-abrir-postar><svg aria-hidden="true"><use href="img/icones.svg#i-camera"/></svg>Postar foto da fila</button>
+          <button class="btn-medir" type="button" data-medir><svg aria-hidden="true"><use href="img/icones.svg#i-relogio"/></svg>Medir minha espera</button>
+          <button class="btn-medir" type="button" id="meus-cupons" hidden>🎁 Meus cupons</button>
+          <a class="btn-medir btn-jogo" href="jogo.html">🎮 Jogar Capitão da Balsa</a>
+        </div>
+      </div>
+
+      <div class="sinais">
+        <div class="sinal breve" data-semaforo="sao-sebastiao">
+          <div class="luzes" aria-hidden="true"><i class="l-vermelho"></i><i class="l-amarelo"></i><i class="l-verde"></i></div>
+          <div><small>Lado São Sebastião</small><strong class="sinal-nivel">Em breve</strong><span class="sinal-faixa">o mural abre em breve</span><em class="sinal-base"></em><span class="sinal-transito">Trânsito agora: <a href="https://www.google.com/maps/@?api=1&amp;map_action=map&amp;center=-23.8075%2C-45.4005&amp;zoom=15&amp;layer=traffic" target="_blank" rel="noopener">Google Maps</a> · <a href="https://www.waze.com/live-map/directions?to=ll.-23.8075%2C-45.4005" target="_blank" rel="noopener">Waze</a></span></div>
+        </div>
+        <div class="sinal breve" data-semaforo="ilhabela">
+          <div class="luzes" aria-hidden="true"><i class="l-vermelho"></i><i class="l-amarelo"></i><i class="l-verde"></i></div>
+          <div><small>Lado Ilhabela</small><strong class="sinal-nivel">Em breve</strong><span class="sinal-faixa">o mural abre em breve</span><em class="sinal-base"></em><span class="sinal-transito">Trânsito agora: <a href="https://www.google.com/maps/@?api=1&amp;map_action=map&amp;center=-23.8202%2C-45.3762&amp;zoom=15&amp;layer=traffic" target="_blank" rel="noopener">Google Maps</a> · <a href="https://www.waze.com/live-map/directions?to=ll.-23.8202%2C-45.3762" target="_blank" rel="noopener">Waze</a></span></div>
+        </div>
       </div>
 
       <div class="mapas-waze">
