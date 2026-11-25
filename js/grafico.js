@@ -1,4 +1,4 @@
-/* VAIDEBALSA — gráfico da espera nas últimas 12 horas (janela móvel; dados próprios: esperas medidas + fotos) */
+/* VAIDEBALSA — gráfico da espera nas últimas 12 horas (janela móvel; espera oficial da AcquaVias + esperas medidas e fotos) */
 (function () {
   var cfg = window.VAIDEBALSA || {};
   var caixa = document.getElementById("grafico-dia");
@@ -6,7 +6,7 @@
   var DEMO = /[?&]demo=1/.test(location.search);
   var SERIES = [
     { lado: "sao-sebastiao", nome: "São Sebastião", cor: "#0D6EFD" },
-    { lado: "ilhabela", nome: "Ilhabela", cor: "#00B8A9" }
+    { lado: "ilhabela", nome: "Ilhabela", cor: "#00B8A9", traco: "7 5" }
   ];
   var JANELA = 12;                    // horas
   var HORA = 3600000;
@@ -14,7 +14,7 @@
   function medidas() {
     W = Math.max(300, Math.round(caixa.clientWidth || 720));
     H = W < 520 ? 220 : 260;
-    M.r = W < 520 ? 96 : 120; M.l = W < 520 ? 34 : 44;
+    M.r = W < 520 ? 132 : 132; M.l = W < 520 ? 34 : 44;
   }
   var dados = [], inicio = 0;         // inicio = começo da 1ª hora da janela (ms)
 
@@ -38,16 +38,30 @@
       return Promise.resolve(desenhar());
     }
     if (!cfg.supabaseUrl) return Promise.resolve(desenhar());
-    return fetch(cfg.supabaseUrl + "/rest/v1/rpc/espera_12h", {
-      method: "POST", headers: { apikey: cfg.supabaseAnonKey, "Content-Type": "application/json" }, body: "{}"
-    }).then(function (r) { return r.ok ? r.json() : []; })
-      .then(function (j) {
-        dados = (Array.isArray(j) ? j : []).map(function (d) {
-          return { lado: d.lado, k: Math.round((new Date(d.hora).getTime() - inicio) / HORA), minutos: d.minutos, medidas: d.medidas, relatos: d.relatos };
-        }).filter(function (d) { return d.k >= 0 && d.k < JANELA; });
-        desenhar();
-      })
-      .catch(function () { desenhar(); });
+    function rpc(nome) {
+      return fetch(cfg.supabaseUrl + "/rest/v1/rpc/" + nome, {
+        method: "POST", headers: { apikey: cfg.supabaseAnonKey, "Content-Type": "application/json" }, body: "{}"
+      }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
+    }
+    function kDe(hora) { return Math.round((new Date(hora).getTime() - inicio) / HORA); }
+    return Promise.all([rpc("espera_oficial_12h"), rpc("espera_12h")]).then(function (r) {
+      var mapa = {};
+      // 1) espera oficial publicada pela AcquaVias (lida a cada 10 min): base do gráfico
+      (Array.isArray(r[0]) ? r[0] : []).forEach(function (d) {
+        var k = kDe(d.hora);
+        [["sao-sebastiao", d.ss], ["ilhabela", d.ib]].forEach(function (l) {
+          if (l[1] != null) mapa[l[0] + "|" + k] = { lado: l[0], k: k, minutos: l[1], medidas: 0, relatos: 0, oficial: true };
+        });
+      });
+      // 2) esperas medidas e fotos de quem está na fila: completam as horas sem dado oficial
+      (Array.isArray(r[1]) ? r[1] : []).forEach(function (d) {
+        var k = kDe(d.hora), ch = d.lado + "|" + k, o = mapa[ch];
+        if (o) { o.medidas = d.medidas || 0; o.relatos = d.relatos || 0; }
+        else if (d.minutos != null) mapa[ch] = { lado: d.lado, k: k, minutos: d.minutos, medidas: d.medidas || 0, relatos: d.relatos || 0, oficial: false };
+      });
+      dados = Object.keys(mapa).map(function (c) { return mapa[c]; }).filter(function (d) { return d.k >= 0 && d.k < JANELA; });
+      desenhar();
+    });
   }
 
   function desenhar() {
@@ -80,7 +94,7 @@
       var ps = pontos.filter(function (d) { return d.lado === s.lado; }).sort(function (a, b) { return a.k - b.k; });
       if (!ps.length) return;
       if (ps.length > 1) {
-        svg += '<polyline fill="none" stroke="' + s.cor + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="' +
+        svg += '<polyline fill="none" stroke="' + s.cor + '"' + (s.traco ? ' stroke-dasharray="' + s.traco + '"' : "") + ' stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="' +
           ps.map(function (d) { return x(d.k + .5) + "," + y(d.minutos); }).join(" ") + '"/>';
       }
       ps.forEach(function (d) {
@@ -99,19 +113,19 @@
     svg += '<rect class="g-alvo" x="' + M.l + '" y="' + M.t + '" width="' + (W - M.l - M.r) + '" height="' + (H - M.t - M.b) + '" fill="transparent"/>';
     svg += "</svg>";
 
-    var total = pontos.reduce(function (s, d) { return s + d.medidas + d.relatos; }, 0);
+    var oficiais = pontos.some(function (d) { return d.oficial; });
     var aviso = !pontos.length
-      ? '<p class="g-vazio">Sem dados nas últimas 12 horas. O gráfico se forma com as <b>esperas medidas</b> e as <b>fotos da fila</b> enviadas por quem está lá.</p>'
-      : (total < 4 ? '<p class="g-vazio">Poucos dados nas últimas 12 horas (' + total + "). Quanto mais gente medir a espera, mais preciso fica.</p>" : "");
+      ? '<p class="g-vazio">Ainda sem dados nas últimas 12 horas. O gráfico usa a <b>espera oficial da AcquaVias</b> e as <b>esperas medidas</b> e <b>fotos da fila</b> enviadas por quem está lá.</p>'
+      : '<p class="g-fonte">Fonte: ' + (oficiais ? 'espera oficial publicada pela <a href="https://acquavias.com.br/" target="_blank" rel="noopener">AcquaVias</a>, média por hora' : "esperas medidas e fotos de quem está na fila") + ".</p>";
 
     var linhas = pontos.slice().sort(function (a, b) { return a.k - b.k || a.lado.localeCompare(b.lado); }).map(function (d) {
-      return "<tr><td>" + rotH(d.k) + "h</td><td>" + (d.lado === "ilhabela" ? "Ilhabela" : "São Sebastião") + "</td><td>" + d.minutos + " min</td><td>" + d.medidas + "</td><td>" + d.relatos + "</td></tr>";
+      return "<tr><td>" + rotH(d.k) + "h</td><td>" + (d.lado === "ilhabela" ? "Ilhabela" : "São Sebastião") + "</td><td>" + d.minutos + " min</td><td>" + (d.oficial ? "AcquaVias" : "Medições e fotos") + "</td></tr>";
     }).join("");
 
     caixa.innerHTML =
       '<div class="g-legenda">' + SERIES.map(function (s) { return '<span><i style="background:' + s.cor + '"></i>' + s.nome + "</span>"; }).join("") + "</div>" +
       '<div class="g-area">' + svg + '<div class="g-dica" hidden></div></div>' + aviso +
-      (linhas ? '<details class="g-tabela"><summary>Ver em tabela</summary><table class="tabela"><thead><tr><th>Hora</th><th>Lado</th><th>Espera</th><th>Medições</th><th>Relatos</th></tr></thead><tbody>' + linhas + "</tbody></table></details>" : "");
+      (linhas ? '<details class="g-tabela"><summary>Ver em tabela</summary><table class="tabela"><thead><tr><th>Hora</th><th>Lado</th><th>Espera</th><th>Fonte</th></tr></thead><tbody>' + linhas + "</tbody></table></details>" : "");
 
     // dica com mira (mouse e toque): pula para a hora com dado mais próxima
     var area = caixa.querySelector(".g-area"), alvo = caixa.querySelector(".g-alvo"), mira = caixa.querySelector(".g-mira"), dica = caixa.querySelector(".g-dica");
@@ -127,7 +141,7 @@
       var itens = SERIES.map(function (s) {
         var d = pontos.find(function (p) { return p.lado === s.lado && p.k === k; });
         return '<div><i style="background:' + s.cor + '"></i>' + s.nome + ": <b>" + (d ? d.minutos + " min" : "sem dados") + "</b>" +
-          (d ? ' <small>(' + d.medidas + " med. · " + d.relatos + " rel.)</small>" : "") + "</div>";
+          (d ? " <small>(" + (d.oficial ? "AcquaVias" : d.medidas + " med. · " + d.relatos + " rel.") + ")</small>" : "") + "</div>";
       }).join("");
       dica.innerHTML = "<strong>" + rotH(k) + "h às " + rotH(k + 1) + "h</strong>" + itens;
       dica.hidden = false;
