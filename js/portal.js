@@ -208,6 +208,8 @@
   document.addEventListener("click", function (ev) {
     var a = ev.target.closest("a[data-parceiro]");
     if (a) contarClique(a.dataset.parceiro, a.dataset.tipo);
+    var ad = ev.target.closest("a[data-anuncio]");   // banners da home: conta o clique no Analytics
+    if (ad && typeof window.gtag === "function") window.gtag("event", "clique_banner", { anuncio: ad.dataset.anuncio, espaco: ad.id });
   });
 
   function cardParceiro(p) {
