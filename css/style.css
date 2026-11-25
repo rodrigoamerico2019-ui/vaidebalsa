@@ -921,3 +921,13 @@ a.bf-item:hover{color:var(--sol);text-decoration:underline}
   .adx-selo{left:auto;right:12px;top:14px;bottom:auto;font-size:.6rem}
 }
 @media (prefers-reduced-motion:reduce){.adx *,.adx::before{animation:none!important}.adx-bg.b1,.adx-fim{opacity:1}}
+
+/* página de apoiador (plano único) */
+.ap-unico{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:28px;align-items:start;margin-top:10px}
+.ap-unico .ap-plano.destaque{transform:none}
+.ap-lado{background:#fff;border-radius:24px;box-shadow:var(--sombra);padding:26px 24px}
+.ap-lado h2{font:900 italic 1.4rem var(--titulo);color:var(--oceano);margin:0 0 12px}
+.ap-lado p{line-height:1.55}
+.ap-tipos{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.ap-tipos span{background:#F1F6FC;border:1px solid #dce6f2;border-radius:999px;padding:7px 12px;font-weight:700;font-size:.9rem;color:var(--oceano)}
+@media (max-width:760px){.ap-unico{grid-template-columns:1fr}}
