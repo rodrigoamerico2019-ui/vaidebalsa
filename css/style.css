@@ -1038,3 +1038,8 @@ dialog.lc-zoom::backdrop{background:rgba(4,12,24,.94)}
   .lc-seta{display:none}
   .lc-bloco{padding:18px}
 }
+
+/* guia logo abaixo das câmeras, banner depois */
+.secao-cams + .guia-home{padding:34px 0 0}
+.banner-home{margin-top:8px}
+.banner-home + .secao.fila{padding-top:40px}
