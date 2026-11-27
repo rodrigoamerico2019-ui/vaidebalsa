@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,800;1,900&display=swap">
-<link rel="stylesheet" href="css/style.css?v=35">
+<link rel="stylesheet" href="css/style.css?v=43">
 <style>
   body{padding-bottom:40px}
   .pn-topo{background:var(--oceano);color:#fff}
@@ -55,6 +55,18 @@
   table.rel th,table.rel td{padding:10px 12px;border-bottom:1px solid var(--borda);text-align:left}
   table.rel th{background:var(--oceano);color:#fff;font:700 .85rem var(--titulo)}
   table.rel td:not(:first-child){text-align:center;font-weight:700}
+  .pg-campos{border:2px solid var(--borda);border-radius:16px;padding:12px 14px;margin:6px 0 12px}
+  .pg-campos legend{font:900 italic 1rem var(--titulo);color:var(--oceano);padding:0 6px}
+  .campo textarea{resize:vertical}
+  .pg-link{margin:-4px 0 10px;font-size:.85rem}
+  .pg-fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin:6px 0}
+  .pg-foto{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;background:var(--nevoa)}
+  .pg-foto img{width:100%;height:100%;object-fit:cover}
+  .pg-foto .capa{position:absolute;left:4px;top:4px;background:var(--sol);color:var(--oceano);font:800 .65rem var(--corpo);padding:2px 6px;border-radius:999px}
+  .pg-foto .bt{position:absolute;bottom:4px;display:flex;gap:4px;left:4px;right:4px;justify-content:space-between}
+  .pg-foto .bt button{border:0;border-radius:999px;background:rgba(255,255,255,.92);font:800 .75rem var(--corpo);padding:3px 8px;cursor:pointer}
+  .pg-add{display:inline-block;width:auto;text-align:center}
+  .chip.guia{background:#E0F2FE;color:#075985}
   @media (max-width:600px){.linha2{grid-template-columns:1fr}}
 </style>
 </head>
@@ -148,6 +160,26 @@
       <label class="campo">Site<input name="site" type="url" placeholder="https://"></label>
     </div>
     <label class="campo">Foto <small>(é reduzida automaticamente)</small><input type="file" name="foto" accept="image/*"><img class="previa-foto" id="previa-parceiro" alt="Prévia da foto"></label>
+    <fieldset class="pg-campos">
+      <legend>📄 Página no guia do site</legend>
+      <div class="linha2">
+        <label class="campo">Aparece em<select name="guia">
+          <option value="">Sem página</option><option value="ficar">🛏️ Onde ficar</option><option value="comer">🍽️ Onde comer</option><option value="servicos">🧭 Serviços</option></select></label>
+        <label class="campo">Endereço da página <small>(gerado pelo nome)</small><input name="slug" maxlength="70" pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="nome-do-negocio"></label>
+      </div>
+      <p class="pg-link" id="pg-link"></p>
+      <label class="campo">Frase de destaque <small>(aparece em cima, sobre a foto. Até 120 caracteres)</small><input name="chamada" maxlength="120" placeholder="Um refúgio com alma, longe de tudo"></label>
+      <label class="campo">Sobre o negócio<textarea name="sobre" rows="4" maxlength="1500" placeholder="Conte a história, o clima do lugar, o que torna especial…"></textarea></label>
+      <label class="campo">O que oferece <small>(um item por linha)</small><textarea name="oferece" rows="4" maxlength="1200" placeholder="Café da manhã incluso&#10;Piscina&#10;Estacionamento"></textarea></label>
+      <div class="linha2">
+        <label class="campo">Horário<input name="horario" maxlength="160" placeholder="Todos os dias, das 11h às 23h"></label>
+        <label class="campo">Instagram <small>(sem @)</small><input name="instagram" maxlength="60" placeholder="nomedonegocio"></label>
+      </div>
+      <div class="campo">Fotos da página <small>(até 12. A primeira é a capa. Só fotos: não publicamos vídeos)</small>
+        <div class="pg-fotos" id="pg-fotos"></div>
+        <label class="btn sec pg-add">+ Adicionar fotos<input type="file" id="pg-novas" accept="image/*" multiple hidden></label>
+      </div>
+    </fieldset>
     <label class="check"><input type="checkbox" name="selo_inclusao"> Selo "Amigo da inclusão" 🧩</label>
     <label class="check"><input type="checkbox" name="ativo" checked> Ativo (aparece no site)</label>
     <p class="msg" id="msg-parceiro"></p>
@@ -172,6 +204,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="js/config.js?v=14"></script>
-<script src="js/painel.js?v=2"></script>
+<script src="js/painel.js?v=3"></script>
 </body>
 </html>
